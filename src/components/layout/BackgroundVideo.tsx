@@ -1,0 +1,45 @@
+import {
+  VIDEO_BACKWARD_ID,
+  VIDEO_BACKWARD_SOURCE,
+  VIDEO_FORWARD_ID,
+  VIDEO_FORWARD_SOURCE,
+} from '@/constants';
+import { timeUpdated } from '@/models/video';
+import { useUnit } from 'effector-react';
+
+export const BackgroundVideo: React.FC = () => {
+  const { handleTimeUpdate } = useUnit({
+    handleTimeUpdate: timeUpdated,
+  });
+
+  return (
+    <>
+      <video
+        id={VIDEO_FORWARD_ID}
+        onTimeUpdate={(e) => {
+          handleTimeUpdate((e.target as HTMLVideoElement).currentTime);
+        }}
+        className="absolute inset-0 h-full w-full object-cover"
+        playsInline
+        muted
+        preload="auto"
+        style={{ opacity: 1, visibility: 'visible' }}>
+        <source src={VIDEO_FORWARD_SOURCE} type="video/mp4" />
+        Ваш браузер не поддерживает видео-тег.
+      </video>
+      <video
+        id={VIDEO_BACKWARD_ID}
+        onTimeUpdate={(e) => {
+          handleTimeUpdate((e.target as HTMLVideoElement).currentTime);
+        }}
+        className="absolute inset-0 h-full w-full object-cover"
+        playsInline
+        muted
+        preload="auto"
+        style={{ opacity: 1, visibility: 'visible' }}>
+        <source src={VIDEO_BACKWARD_SOURCE} type="video/mp4" />
+        Ваш браузер не поддерживает видео-тег.
+      </video>
+    </>
+  );
+};
