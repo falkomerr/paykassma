@@ -1,5 +1,10 @@
 import { useUnit } from 'effector-react';
-import { $activeSection, scrollToSection } from '../../models/journey';
+import {
+  $activeSection,
+  $animationPlaying,
+  $isChangingSection,
+  scrollToSection,
+} from '../../models/journey';
 
 type NavigationItem = {
   id: string;
@@ -8,6 +13,8 @@ type NavigationItem = {
 
 export const SectionNav = () => {
   const activeSection = useUnit($activeSection);
+  const isAnimationPlaying = useUnit($animationPlaying);
+  const isChangingSection = useUnit($isChangingSection);
 
   const navigationItems: NavigationItem[] = [
     { id: 'section1', label: '01' },
@@ -16,6 +23,13 @@ export const SectionNav = () => {
     { id: 'section4', label: '04' },
     { id: 'section5', label: '05' },
   ];
+
+  const handleSectionClick = (sectionId: string) => {
+    if (isAnimationPlaying || isChangingSection) {
+      return; // Блокируем переключение при воспроизведении анимации
+    }
+    scrollToSection(sectionId);
+  };
 
   return (
     <div
@@ -32,7 +46,7 @@ export const SectionNav = () => {
       {navigationItems.map((item) => (
         <button
           key={item.id}
-          onClick={() => scrollToSection(item.id)}
+          onClick={() => handleSectionClick(item.id)}
           style={{
             width: '40px',
             height: '40px',
@@ -46,7 +60,10 @@ export const SectionNav = () => {
                 : 'rgba(255, 255, 255, 0.2)',
             color: activeSection === item.id ? '#000' : '#fff',
             border: 'none',
-            cursor: 'pointer',
+            cursor:
+              isAnimationPlaying || isChangingSection
+                ? 'not-allowed'
+                : 'pointer',
             transition: 'all 0.3s ease',
             fontSize: '12px',
             fontWeight: 'bold',

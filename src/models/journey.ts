@@ -105,8 +105,10 @@ sample({
     sections: $sections,
     activeSection: $activeSection,
     isChanging: $isChangingSection,
+    animationPlaying: $animationPlaying,
   },
-  filter: ({ isChanging }) => !isChanging,
+  filter: ({ isChanging, animationPlaying }) =>
+    !isChanging && !animationPlaying,
   fn: ({ sections, activeSection }) => {
     const currentIndex = sections.indexOf(activeSection);
     if (currentIndex >= 0 && currentIndex < sections.length - 1) {
@@ -187,6 +189,7 @@ export const initJourneyFx = createEffect(() => {
     // и достаточно ли времени прошло с последнего действия
     if (
       $isChangingSection.getState() ||
+      $animationPlaying.getState() ||
       isWheelHandled ||
       now - lastActionTime < MIN_ACTION_INTERVAL ||
       isScrolling
@@ -225,6 +228,7 @@ export const initJourneyFx = createEffect(() => {
     // и достаточно ли времени прошло с последнего действия
     if (
       $isChangingSection.getState() ||
+      $animationPlaying.getState() ||
       now - lastActionTime < MIN_ACTION_INTERVAL
     )
       return;

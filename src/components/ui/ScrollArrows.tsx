@@ -1,6 +1,8 @@
 import { useUnit } from 'effector-react';
 import {
   $activeSection,
+  $animationPlaying,
+  $isChangingSection,
   $sections,
   goToNextSection,
   goToPrevSection,
@@ -9,9 +11,25 @@ import {
 export const ScrollArrows = () => {
   const activeSection = useUnit($activeSection);
   const sections = useUnit($sections);
+  const isAnimationPlaying = useUnit($animationPlaying);
+  const isChangingSection = useUnit($isChangingSection);
 
   const isFirstSection = activeSection === sections[0];
   const isLastSection = activeSection === sections[sections.length - 1];
+
+  const handlePrevSection = () => {
+    if (isAnimationPlaying || isChangingSection) {
+      return; // Блокируем переключение при воспроизведении анимации
+    }
+    goToPrevSection();
+  };
+
+  const handleNextSection = () => {
+    if (isAnimationPlaying || isChangingSection) {
+      return; // Блокируем переключение при воспроизведении анимации
+    }
+    goToNextSection();
+  };
 
   return (
     <div
@@ -28,7 +46,7 @@ export const ScrollArrows = () => {
       }}>
       {!isFirstSection && (
         <button
-          onClick={() => goToPrevSection()}
+          onClick={handlePrevSection}
           aria-label="Прокрутить вверх"
           style={{
             background: 'rgba(255, 255, 255, 0.2)',
@@ -36,7 +54,10 @@ export const ScrollArrows = () => {
             borderRadius: '50%',
             width: '40px',
             height: '40px',
-            cursor: 'pointer',
+            cursor:
+              isAnimationPlaying || isChangingSection
+                ? 'not-allowed'
+                : 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -58,7 +79,7 @@ export const ScrollArrows = () => {
 
       {!isLastSection && (
         <button
-          onClick={() => goToNextSection()}
+          onClick={handleNextSection}
           aria-label="Прокрутить вниз"
           style={{
             background: 'rgba(255, 255, 255, 0.2)',
@@ -66,7 +87,10 @@ export const ScrollArrows = () => {
             borderRadius: '50%',
             width: '40px',
             height: '40px',
-            cursor: 'pointer',
+            cursor:
+              isAnimationPlaying || isChangingSection
+                ? 'not-allowed'
+                : 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

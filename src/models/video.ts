@@ -73,8 +73,6 @@ export const playVideoTimecodeFx = createEffect(
     videoMode: 'forward' | 'backward';
     timecode: { start: number; end: number };
   }) => {
-    console.log(videoMode, timecode);
-
     if (
       videoMode === 'backward' &&
       videoElements.backward &&
@@ -82,9 +80,12 @@ export const playVideoTimecodeFx = createEffect(
     ) {
       videoElements.backward.currentTime = timecode.start;
 
-      videoElements.backward.hidden = false;
-      videoElements.forward.hidden = true;
-      videoElements.backward.play();
+      setTimeout(() => {
+        if (!videoElements.backward || !videoElements.forward) return;
+        videoElements.backward.hidden = false;
+        videoElements.forward.hidden = true;
+        videoElements.backward.play();
+      }, 200);
     } else if (
       videoMode === 'forward' &&
       videoElements.forward &&
@@ -92,9 +93,12 @@ export const playVideoTimecodeFx = createEffect(
     ) {
       videoElements.forward.currentTime = timecode.start;
 
-      videoElements.forward.hidden = false;
-      videoElements.backward.hidden = true;
-      videoElements.forward.play();
+      setTimeout(() => {
+        if (!videoElements.forward || !videoElements.backward) return;
+        videoElements.forward.hidden = false;
+        videoElements.backward.hidden = true;
+        videoElements.forward.play();
+      }, 200);
     }
   },
 );
@@ -161,9 +165,6 @@ sample({
             'section' + (parseInt(src.activeSection.split('section')[1]) + 1)
           ];
 
-    if (!(time >= timecode.start && time < timecode.end)) {
-      console.log('wdjwj');
-    }
     return !(time >= timecode.start && time < timecode.end);
   },
   fn: ({ videoElements }) => ({ videoElements }),
