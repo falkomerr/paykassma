@@ -2,7 +2,7 @@ import { useUnit } from 'effector-react';
 import { useEffect } from 'react';
 import { $activeSection } from '../../models/journey';
 import '../../styles/sections.css';
-import { SectionNav } from './SectionNav';
+// import { SectionNav } from './SectionNav';
 import {
   Section1,
   Section2,
@@ -30,7 +30,7 @@ export const SectionsContainer = () => {
 
   return (
     <div style={{ position: 'relative' }}>
-      <SectionNav />
+      {/* <SectionNav /> */}
       {/* Контейнер для секций */}
       <div id="sections-wrapper">
         {/* Используем классы для анимации и принудительно устанавливаем visible для первой секции */}

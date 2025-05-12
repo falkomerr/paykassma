@@ -20,7 +20,7 @@ const SECTION_TIMECODES: Record<string, { start: number; end: number }> = {
 
 const REVERSED_TIMECODES: Record<string, { start: number; end: number }> = {
   section2: { start: 17.3, end: 23.1 }, // 5 - 11 секунд
-  section3: { start: 11.4, end: 17.1 }, // 11.1 - 16.8 секунд
+  section3: { start: 11.6, end: 17.4 }, // 11.1 - 16.8 секунд
   section4: { start: 5.9, end: 11.4 }, // 16.8 - 22.4 секунд
   section5: { start: 0, end: 5.9 }, // 22.4 - 28 секунд (конец видео)
 };
@@ -152,11 +152,8 @@ sample({
     videoMode: $videoMode,
     sections: $sections,
   },
-  filter: ({ isAnimationPlaying, activeSection, sections }) => {
-    const currentIndex = sections.indexOf(activeSection);
-    const isFirstSection = currentIndex === 0;
-    // Не запускаем анимацию, если уже на первой секции
-    return !isAnimationPlaying && !isFirstSection;
+  filter: ({ isAnimationPlaying }) => {
+    return !isAnimationPlaying;
   },
   fn: ({ videoElements, activeSection, videoMode }) => ({
     videoElements,
