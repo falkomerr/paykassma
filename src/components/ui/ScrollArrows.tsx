@@ -18,15 +18,15 @@ export const ScrollArrows = () => {
   const isLastSection = activeSection === sections[sections.length - 1];
 
   const handlePrevSection = () => {
-    if (isAnimationPlaying || isChangingSection) {
-      return; // Блокируем переключение при воспроизведении анимации
+    if (isAnimationPlaying || isChangingSection || isFirstSection) {
+      return; // Блокируем переключение при воспроизведении анимации или если уже на первой секции
     }
     goToPrevSection();
   };
 
   const handleNextSection = () => {
-    if (isAnimationPlaying || isChangingSection) {
-      return; // Блокируем переключение при воспроизведении анимации
+    if (isAnimationPlaying || isChangingSection || isLastSection) {
+      return; // Блокируем переключение при воспроизведении анимации или если уже на последней секции
     }
     goToNextSection();
   };

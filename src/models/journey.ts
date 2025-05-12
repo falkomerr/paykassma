@@ -107,14 +107,15 @@ sample({
     isChanging: $isChangingSection,
     animationPlaying: $animationPlaying,
   },
-  filter: ({ isChanging, animationPlaying }) =>
-    !isChanging && !animationPlaying,
+  filter: ({ isChanging, animationPlaying, sections, activeSection }) => {
+    const currentIndex = sections.indexOf(activeSection);
+    const isLastSection = currentIndex === sections.length - 1;
+    // Не выполняем действие, если анимация играет, секция меняется или мы на последней секции
+    return !isChanging && !animationPlaying && !isLastSection;
+  },
   fn: ({ sections, activeSection }) => {
     const currentIndex = sections.indexOf(activeSection);
-    if (currentIndex >= 0 && currentIndex < sections.length - 1) {
-      return sections[currentIndex + 1];
-    }
-    return activeSection;
+    return sections[currentIndex + 1];
   },
   target: scrollToSection,
 });
@@ -128,14 +129,15 @@ sample({
     isChanging: $isChangingSection,
     animationPlaying: $animationPlaying,
   },
-  filter: ({ isChanging, animationPlaying }) =>
-    !isChanging && !animationPlaying,
+  filter: ({ isChanging, animationPlaying, sections, activeSection }) => {
+    const currentIndex = sections.indexOf(activeSection);
+    const isFirstSection = currentIndex === 0;
+    // Не выполняем действие, если анимация играет, секция меняется или мы на первой секции
+    return !isChanging && !animationPlaying && !isFirstSection;
+  },
   fn: ({ sections, activeSection }) => {
     const currentIndex = sections.indexOf(activeSection);
-    if (currentIndex > 0) {
-      return sections[currentIndex - 1];
-    }
-    return activeSection;
+    return sections[currentIndex - 1];
   },
   target: scrollToSection,
 });
@@ -196,28 +198,40 @@ export const initJourneyFx = createEffect(() => {
     )
       return;
 
-    // Устанавливаем флаг обработки и прокрутки
-    isWheelHandled = true;
-    isScrolling = true;
-    // Записываем время действия
-    lastActionTime = now;
+    const activeSection = $activeSection.getState();
+    const sections = $sections.getState();
+    const currentIndex = sections.indexOf(activeSection);
+    const isFirstSection = currentIndex === 0;
+    const isLastSection = currentIndex === sections.length - 1;
 
-    // Проверяем только направление скроллинга, игнорируем интенсивность (deltaY)
-    if (e.deltaY > 0) {
+    // Проверяем только направление скроллинга и возможность перехода
+    if (e.deltaY > 0 && !isLastSection) {
+      // Устанавливаем флаг обработки и прокрутки только если можно выполнить переход
+      isWheelHandled = true;
+      isScrolling = true;
+      // Записываем время действия
+      lastActionTime = now;
       goToNextSection();
-    } else if (e.deltaY < 0) {
+    } else if (e.deltaY < 0 && !isFirstSection) {
+      // Устанавливаем флаг обработки и прокрутки только если можно выполнить переход
+      isWheelHandled = true;
+      isScrolling = true;
+      // Записываем время действия
+      lastActionTime = now;
       goToPrevSection();
     }
 
-    // Сбрасываем флаг обработки через задержку
-    if (wheelDelayTimer) {
+    // Сбрасываем флаг обработки через задержку только если он был установлен
+    if (isWheelHandled && wheelDelayTimer) {
       clearTimeout(wheelDelayTimer);
     }
 
-    wheelDelayTimer = setTimeout(() => {
-      isWheelHandled = false;
-      isScrolling = false;
-    }, MIN_ACTION_INTERVAL); // Используем константу для согласованности
+    if (isWheelHandled) {
+      wheelDelayTimer = setTimeout(() => {
+        isWheelHandled = false;
+        isScrolling = false;
+      }, MIN_ACTION_INTERVAL); // Используем константу для согласованности
+    }
   };
 
   // Обработчик нажатия клавиш
@@ -233,12 +247,18 @@ export const initJourneyFx = createEffect(() => {
     )
       return;
 
-    if (e.key === 'ArrowDown') {
+    const activeSection = $activeSection.getState();
+    const sections = $sections.getState();
+    const currentIndex = sections.indexOf(activeSection);
+    const isFirstSection = currentIndex === 0;
+    const isLastSection = currentIndex === sections.length - 1;
+
+    if (e.key === 'ArrowDown' && !isLastSection) {
       e.preventDefault();
       goToNextSection();
       // Записываем время действия
       lastActionTime = now;
-    } else if (e.key === 'ArrowUp') {
+    } else if (e.key === 'ArrowUp' && !isFirstSection) {
       e.preventDefault();
       goToPrevSection();
       // Записываем время действия

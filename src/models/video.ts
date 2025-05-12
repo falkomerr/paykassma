@@ -2,6 +2,7 @@ import { VIDEO_BACKWARD_ID, VIDEO_FORWARD_ID } from '@/constants';
 import {
   $activeSection,
   $animationPlaying,
+  $sections,
   animationEnded,
   animationPlayed,
   goToNextSection,
@@ -85,7 +86,7 @@ export const playVideoTimecodeFx = createEffect(
         videoElements.backward.hidden = false;
         videoElements.forward.hidden = true;
         videoElements.backward.play();
-      }, 200);
+      }, 400);
     } else if (
       videoMode === 'forward' &&
       videoElements.forward &&
@@ -93,12 +94,18 @@ export const playVideoTimecodeFx = createEffect(
     ) {
       videoElements.forward.currentTime = timecode.start;
 
-      setTimeout(() => {
-        if (!videoElements.forward || !videoElements.backward) return;
+      if (timecode.start === 0) {
         videoElements.forward.hidden = false;
         videoElements.backward.hidden = true;
         videoElements.forward.play();
-      }, 200);
+      } else {
+        setTimeout(() => {
+          if (!videoElements.forward || !videoElements.backward) return;
+          videoElements.forward.hidden = false;
+          videoElements.backward.hidden = true;
+          videoElements.forward.play();
+        }, 400);
+      }
     }
   },
 );
@@ -120,8 +127,14 @@ sample({
     isAnimationPlaying: $animationPlaying,
     activeSection: $activeSection,
     videoMode: $videoMode,
+    sections: $sections,
   },
-  filter: ({ isAnimationPlaying }) => !isAnimationPlaying,
+  filter: ({ isAnimationPlaying, activeSection, sections }) => {
+    const currentIndex = sections.indexOf(activeSection);
+    const isLastSection = currentIndex === sections.length - 1;
+    // Не запускаем анимацию, если уже на последней секции
+    return !isAnimationPlaying && !isLastSection;
+  },
   fn: ({ videoElements, activeSection, videoMode }) => ({
     videoElements,
     videoMode,
@@ -137,8 +150,14 @@ sample({
     activeSection: $activeSection,
     isAnimationPlaying: $animationPlaying,
     videoMode: $videoMode,
+    sections: $sections,
   },
-  filter: ({ isAnimationPlaying }) => !isAnimationPlaying,
+  filter: ({ isAnimationPlaying, activeSection, sections }) => {
+    const currentIndex = sections.indexOf(activeSection);
+    const isFirstSection = currentIndex === 0;
+    // Не запускаем анимацию, если уже на первой секции
+    return !isAnimationPlaying && !isFirstSection;
+  },
   fn: ({ videoElements, activeSection, videoMode }) => ({
     videoElements,
     videoMode,
