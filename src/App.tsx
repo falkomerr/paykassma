@@ -4,7 +4,7 @@ import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import './App.css';
 import { BackgroundVideo } from './components/layout/BackgroundVideo';
 import { SectionsContainer } from './components/layout/SectionsContainer';
-import { VideoReversePage } from './features/videoProcessor';
+import { ScrollVideoPage, VideoReversePage } from './features/videoProcessor';
 import { appMounted } from './models/app-model';
 import './styles/sections.css';
 
@@ -32,6 +32,13 @@ export const App = () => {
                 Реверс видео
               </Link>
             </li>
+            <li>
+              <Link
+                to="/scroll-video"
+                className="text-white hover:text-blue-300">
+                Скролл видео
+              </Link>
+            </li>
           </ul>
         </nav>
       </div>
@@ -52,6 +59,7 @@ export const App = () => {
           }
         />
         <Route path="/video-reverse" element={<VideoReversePage />} />
+        <Route path="/scroll-video" element={<ScrollVideoPage />} />
       </Routes>
     </BrowserRouter>
   );
