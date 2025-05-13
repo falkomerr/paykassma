@@ -10,7 +10,6 @@ import { SectionsContainer } from './components/layout/SectionsContainer';
 import { appMounted } from './models/app-model';
 import { $activeSection, $animationPlaying, $sections } from './models/journey';
 
-import { AudioLine } from './assets/audio-line';
 import { AudioVilence } from './assets/audio-vilence';
 import { Button } from './components/ui/Button';
 import { cn } from './lib/utils';
@@ -58,45 +57,9 @@ export const App = () => {
 };
 
 const SplineContainer = () => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSplineLoad = () => {
-    setLoading(false);
-  };
-
-  const handleSplineError = (e: Error | unknown) => {
-    console.error('Spline error:', e);
-    setError('Не удалось загрузить 3D модель');
-    setLoading(false);
-  };
-
   return (
-    <div className="relative h-screen w-screen">
-      {loading && (
-        <div className="bg-opacity-50 absolute inset-0 z-10 flex items-center justify-center bg-black">
-          <p className="text-xl text-white">Загрузка 3D модели...</p>
-        </div>
-      )}
-
-      {error && (
-        <div className="bg-opacity-80 absolute inset-0 z-10 flex flex-col items-center justify-center bg-black">
-          <p className="mb-4 text-xl text-red-500">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="rounded bg-white px-4 py-2 text-black">
-            Попробовать снова
-          </button>
-        </div>
-      )}
-
-      <div style={{ opacity: loading ? 0 : 1, transition: 'opacity 0.5s' }}>
-        <Spline
-          scene="https://prod.spline.design/VAo5BWPUJeLtMWz0/scene.splinecode"
-          onLoad={handleSplineLoad}
-          onError={handleSplineError}
-        />
-      </div>
+    <div className="h-screen w-screen">
+      <Spline scene="https://prod.spline.design/VAo5BWPUJeLtMWz0/scene.splinecode" />
     </div>
   );
 };
@@ -125,8 +88,8 @@ const AudioContainer = () => {
     'bg-gradient-to-t from-[#FFD01F] via-[#FFFD64] via-30% to-[#FFC61D] bg-clip-text text-transparent';
 
   return (
-    <div className="fixed bottom-[1.6875rem] z-[999] flex h-[5.625rem] w-full items-center justify-between px-[3.75rem]">
-      <div className="relative ml-[3.75rem] flex items-center justify-center">
+    <div className="fixed bottom-[1.6875rem] z-40 flex h-[5.625rem] w-full items-center justify-between px-[3.75rem]">
+      <div className="relative z-50 ml-[3.75rem] flex items-center justify-center">
         <ChipIcon
           className={cn('absolute', isAnimationPlaying && 'animate-ease-spin')}
         />
@@ -135,8 +98,13 @@ const AudioContainer = () => {
           <span>{sections.length}</span>
         </p>
       </div>
-      <AudioLine className="absolute inset-0 top-1/2" />
-      <div className="absolute top-1/2 right-0 mr-[3.75rem] flex items-start justify-center gap-x-4">
+      <img
+        src="/audio-line.svg"
+        className="absolute inset-0 top-1/2 h-[3px] w-full translate-y-1/2"
+        width={1802}
+        height={3}
+      />
+      <div className="absolute top-1/2 right-0 z-50 mr-[3.75rem] flex -translate-y-[17.5%] items-start justify-center gap-x-4 object-cover">
         <p className="text-[1rem] font-medium">
           SOUND{' '}
           <span className={gradientText}>{volume === 0 ? 'OFF' : 'ON'}</span>
@@ -144,8 +112,8 @@ const AudioContainer = () => {
         <Button
           onClick={() => changeVolume(volume === 0 ? 1 : 0)}
           variant="transparent"
-          className="relative z-[999] cursor-pointer">
-          <AudioVilence className="-translate-y-1/4" />
+          className="relative z-[999] -translate-y-1/4 cursor-pointer">
+          <AudioVilence />
         </Button>
       </div>
     </div>
