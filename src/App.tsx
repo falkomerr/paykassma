@@ -58,9 +58,45 @@ export const App = () => {
 };
 
 const SplineContainer = () => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSplineLoad = () => {
+    setLoading(false);
+  };
+
+  const handleSplineError = (e: Error | unknown) => {
+    console.error('Spline error:', e);
+    setError('Не удалось загрузить 3D модель');
+    setLoading(false);
+  };
+
   return (
-    <div className="h-screen w-screen">
-      <Spline scene="https://prod.spline.design/VAo5BWPUJeLtMWz0/scene.splinecode" />
+    <div className="relative h-screen w-screen">
+      {loading && (
+        <div className="bg-opacity-50 absolute inset-0 z-10 flex items-center justify-center bg-black">
+          <p className="text-xl text-white">Загрузка 3D модели...</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="bg-opacity-80 absolute inset-0 z-10 flex flex-col items-center justify-center bg-black">
+          <p className="mb-4 text-xl text-red-500">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="rounded bg-white px-4 py-2 text-black">
+            Попробовать снова
+          </button>
+        </div>
+      )}
+
+      <div style={{ opacity: loading ? 0 : 1, transition: 'opacity 0.5s' }}>
+        <Spline
+          scene="https://prod.spline.design/VAo5BWPUJeLtMWz0/scene.splinecode"
+          onLoad={handleSplineLoad}
+          onError={handleSplineError}
+        />
+      </div>
     </div>
   );
 };
