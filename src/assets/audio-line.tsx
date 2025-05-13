@@ -1,0 +1,39 @@
+export const AudioLine = ({ className }: { className?: string }) => {
+  return (
+    <svg
+      className={className}
+      width="1802"
+      height="3"
+      viewBox="0 0 1802 3"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M2 0H0.5V3H2V0ZM2 1.5V3H1802V1.5V0H2V1.5Z"
+        fill="url(#paint0_linear_74_45817)"
+      />
+      <defs>
+        <linearGradient
+          id="paint0_linear_74_45817"
+          x1="1802"
+          y1="2.50003"
+          x2="2"
+          y2="2.50003"
+          gradientUnits="userSpaceOnUse">
+          <stop offset="0.10243" stop-color="#FFD48C" stop-opacity="0" />
+          <stop
+            offset="0.293269"
+            stop-color="#FFE77B"
+            stop-opacity="0.480014"
+          />
+          <stop offset="0.5" stop-color="#F26502" />
+          <stop
+            offset="0.740385"
+            stop-color="#FFE67B"
+            stop-opacity="0.459165"
+          />
+          <stop offset="0.944469" stop-color="#FFD48C" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+};

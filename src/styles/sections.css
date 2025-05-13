@@ -67,25 +67,6 @@
 }
 
 /* Стили для специфических секций */
-#section1 {
-  background-color: rgba(0, 0, 0, 0.3);
-}
-
-#section2 {
-  background-color: rgba(0, 0, 0, 0.4);
-}
-
-#section3 {
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-#section4 {
-  background-color: rgba(0, 0, 0, 0.6);
-}
-
-#section5 {
-  background-color: rgba(0, 0, 0, 0.7);
-}
 
 /* Стиль для контейнера секций - улучшает позиционирование */
 #sections-wrapper {

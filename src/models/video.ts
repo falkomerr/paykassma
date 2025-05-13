@@ -13,14 +13,14 @@ import { createEffect, createEvent, createStore, sample } from 'effector';
 const SECTION_TIMECODES: Record<string, { start: number; end: number }> = {
   section1: { start: 0, end: 4.9 }, // 0 - 4.9 секунд
   section2: { start: 5, end: 11 }, // 5 - 11 секунд
-  section3: { start: 11.1, end: 16.8 }, // 11.1 - 16.8 секунд
+  section3: { start: 11.1, end: 16.6 }, // 11.1 - 16.8 секунд
   section4: { start: 16.9, end: 22.4 }, // 16.8 - 22.4 секунд
   section5: { start: 22.5, end: 28 }, // 22.4 - 28 секунд (конец видео)
 };
 
 const REVERSED_TIMECODES: Record<string, { start: number; end: number }> = {
   section2: { start: 17.3, end: 23.1 }, // 5 - 11 секунд
-  section3: { start: 11.6, end: 17.4 }, // 11.1 - 16.8 секунд
+  section3: { start: 11.8, end: 17.2 }, // 11.1 - 16.8 секунд
   section4: { start: 5.9, end: 11.4 }, // 16.8 - 22.4 секунд
   section5: { start: 0, end: 5.9 }, // 22.4 - 28 секунд (конец видео)
 };
@@ -129,12 +129,7 @@ sample({
     videoMode: $videoMode,
     sections: $sections,
   },
-  filter: ({ isAnimationPlaying, activeSection, sections }) => {
-    const currentIndex = sections.indexOf(activeSection);
-    const isLastSection = currentIndex === sections.length - 1;
-    // Не запускаем анимацию, если уже на последней секции
-    return !isAnimationPlaying && !isLastSection;
-  },
+  filter: ({ isAnimationPlaying }) => !isAnimationPlaying,
   fn: ({ videoElements, activeSection, videoMode }) => ({
     videoElements,
     videoMode,
@@ -152,9 +147,7 @@ sample({
     videoMode: $videoMode,
     sections: $sections,
   },
-  filter: ({ isAnimationPlaying }) => {
-    return !isAnimationPlaying;
-  },
+  filter: ({ isAnimationPlaying }) => !isAnimationPlaying,
   fn: ({ videoElements, activeSection, videoMode }) => ({
     videoElements,
     videoMode,

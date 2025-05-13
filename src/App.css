@@ -155,3 +155,17 @@
 .daysone {
   font-family: 'Days One', Arial, sans-serif;
 }
+
+/* Анимация вращения с эффектом разгона и замедления */
+@keyframes easeInOutSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-ease-spin {
+  animation: easeInOutSpin 2s ease-in-out 400ms infinite;
+}

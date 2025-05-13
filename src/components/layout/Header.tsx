@@ -27,16 +27,8 @@ export const Header = () => {
   ]);
 
   return (
-    <header
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '24px 48px 0 32px',
-        position: 'relative',
-        zIndex: 2,
-      }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+    <header className="via-58.25% absolute top-0 right-0 left-0 z-50 flex h-[10.6875rem] items-start justify-between bg-gradient-to-b from-black from-0% via-black/42 to-black/0 to-100% px-15 pt-7.5">
+      <div className="flex items-center gap-3">
         <a href="/">
           <LogoSmall />
         </a>
@@ -56,7 +48,7 @@ export const Header = () => {
           </a>
         ))}
       </nav> */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div className="flex items-center gap-4">
         <Select value={lang} onValueChange={handleChangeLang}>
           <SelectTrigger className="w-[70px] border-none bg-transparent text-white focus:border-none focus:ring-0">
             <SelectValue

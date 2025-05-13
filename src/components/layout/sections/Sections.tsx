@@ -1,5 +1,4 @@
 import { ReactNode } from 'react';
-import { ScrollArrows } from '../../ui/ScrollArrows';
 
 interface SectionProps {
   id: string;
@@ -7,7 +6,7 @@ interface SectionProps {
   children?: ReactNode;
 }
 
-export const Section = ({ id, title, children }: SectionProps) => {
+export const Section = ({ id }: SectionProps) => {
   return (
     <section
       id={id}
@@ -21,54 +20,26 @@ export const Section = ({ id, title, children }: SectionProps) => {
         justifyContent: 'center',
         position: 'relative',
         zIndex: 1,
-      }}>
-      <h2
-        className="section-title"
-        style={{ fontSize: '2.5rem', marginBottom: '2rem' }}>
-        {title}
-      </h2>
-      <div className="section-content">{children}</div>
-      <ScrollArrows />
-    </section>
+      }}></section>
   );
 };
 
 export const Section1 = () => {
-  return (
-    <Section id="section1" title="Секция 1">
-      <p>Содержимое первой секции</p>
-    </Section>
-  );
+  return <Section id="section1" title="Секция 1"></Section>;
 };
 
 export const Section2 = () => {
-  return (
-    <Section id="section2" title="Секция 2">
-      <p>Содержимое второй секции</p>
-    </Section>
-  );
+  return <Section id="section2" title="Секция 2"></Section>;
 };
 
 export const Section3 = () => {
-  return (
-    <Section id="section3" title="Секция 3">
-      <p>Содержимое третьей секции</p>
-    </Section>
-  );
+  return <Section id="section3" title="Секция 3"></Section>;
 };
 
 export const Section4 = () => {
-  return (
-    <Section id="section4" title="Секция 4">
-      <p>Содержимое четвертой секции</p>
-    </Section>
-  );
+  return <Section id="section4" title="Секция 4"></Section>;
 };
 
 export const Section5 = () => {
-  return (
-    <Section id="section5" title="Секция 5">
-      <p>Содержимое пятой секции</p>
-    </Section>
-  );
+  return <Section id="section5" title="Секция 5"></Section>;
 };
