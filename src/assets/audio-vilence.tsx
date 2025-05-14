@@ -14,7 +14,7 @@ export const AudioVilence = ({ className }: { className?: string }) => {
         height="64"
         rx="32"
         fill="url(#paint0_linear_74_45818)"
-        fill-opacity="0.05"
+        fillOpacity="0.05"
       />
       <rect
         x="0.5"
@@ -27,9 +27,9 @@ export const AudioVilence = ({ className }: { className?: string }) => {
       <path
         d="M19.0103 29.493V35.5072M24.4061 24.9824V40.0178M29.8019 19.7207V45.2795M35.1978 25.4009V39.5992M40.5936 28.9505V36.0497M45.9894 30.9965V34.0036"
         stroke="url(#paint2_linear_74_45818)"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <defs>
         <linearGradient
@@ -39,8 +39,8 @@ export const AudioVilence = ({ className }: { className?: string }) => {
           x2="-7.7486e-06"
           y2="33.4847"
           gradientUnits="userSpaceOnUse">
-          <stop offset="0.046883" stop-color="#FFFD64" />
-          <stop offset="1" stop-color="#FFB901" />
+          <stop offset="0.046883" stopColor="#FFFD64" />
+          <stop offset="1" stopColor="#FFB901" />
         </linearGradient>
         <linearGradient
           id="paint1_linear_74_45818"
@@ -49,9 +49,9 @@ export const AudioVilence = ({ className }: { className?: string }) => {
           x2="72.9447"
           y2="16.9609"
           gradientUnits="userSpaceOnUse">
-          <stop stop-color="#515150" />
-          <stop offset="0.465842" stop-color="#FFFD64" />
-          <stop offset="1" stop-color="#515150" />
+          <stop stopColor="#515150" />
+          <stop offset="0.465842" stopColor="#FFFD64" />
+          <stop offset="1" stopColor="#515150" />
         </linearGradient>
         <linearGradient
           id="paint2_linear_74_45818"
@@ -60,8 +60,8 @@ export const AudioVilence = ({ className }: { className?: string }) => {
           x2="31.4991"
           y2="50.2885"
           gradientUnits="userSpaceOnUse">
-          <stop stop-color="#FBD804" />
-          <stop offset="1" stop-color="#F26502" stop-opacity="0.98" />
+          <stop stopColor="#FBD804" />
+          <stop offset="1" stopColor="#F26502" stopOpacity="0.98" />
         </linearGradient>
       </defs>
     </svg>

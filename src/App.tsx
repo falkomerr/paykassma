@@ -8,26 +8,38 @@ import { BackgroundVideo } from './components/layout/BackgroundVideo';
 import { Header } from './components/layout/Header';
 import { SectionsContainer } from './components/layout/SectionsContainer';
 import { appMounted } from './models/app-model';
-import { $activeSection, $animationPlaying, $sections } from './models/journey';
+import {
+  $activeSection,
+  $animationPlaying,
+  $gateOpened,
+  $sections,
+} from './models/journey';
 
-import { AudioVilence } from './assets/audio-vilence';
+import { Hero } from './components/layout/Hero';
+import { AudioVilence } from './components/ui/AudioVilence';
 import { Button } from './components/ui/Button';
 import { cn } from './lib/utils';
 import { $volume, volumeChanged } from './models/audio';
 import './styles/sections.css';
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
+  const isGateOpened = useUnit($gateOpened);
+
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        color: '#fff',
-        overflow: 'hidden',
-      }}>
+    <div className="min-h-screen overflow-hidden bg-black text-white">
       <Header />
+      {!isGateOpened && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black">
+          <Hero />
+        </div>
+      )}
       {children}
-      <BackgroundVideo />
-      <AudioContainer />
+      {isGateOpened && (
+        <>
+          <BackgroundVideo />
+          <AudioContainer />
+        </>
+      )}
     </div>
   );
 };
@@ -58,8 +70,11 @@ export const App = () => {
 
 const SplineContainer = () => {
   return (
-    <div className="h-screen w-screen">
-      <Spline scene="https://prod.spline.design/VAo5BWPUJeLtMWz0/scene.splinecode" />
+    <div className="h-screen w-screen overflow-hidden bg-black">
+      <Spline
+        scene="https://prod.spline.design/VesmLhzpdoKoAkRX/scene.splinecode"
+        className="scale-[1.125]"
+      />
     </div>
   );
 };
@@ -112,7 +127,7 @@ const AudioContainer = () => {
         <Button
           onClick={() => changeVolume(volume === 0 ? 1 : 0)}
           variant="transparent"
-          className="relative z-[999] -translate-y-1/4 cursor-pointer">
+          className="-[4rem] relative z-[999] size-[4rem] -translate-y-1/4 cursor-pointer">
           <AudioVilence />
         </Button>
       </div>

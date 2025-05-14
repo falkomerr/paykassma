@@ -61,8 +61,10 @@ export const scrollToSection = createEvent<string>();
 export const animationPlayed = createEvent();
 export const animationEnded = createEvent();
 export const initSections = createEvent();
+export const gateOpened = createEvent();
 
 export const $animationPlaying = createStore(false);
+export const $gateOpened = createStore(false);
 
 // Константа для всех задержек, чтобы они были согласованы
 export const SECTION_TRANSITION_DELAY = 800; // мс
@@ -97,6 +99,12 @@ export const $activeSection = createStore('section1').on(
   sectionChanged,
   (_, sectionId) => sectionId,
 );
+
+sample({
+  clock: gateOpened,
+  fn: () => true,
+  target: $gateOpened,
+});
 
 // Обработка перехода к следующей секции
 sample({

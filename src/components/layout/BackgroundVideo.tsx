@@ -4,13 +4,19 @@ import {
   VIDEO_FORWARD_ID,
   VIDEO_FORWARD_SOURCE,
 } from '@/constants';
-import { timeUpdated } from '@/models/video';
+import { timeUpdated, videoElementMounted } from '@/models/video';
 import { useUnit } from 'effector-react';
+import { useEffect } from 'react';
 
 export const BackgroundVideo: React.FC = () => {
+  const mountVideo = useUnit(videoElementMounted);
   const { handleTimeUpdate } = useUnit({
     handleTimeUpdate: timeUpdated,
   });
+
+  useEffect(() => {
+    mountVideo();
+  }, [mountVideo]);
 
   return (
     <>

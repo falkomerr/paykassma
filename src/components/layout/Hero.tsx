@@ -1,53 +1,26 @@
+import { gateOpened } from '@/models/journey';
+import { useUnit } from 'effector-react';
 import { useTranslation } from '../../hooks/useTranslation';
-import { Button } from '../ui/Button';
+import { AnimatedButton } from '../ui/AnimatedButton';
 import { LogoBig } from '../ui/LogoBig';
 
 export const Hero = () => {
+  const openGate = useUnit(gateOpened);
   const { t } = useTranslation();
-
-  // Функция для плавной прокрутки к первой секции
-  const scrollToFirstSection = () => {
-    const firstSection = document.getElementById('blog');
-    if (firstSection) {
-      firstSection.scrollIntoView({ behavior: 'smooth' });
-      // Обновляем URL без перезагрузки страницы
-      window.history.pushState(null, '', '#blog');
-    }
-  };
 
   return (
     <section
       id="home"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: 'calc(100vh - 120px)',
-        zIndex: 1,
-        position: 'relative',
-      }}>
-      <div style={{ marginBottom: 16 }}>
+      className="relative z-10 flex min-h-[calc(100vh-120px)] flex-col items-center justify-center">
+      <div className="mb-4">
         <LogoBig />
       </div>
-      <div
-        className="gilroy"
-        style={{
-          fontWeight: 400,
-          fontSize: 22,
-          lineHeight: '100%',
-          letterSpacing: '0%',
-          textAlign: 'center',
-          verticalAlign: 'middle',
-          color: '#ccc',
-          marginBottom: 40,
-          maxWidth: 480,
-        }}>
+      <div className="gilroy mb-10 max-w-[480px] text-center text-[22px] leading-none font-normal text-[#ccc]">
         {t('hero.description')}
       </div>
-      <Button variant="journey" size="lg" onClick={scrollToFirstSection}>
+      <AnimatedButton variant="login" size="big" onClick={openGate}>
         {t('buttons.submit')}
-      </Button>
+      </AnimatedButton>
     </section>
   );
 };
