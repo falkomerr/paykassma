@@ -13,7 +13,7 @@ import {
   registerClicked,
 } from '../../models/auth';
 import { $lang, changeLang } from '../../models/language';
-import { Button } from '../ui/Button';
+import { AnimatedButton } from '../ui/AnimatedButton';
 import { LogoSmall } from '../ui/LogoSmall';
 
 export const Header = () => {
@@ -61,20 +61,18 @@ export const Header = () => {
             <SelectItem value="en">EN</SelectItem>
           </SelectContent>
         </Select>
-        <Button
-          variant="outline"
-          className="mr-2 bg-black/20 text-white/90"
+        <AnimatedButton
+          variant="default"
           onClick={() => handleRegister()}
           disabled={isAuthLoading}>
           {t('buttons.register')}
-        </Button>
-        <Button
-          variant="gold"
-          className="bg-black/20"
+        </AnimatedButton>
+        <AnimatedButton
+          variant="login"
           onClick={() => handleLogin()}
           disabled={isAuthLoading}>
           {t('buttons.login')}
-        </Button>
+        </AnimatedButton>
       </div>
     </header>
   );
