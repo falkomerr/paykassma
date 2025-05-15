@@ -18,11 +18,11 @@ export const Hero = () => {
           className=""
         />
       </div>
-      <div className="gilroy absolute top-[60%] mb-10 max-w-[650px] text-center text-[1.8vw] leading-none font-normal text-[#ccc]">
+      <div className="gilroy absolute top-[54%] mb-10 max-w-[650px] text-center text-[1.8vw] leading-none font-normal text-[#ccc]">
         {t('hero.description')}
       </div>
 
-      <div className="group absolute top-[75%]">
+      <div className="group absolute top-[65%]">
         {/* <svg
           className="absolute -translate-x-1/4 -translate-y-1/3 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
           width="591"
@@ -67,7 +67,7 @@ export const Hero = () => {
           size="big"
           className="group/button cursor-pointer"
           onClick={openGate}>
-          <div className="relative flex h-[4.0104166667vw] w-[18.3541666667vw] items-center justify-center">
+          <div className="relative flex h-[4.0104166667vw] w-[18.3541666667vw] items-center justify-center transition-all duration-500 group-hover/button:w-[17.8vw]">
             <div className="absolute inset-0 top-[31%] h-[1.40625vw] w-full overflow-hidden">
               <div className="absolute w-full text-[1.40625vw] leading-[1] transition-transform duration-300 group-hover/button:-translate-y-full">
                 {t('buttons.submit')}
