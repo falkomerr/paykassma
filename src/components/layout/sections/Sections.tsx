@@ -25,7 +25,11 @@ export const Section = ({ id }: SectionProps) => {
 };
 
 export const Section1 = () => {
-  return <Section id="section1" title="Секция 1"></Section>;
+  return (
+    <Section id="section1" title="Секция 1">
+      <ChapterText>Глава 1: Преимущества</ChapterText>
+    </Section>
+  );
 };
 
 export const Section2 = () => {
@@ -42,4 +46,12 @@ export const Section4 = () => {
 
 export const Section5 = () => {
   return <Section id="section5" title="Секция 5"></Section>;
+};
+
+export const ChapterText = ({ children }: { children: ReactNode }) => {
+  return (
+    <p className="bg-gradient-to-r from-[#FFD01F] via-[#FFFD64] via-30% to-[#FFC61D] bg-clip-text text-transparent">
+      {children}
+    </p>
+  );
 };

@@ -18,7 +18,7 @@ export const AnimatedButton = ({
       className={cn(
         'relative inline-flex cursor-pointer items-center justify-center text-base font-medium text-white focus:outline-none',
         size === 'big'
-          ? 'h-[77px] w-[314px] px-10'
+          ? 'h-[4.0104166667vw] w-[16.3541666667vw] px-10'
           : cn(
               'h-[46px] max-h-[46px] min-h-[46px] px-8',
               variant === 'default' ? 'w-[169px]' : 'w-[111px]',
