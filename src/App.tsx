@@ -24,21 +24,47 @@ import './styles/sections.css';
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const isGateOpened = useUnit($gateOpened);
+  const [fadeIn, setFadeIn] = useState(false);
+  const [showHero, setShowHero] = useState(true);
+  const [heroOpacity, setHeroOpacity] = useState(1);
+
+  useEffect(() => {
+    if (isGateOpened) {
+      // Анимация исчезновения Hero
+      setHeroOpacity(0);
+      // Удаляем Hero из DOM через 1 секунду (длительность анимации)
+      setTimeout(() => {
+        setShowHero(false);
+      }, 1000);
+
+      // Анимация появления BackgroundVideo и AudioContainer
+      setTimeout(() => {
+        setFadeIn(true);
+      }, 100);
+    } else {
+      setFadeIn(false);
+      setShowHero(true);
+      setHeroOpacity(1);
+    }
+  }, [isGateOpened]);
 
   return (
     <div className="min-h-screen overflow-hidden bg-black text-white">
       <Header />
-      {!isGateOpened && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black">
+      {showHero && (
+        <div
+          className="absolute inset-0 flex items-center justify-center bg-black transition-opacity duration-1000 ease-in-out"
+          style={{ opacity: heroOpacity }}>
           <Hero />
         </div>
       )}
       {children}
       {isGateOpened && (
-        <>
+        <div
+          className={`transition-opacity duration-1000 ease-in-out ${fadeIn ? 'opacity-100' : 'opacity-0'}`}>
           <BackgroundVideo />
           <AudioContainer />
-        </>
+        </div>
       )}
     </div>
   );
