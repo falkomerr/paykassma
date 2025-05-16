@@ -22,8 +22,8 @@ export const AnimatedButton = ({
         size === 'big'
           ? 'h-[4.0104166667vw] w-[16.3541666667vw] px-10'
           : cn(
-              'h-[46px] max-h-[46px] min-h-[46px] px-8',
-              variant === 'default' ? 'w-[169px]' : 'w-[111px]',
+              'flex h-[3vw] items-center justify-center',
+              variant === 'default' ? 'w-[9.7020833333vw]' : 'w-[6.58125vw]',
             ),
       )}
       {...props}>
@@ -53,11 +53,11 @@ export const AnimatedButton = ({
           {children}
         </span>
       ) : (
-        <div className="relative z-10 h-[1vw] w-full overflow-hidden text-center">
-          <div className="absolute w-full text-center text-[1.05vw] leading-[1] whitespace-nowrap transition-transform duration-300 group-hover/button:-translate-y-full">
+        <div className="relative z-10 h-[13px] w-full overflow-hidden text-center 2xl:text-[15px]">
+          <div className="absolute w-full text-center text-[14px] leading-[1] whitespace-nowrap transition-transform duration-300 group-hover/button:-translate-y-full 2xl:text-[16px]">
             {children}
           </div>
-          <div className="absolute w-full translate-y-full text-center text-[1.05vw] leading-[1] whitespace-nowrap transition-transform duration-300 group-hover/button:translate-y-0">
+          <div className="absolute w-full translate-y-full text-center text-[14px] leading-[1] whitespace-nowrap transition-transform duration-300 group-hover/button:translate-y-0 2xl:text-[16px]">
             {children}
           </div>
         </div>
