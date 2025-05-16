@@ -5,18 +5,20 @@ type AnimatedButtonProps = {
   children: ReactNode;
   variant?: 'default' | 'login';
   size?: 'default' | 'big';
+  hasOwnAnimation?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const AnimatedButton = ({
   children,
   variant = 'default',
   size = 'default',
+  hasOwnAnimation = false,
   ...props
 }: AnimatedButtonProps) => {
   return (
     <button
       className={cn(
-        'relative inline-flex cursor-pointer items-center justify-center text-base font-medium text-white focus:outline-none',
+        'group/button relative inline-flex cursor-pointer items-center justify-center overflow-hidden text-base font-medium text-white focus:outline-none',
         size === 'big'
           ? 'h-[4.0104166667vw] w-[16.3541666667vw] px-10'
           : cn(
@@ -46,9 +48,20 @@ export const AnimatedButton = ({
           className="absolute inset-0 h-full w-full object-contain backdrop-blur-sm"
         />
       )}
-      <span className="relative z-10 px-2 text-center whitespace-nowrap">
-        {children}
-      </span>
+      {hasOwnAnimation ? (
+        <span className="relative z-10 px-2 text-center whitespace-nowrap">
+          {children}
+        </span>
+      ) : (
+        <div className="relative z-10 h-[1vw] w-full overflow-hidden text-center">
+          <div className="absolute w-full text-center text-[1.05vw] leading-[1] whitespace-nowrap transition-transform duration-300 group-hover/button:-translate-y-full">
+            {children}
+          </div>
+          <div className="absolute w-full translate-y-full text-center text-[1.05vw] leading-[1] whitespace-nowrap transition-transform duration-300 group-hover/button:translate-y-0">
+            {children}
+          </div>
+        </div>
+      )}
     </button>
   );
 };

@@ -62,7 +62,7 @@ export const animationPlayed = createEvent();
 export const animationEnded = createEvent();
 export const initSections = createEvent();
 export const gateOpened = createEvent();
-
+export const initGateAudio = createEvent();
 export const $animationPlaying = createStore(false);
 export const $gateOpened = createStore(false);
 
@@ -93,6 +93,7 @@ export const $sections = createStore<string[]>([
   'section4',
   'section5',
 ]);
+export const $gateAudioElement = createStore<HTMLAudioElement | null>(null);
 
 // Текущая активная секция
 export const $activeSection = createStore('section1').on(
@@ -100,10 +101,28 @@ export const $activeSection = createStore('section1').on(
   (_, sectionId) => sectionId,
 );
 
+export const playFx = createEffect((audio: HTMLAudioElement) => {
+  audio.play();
+});
+
+//Audio
+sample({
+  clock: initGateAudio,
+  fn: () => new Audio('/gate.mp3'),
+  target: $gateAudioElement,
+});
+
 sample({
   clock: gateOpened,
   fn: () => true,
   target: $gateOpened,
+});
+
+sample({
+  clock: gateOpened,
+  source: $gateAudioElement,
+  filter: Boolean,
+  target: playFx,
 });
 
 // Обработка перехода к следующей секции

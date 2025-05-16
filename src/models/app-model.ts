@@ -1,10 +1,10 @@
 import { createEvent, sample } from 'effector';
 import { once } from 'patronum';
-import { initSections } from './journey';
+import { initGateAudio, initSections } from './journey';
 
 export const appMounted = createEvent();
 
 sample({
   clock: once(appMounted),
-  target: [initSections],
+  target: [initSections, initGateAudio],
 });
