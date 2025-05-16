@@ -73,7 +73,7 @@ export const Hero = () => {
               <div className="absolute w-full text-[1.15625vw] leading-[1] transition-transform duration-300 group-hover/button:-translate-y-full">
                 {t('buttons.submit')}
               </div>
-              <div className="absolute mt-0.5 w-full translate-y-full text-[1.15625vw] leading-[1] transition-transform duration-300 group-hover/button:translate-y-0">
+              <div className="absolute mt-0.5 w-full translate-y-full text-[1.15625vw] leading-[1] transition-transform duration-300 group-hover/button:-translate-y-0.5">
                 {t('buttons.submit')}
               </div>
             </div>
