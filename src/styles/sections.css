@@ -4,71 +4,183 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: start;
   justify-content: center;
   position: relative;
   z-index: 1;
   color: #fff;
-  padding: 2rem;
-  transition: opacity 0.3s ease;
+  padding: 3.75rem;
+  opacity: 1; /* Всегда видимы секции */
+  transform: translateY(0);
+  transition: opacity 0.8s ease-in-out;
+}
+
+/* Специальный класс для анимации первой секции */
+.animated-section {
+  animation: fadeInSection 1.2s ease-out forwards;
+}
+
+@keyframes fadeInSection {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section.active {
+  opacity: 1;
+}
+
+/* Обновленные анимации для секций */
+@keyframes fadeOutUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section.exit {
+  animation: fadeOutUp 0.6s ease-in-out forwards;
 }
 
 .section-title {
   font-size: 2.5rem;
   margin-bottom: 2rem;
-  opacity: 0;
-  transform: translateY(20px);
-  transition:
-    opacity 0.5s ease,
-    transform 0.5s ease;
 }
 
-.section.active .section-title {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Стили для контейнера содержимого секции */
+/* НОВАЯ СИСТЕМА АНИМАЦИИ КОНТЕНТА */
+/* Базовый стиль для контейнера контента */
 .section-content {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   max-width: 800px;
-  margin: 0 auto;
+  width: 100%;
+  opacity: 0; /* По умолчанию контент скрыт */
+  transform: translateY(20px); /* Начинаем снизу */
+  pointer-events: none; /* Отключаем взаимодействие по умолчанию */
+  transition: none;
 }
 
-/* Анимации для элементов секций */
-.section p {
+/* Анимация появления контента: выплывает снизу с прозрачности */
+.section-content.show-content {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.6s cubic-bezier(0.17, 0.67, 0.26, 0.99),
+    transform 0.6s cubic-bezier(0.17, 0.67, 0.26, 0.99);
+  pointer-events: auto; /* Включаем взаимодействие */
+}
+
+/* Анимация исчезновения: плавно уплывает вверх и исчезает */
+.section-content.exiting-content {
+  opacity: 0;
+  transform: translateY(-30px);
+  transition:
+    opacity 0.5s cubic-bezier(0.46, 0.03, 0.52, 0.96),
+    transform 0.5s cubic-bezier(0.46, 0.03, 0.52, 0.96);
+  pointer-events: none;
+}
+
+/* СТИЛИ ДЛЯ ДОЧЕРНИХ ЭЛЕМЕНТОВ */
+/* Все дочерние элементы контента имеют общие стили анимации */
+.section-content > * {
   opacity: 0;
   transform: translateY(20px);
-  transition:
-    opacity 0.5s ease 0.2s,
-    transform 0.5s ease 0.2s;
+  transition: none;
 }
 
-.section.active p {
+/* Последовательная анимация появления дочерних элементов */
+.section-content.show-content > * {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* Стили для контейнера секций */
-.sections-container {
-  height: 100vh;
-  overflow-y: scroll;
-  scroll-snap-type: y mandatory;
-  -ms-overflow-style: none; /* IE и Edge */
-  scrollbar-width: none; /* Firefox */
+/* Первый элемент появляется сразу */
+.section-content.show-content > *:nth-child(1) {
+  transition:
+    opacity 0.6s cubic-bezier(0.17, 0.67, 0.26, 0.99) 0.05s,
+    transform 0.6s cubic-bezier(0.17, 0.67, 0.26, 0.99) 0.05s;
 }
 
-/* Скрываем полосу прокрутки для Chrome, Safari и Opera */
-.sections-container::-webkit-scrollbar {
-  display: none;
+/* Второй элемент с задержкой */
+.section-content.show-content > *:nth-child(2) {
+  transition:
+    opacity 0.6s cubic-bezier(0.17, 0.67, 0.26, 0.99) 0.15s,
+    transform 0.6s cubic-bezier(0.17, 0.67, 0.26, 0.99) 0.15s;
 }
 
-/* Стили для специфических секций */
+/* Третий элемент с еще большей задержкой */
+.section-content.show-content > *:nth-child(3) {
+  transition:
+    opacity 0.6s cubic-bezier(0.17, 0.67, 0.26, 0.99) 0.25s,
+    transform 0.6s cubic-bezier(0.17, 0.67, 0.26, 0.99) 0.25s;
+}
 
-/* Стиль для контейнера секций - улучшает позиционирование */
+/* Анимация исчезновения дочерних элементов */
+.section-content.exiting-content > * {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+/* Первый элемент исчезает первым */
+.section-content.exiting-content > *:nth-child(1) {
+  transition:
+    opacity 0.5s cubic-bezier(0.46, 0.03, 0.52, 0.96),
+    transform 0.5s cubic-bezier(0.46, 0.03, 0.52, 0.96);
+}
+
+/* Второй элемент с небольшой задержкой */
+.section-content.exiting-content > *:nth-child(2) {
+  transition:
+    opacity 0.5s cubic-bezier(0.46, 0.03, 0.52, 0.96) 0.05s,
+    transform 0.5s cubic-bezier(0.46, 0.03, 0.52, 0.96) 0.05s;
+}
+
+/* Третий элемент с еще большей задержкой */
+.section-content.exiting-content > *:nth-child(3) {
+  transition:
+    opacity 0.5s cubic-bezier(0.46, 0.03, 0.52, 0.96) 0.1s,
+    transform 0.5s cubic-bezier(0.46, 0.03, 0.52, 0.96) 0.1s;
+}
+
+/* Специальные стили для изображений */
+.section-content img {
+  transform: translateY(20px) scale(0.98);
+}
+
+.section-content.show-content img {
+  transform: translateY(0) scale(1);
+  transition:
+    opacity 0.7s cubic-bezier(0.17, 0.67, 0.26, 0.99) 0.2s,
+    transform 0.7s cubic-bezier(0.17, 0.67, 0.26, 0.99) 0.2s;
+}
+
+.section-content.exiting-content img {
+  transform: translateY(-20px) scale(0.98);
+}
+
+/* Стиль для контейнера секций */
 #sections-wrapper {
   height: 100vh;
   width: 100%;
@@ -84,40 +196,25 @@
   opacity: 0;
   visibility: hidden;
   transition:
-    opacity 0.5s ease-in-out,
-    visibility 0.5s ease-in-out;
+    opacity 0.4s ease-in-out,
+    visibility 0.4s ease-in-out;
 }
 
-/* Обеспечение видимости первой секции по умолчанию */
-.section-container:first-child {
-  opacity: 1;
-  visibility: visible;
-}
-
+/* Обеспечение видимости активной секции */
 .section-container.visible {
   opacity: 1;
   visibility: visible;
+  transition:
+    opacity 0.6s ease-in-out,
+    visibility 0.6s ease-in-out;
 }
 
-/* Стили для плавного появления секций */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.section-container.visible .section {
-  animation: fadeIn 0.6s ease-out forwards;
-}
-
-/* По умолчанию первая секция уже имеет анимацию */
-.section-container:first-child .section {
-  animation: fadeIn 0.6s ease-out forwards;
+/* Анимация исчезновения контейнера */
+.section-container.exiting {
+  opacity: 0;
+  transition:
+    opacity 0.7s ease-in-out,
+    visibility 0s 0.7s; /* Задержка visibility для завершения анимации */
 }
 
 /* Анимация пульсации для стрелок */

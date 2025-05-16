@@ -61,7 +61,8 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       {children}
       {isGateOpened && (
         <div
-          className={`transition-opacity duration-1000 ease-in-out ${fadeIn ? 'opacity-100' : 'opacity-0'}`}>
+          className={`transition-opacity duration-1000 ease-in-out ${fadeIn ? '!opacity-100' : '!opacity-0'}`}>
+          <SectionsContainer />
           <BackgroundVideo />
           <AudioContainer />
         </div>
@@ -130,7 +131,7 @@ const AudioContainer = () => {
 
   return (
     <div className="fixed bottom-[1.6875rem] z-40 flex h-[5.625rem] w-full items-center justify-between px-[3.75rem]">
-      <div className="relative z-50 ml-[3.75rem] flex items-center justify-center">
+      <div className="relative z-50 ml-[2.75rem] flex items-center justify-center">
         <ChipIcon
           className={cn('absolute', isAnimationPlaying && 'animate-ease-spin')}
         />
