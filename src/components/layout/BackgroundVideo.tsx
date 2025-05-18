@@ -25,7 +25,7 @@ export const BackgroundVideo: React.FC = () => {
         onTimeUpdate={(e) => {
           handleTimeUpdate((e.target as HTMLVideoElement).currentTime);
         }}
-        className="absolute inset-0 h-full w-full object-cover"
+        className="fixed top-0 left-0 h-screen w-screen object-cover"
         playsInline
         muted
         preload="auto"

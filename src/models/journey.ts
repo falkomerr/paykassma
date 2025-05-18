@@ -182,21 +182,6 @@ sample({
   target: [changeSectionFx, sectionChanged],
 });
 
-// Эффект для установки класса active у текущей секции
-export const updateActiveSectionClassFx = createEffect((sectionId: string) => {
-  const sections = document.querySelectorAll('.section');
-  sections.forEach((section) => {
-    if (section.id === sectionId) {
-      section.classList.add('active');
-    } else {
-      section.classList.remove('active');
-    }
-  });
-});
-
-// Обновление классов при изменении активной секции
-$activeSection.watch(updateActiveSectionClassFx);
-
 // Инициализация обработчиков событий
 export const initJourneyFx = createEffect(() => {
   // Переменная для дебаунса событий прокрутки
@@ -305,9 +290,6 @@ export const initJourneyFx = createEffect(() => {
     sectionChanged('section1');
   }, 100);
 
-  // Сразу устанавливаем классы для первой секции
-  updateActiveSectionClassFx('section1');
-
   // Добавляем подписку на изменение активной секции для сброса флага прокрутки
   const unsubscribe = $activeSection.watch(() => {
     // Сбрасываем флаг прокрутки с задержкой
@@ -326,13 +308,6 @@ export const initJourneyFx = createEffect(() => {
       clearTimeout(wheelDelayTimer);
     }
   };
-});
-
-// Явно активируем первую секцию сразу после инициализации
-sample({
-  clock: initSections,
-  fn: () => 'section1',
-  target: [sectionChanged, updateActiveSectionClassFx],
 });
 
 // Инициализация при монтировании приложения

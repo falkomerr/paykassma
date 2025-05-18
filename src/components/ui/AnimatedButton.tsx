@@ -32,7 +32,7 @@ export const AnimatedButton = ({
           <img
             src="/big-golden-button-bg.svg"
             alt="login-big"
-            className="absolute inset-0 h-full w-full rounded-[1.25rem] object-contain backdrop-blur-sm"
+            className="absolute inset-0 h-full w-full rounded-[1.25rem] object-contain"
           />
         ) : (
           <img

@@ -19,7 +19,7 @@ const SECTION_TIMECODES: Record<string, { start: number; end: number }> = {
 };
 
 const REVERSED_TIMECODES: Record<string, { start: number; end: number }> = {
-  section2: { start: 17.3, end: 23.1 }, // 5 - 11 секунд
+  section2: { start: 17.3, end: 23.3 }, // 5 - 11 секунд
   section3: { start: 11.8, end: 17.2 }, // 11.1 - 16.8 секунд
   section4: { start: 5.2, end: 11.6 }, // 16.8 - 22.4 секунд
   section5: { start: 0, end: 5.1 }, // 22.4 - 28 секунд (конец видео)

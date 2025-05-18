@@ -4,9 +4,7 @@ import { useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import { ChipIcon } from './assets/chip-icon';
-import { BackgroundVideo } from './components/layout/BackgroundVideo';
 import { Header } from './components/layout/Header';
-import { SectionsContainer } from './components/layout/SectionsContainer';
 import { appMounted } from './models/app-model';
 import {
   $activeSection,
@@ -15,64 +13,48 @@ import {
   $sections,
 } from './models/journey';
 
+import { AnimatePresence, motion } from 'framer-motion';
+import { BackgroundVideo } from './components/layout/BackgroundVideo';
 import { Hero } from './components/layout/Hero';
+import { SectionsContainer } from './components/layout/SectionsContainer';
 import { AudioVilence } from './components/ui/AudioVilence';
 import { Button } from './components/ui/Button';
 import { cn } from './lib/utils';
 import { $volume, volumeChanged } from './models/audio';
 import './styles/sections.css';
 
-const AppLayout = ({ children }: { children: React.ReactNode }) => {
+const AppLayout = () => {
   const isGateOpened = useUnit($gateOpened);
-  const [fadeIn, setFadeIn] = useState(false);
-  const [showHero, setShowHero] = useState(true);
-  const [heroOpacity, setHeroOpacity] = useState(1);
-
-  useEffect(() => {
-    if (isGateOpened) {
-      // Анимация исчезновения Hero
-      setHeroOpacity(0);
-      // Удаляем Hero из DOM через 1 секунду (длительность анимации)
-      setTimeout(() => {
-        setShowHero(false);
-      }, 1000);
-
-      // Анимация появления BackgroundVideo и AudioContainer
-      setTimeout(() => {
-        setFadeIn(true);
-      }, 100);
-    } else {
-      setFadeIn(false);
-      setShowHero(true);
-      setHeroOpacity(1);
-    }
-  }, [isGateOpened]);
 
   return (
     <div className="min-h-screen overflow-hidden bg-black text-white">
       <Header />
-      {showHero && (
-        <div
-          className="absolute inset-0 flex items-center justify-center bg-black transition-opacity duration-1000 ease-in-out"
-          style={{ opacity: heroOpacity }}>
+      <AnimatePresence>
+        <motion.div
+          key="hero"
+          className={cn(
+            'absolute inset-0 flex items-center justify-center bg-black opacity-100 transition-opacity duration-1000 ease-in-out',
+            isGateOpened && 'opacity-0',
+          )}>
           <Hero />
-        </div>
-      )}
-      {children}
-      {isGateOpened && (
-        <div
-          className={`transition-opacity duration-1000 ease-in-out ${fadeIn ? '!opacity-100' : '!opacity-0'}`}>
-          <SectionsContainer />
-          <BackgroundVideo />
+        </motion.div>
+        <motion.div
+          key="gate"
+          className={cn(
+            'absolute inset-0 flex items-center justify-center bg-black opacity-100 transition-opacity duration-1000 ease-in-out',
+            !isGateOpened && 'opacity-0',
+          )}>
+          {isGateOpened && <BackgroundVideo />}
           <AudioContainer />
-        </div>
-      )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 };
 
 export const App = () => {
   const mountApp = useUnit(appMounted);
+  const isGateOpened = useUnit($gateOpened);
 
   useEffect(() => {
     mountApp();
@@ -84,9 +66,10 @@ export const App = () => {
         <Route
           path="/"
           element={
-            <AppLayout>
-              <SectionsContainer />
-            </AppLayout>
+            <>
+              <AppLayout />
+              {isGateOpened && <SectionsContainer />}
+            </>
           }
         />
         <Route path="/spline" element={<SplineContainer />} />
