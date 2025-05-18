@@ -1,4 +1,5 @@
 import { useUnit } from 'effector-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import {
   $activeSection,
@@ -16,6 +17,27 @@ import {
   Section4,
   Section5,
 } from './sections/Sections';
+
+// Анимационные варианты для секций
+const sectionContainerVariants = {
+  hidden: { opacity: 0, visibility: 'hidden' as const },
+  visible: {
+    opacity: 1,
+    visibility: 'visible' as const,
+    transition: {
+      duration: 0.6,
+      ease: 'easeInOut',
+    },
+  },
+  exit: {
+    opacity: 0,
+    visibility: 'hidden' as const,
+    transition: {
+      duration: 0.4,
+      ease: 'easeInOut',
+    },
+  },
+};
 
 export const SectionsContainer = () => {
   // Получаем текущую активную секцию для правильного отображения
@@ -59,39 +81,25 @@ export const SectionsContainer = () => {
       // Очищаем все таймеры
       clearAllTimers();
 
-      // Делаем контейнер видимым
-      timers.current.showContainer = setTimeout(() => {
-        const container = document.querySelector(
-          '.section-container:first-child',
-        );
-        if (container) {
-          container.classList.add('visible');
-        }
+      // Активируем анимацию с задержками используя Framer Motion
+      timers.current.activateSection = setTimeout(() => {
+        setShowAnimation(true);
 
-        // Активируем анимацию секции
-        timers.current.activateSection = setTimeout(() => {
-          const section = document.querySelector('#section1');
-          if (section) {
-            section.classList.add('active');
-            setShowAnimation(true);
+        // По завершении анимации ворот показываем контент
+        timers.current.showContentAfterGate = setTimeout(() => {
+          console.log('Анимация ворот завершена');
+          gateAnimationCompleted.current = true;
 
-            // По завершении анимации ворот показываем контент
-            timers.current.showContentAfterGate = setTimeout(() => {
-              console.log('Анимация ворот завершена');
-              gateAnimationCompleted.current = true;
+          // Завершаем анимацию
+          finishAnimation();
 
-              // Завершаем анимацию
-              finishAnimation();
-
-              // После небольшой паузы показываем текст
-              timers.current.showFirstSectionText = setTimeout(() => {
-                console.log('Показываем контент первой секции');
-                setShowFirstSectionContent(true);
-              }, 200);
-            }, 1200);
-          }
-        }, 300);
-      }, 1000);
+          // После небольшой паузы показываем текст
+          timers.current.showFirstSectionText = setTimeout(() => {
+            console.log('Показываем контент первой секции');
+            setShowFirstSectionContent(true);
+          }, 200);
+        }, 1200);
+      }, 300);
 
       return clearAllTimers;
     }
@@ -154,41 +162,79 @@ export const SectionsContainer = () => {
       {/* Контейнер для секций */}
       <div id="sections-wrapper">
         {/* Первая секция */}
-        <div
-          className={`section-container ${
-            activeSection === 'section1' ||
-            (gateOpened && activeSection === 'section1')
-              ? 'visible'
-              : ''
-          }`}
-          data-section="section1">
-          <Section1
-            showAnimation={showAnimation}
-            showContent={showFirstSectionContent} // Отдельное состояние для первой секции
-          />
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key="section1"
+            initial="hidden"
+            animate={
+              activeSection === 'section1' ||
+              (gateOpened && activeSection === 'section1')
+                ? 'visible'
+                : 'hidden'
+            }
+            exit="exit"
+            variants={sectionContainerVariants}
+            className="section-container"
+            data-section="section1">
+            <Section1
+              showAnimation={showAnimation}
+              showContent={showFirstSectionContent} // Отдельное состояние для первой секции
+            />
+          </motion.div>
+        </AnimatePresence>
 
         {/* Остальные секции */}
-        <div
-          className={`section-container ${activeSection === 'section2' ? 'visible' : ''}`}
-          data-section="section2">
-          <Section2 showContent={showContent} />
-        </div>
-        <div
-          className={`section-container ${activeSection === 'section3' ? 'visible' : ''}`}
-          data-section="section3">
-          <Section3 showContent={showContent} />
-        </div>
-        <div
-          className={`section-container ${activeSection === 'section4' ? 'visible' : ''}`}
-          data-section="section4">
-          <Section4 showContent={showContent} />
-        </div>
-        <div
-          className={`section-container ${activeSection === 'section5' ? 'visible' : ''}`}
-          data-section="section5">
-          <Section5 showContent={showContent} />
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key="section2"
+            initial="hidden"
+            animate={activeSection === 'section2' ? 'visible' : 'hidden'}
+            exit="exit"
+            variants={sectionContainerVariants}
+            className="section-container"
+            data-section="section2">
+            <Section2 showContent={showContent} />
+          </motion.div>
+        </AnimatePresence>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key="section3"
+            initial="hidden"
+            animate={activeSection === 'section3' ? 'visible' : 'hidden'}
+            exit="exit"
+            variants={sectionContainerVariants}
+            className="section-container"
+            data-section="section3">
+            <Section3 showContent={showContent} />
+          </motion.div>
+        </AnimatePresence>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key="section4"
+            initial="hidden"
+            animate={activeSection === 'section4' ? 'visible' : 'hidden'}
+            exit="exit"
+            variants={sectionContainerVariants}
+            className="section-container"
+            data-section="section4">
+            <Section4 showContent={showContent} />
+          </motion.div>
+        </AnimatePresence>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key="section5"
+            initial="hidden"
+            animate={activeSection === 'section5' ? 'visible' : 'hidden'}
+            exit="exit"
+            variants={sectionContainerVariants}
+            className="section-container"
+            data-section="section5">
+            <Section5 showContent={showContent} />
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );

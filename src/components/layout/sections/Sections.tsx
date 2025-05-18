@@ -1,4 +1,5 @@
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ReactNode, useEffect, useRef } from 'react';
 
 interface SectionProps {
   id: string;
@@ -8,73 +9,127 @@ interface SectionProps {
   showContent?: boolean;
 }
 
+// Анимационные варианты для контента секции
+const contentVariants = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.17, 0.67, 0.26, 0.99],
+      staggerChildren: 0.1,
+      delayChildren: 0.05,
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -30,
+    transition: {
+      duration: 0.5,
+      ease: [0.46, 0.03, 0.52, 0.96],
+      staggerChildren: 0.05,
+      staggerDirection: -1,
+    },
+  },
+};
+
+// Анимационные варианты для дочерних элементов
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.17, 0.67, 0.26, 0.99],
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -20,
+    transition: {
+      duration: 0.5,
+      ease: [0.46, 0.03, 0.52, 0.96],
+    },
+  },
+};
+
+// Анимационные варианты для изображений
+const imageVariants = {
+  hidden: { opacity: 0, y: 20, scale: 0.98 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.7,
+      ease: [0.17, 0.67, 0.26, 0.99],
+      delay: 0.2,
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -20,
+    scale: 0.98,
+    transition: {
+      duration: 0.5,
+      ease: [0.46, 0.03, 0.52, 0.96],
+    },
+  },
+};
+
 export const Section = ({
   id,
   children,
   className = '',
   showContent = false,
 }: SectionProps) => {
-  // Упрощенное состояние для отслеживания анимации контента
-  const [contentState, setContentState] = useState<
-    'hidden' | 'showing' | 'exiting'
-  >('hidden');
-
-  // Реф для отслеживания предыдущего значения showContent
+  // Для логирования изменений (можно удалить в продакшене)
   const prevShowContentRef = useRef<boolean>(false);
 
-  // Таймер для анимации исчезновения
-  const exitTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Обработка изменения showContent и управление анимациями
   useEffect(() => {
-    // Проверяем, изменилось ли значение showContent
     if (prevShowContentRef.current !== showContent) {
       console.log(`[Секция ${id}] showContent изменился: ${showContent}`);
-
-      // Обновляем ссылку на предыдущее значение
       prevShowContentRef.current = showContent;
-
-      if (showContent) {
-        // Показываем контент с анимацией
-        setContentState('showing');
-      } else if (contentState === 'showing') {
-        // Запускаем анимацию исчезновения только если контент был виден
-        setContentState('exiting');
-
-        // Очищаем предыдущий таймер если он есть
-        if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
-
-        // После завершения анимации исчезновения скрываем контент полностью
-        exitTimerRef.current = setTimeout(() => {
-          setContentState('hidden');
-          exitTimerRef.current = null;
-        }, 600); // Должно соответствовать длительности CSS анимации исчезновения
-      }
     }
-  }, [id, showContent, contentState]);
-
-  // Очистка таймеров при размонтировании
-  useEffect(() => {
-    return () => {
-      if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
-    };
-  }, []);
+  }, [id, showContent]);
 
   return (
     <section
       id={id}
       className={`section relative z-10 flex h-screen w-full flex-col items-start justify-center px-[3.75rem] ${className}`}>
-      <div
-        className={`section-content ${
-          contentState === 'showing'
-            ? 'show-content'
-            : contentState === 'exiting'
-              ? 'exiting-content'
-              : ''
-        }`}>
-        {children}
-      </div>
+      <AnimatePresence mode="wait">
+        {showContent && (
+          <motion.div
+            className="section-content"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={contentVariants}>
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
+  );
+};
+
+// Компонент обертки для анимации дочерних элементов
+export const SectionItem = ({
+  children,
+  isImage = false,
+}: {
+  children: ReactNode;
+  isImage?: boolean;
+}) => {
+  return (
+    <motion.div variants={isImage ? imageVariants : itemVariants}>
+      {children}
+    </motion.div>
   );
 };
 
@@ -90,12 +145,60 @@ export const Section1 = ({
       id="section1"
       title="Секция 1"
       showContent={showContent}
-      className={showAnimation ? 'animated-section' : ''}>
-      <ChapterText>Глава 1: Преимущества</ChapterText>
-      <SectionText>
-        Мы масштабируем <br /> вашу прибыль <br />
-        <CarrotSpan>в Igaming</CarrotSpan>
-      </SectionText>
+      className="">
+      {showAnimation && (
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 1.2,
+            ease: 'easeOut',
+          }}
+          className="w-full">
+          <AnimatePresence mode="wait">
+            {showContent && (
+              <motion.div
+                className="section-content"
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                variants={contentVariants}>
+                <SectionItem>
+                  <ChapterText>Глава 1: Преимущества</ChapterText>
+                </SectionItem>
+                <SectionItem>
+                  <SectionText>
+                    Мы масштабируем <br /> вашу прибыль <br />
+                    <CarrotSpan>в Igaming</CarrotSpan>
+                  </SectionText>
+                </SectionItem>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      )}
+      {!showAnimation && (
+        <AnimatePresence mode="wait">
+          {showContent && (
+            <motion.div
+              className="section-content"
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              variants={contentVariants}>
+              <SectionItem>
+                <ChapterText>Глава 1: Преимущества</ChapterText>
+              </SectionItem>
+              <SectionItem>
+                <SectionText>
+                  Мы масштабируем <br /> вашу прибыль <br />
+                  <CarrotSpan>в Igaming</CarrotSpan>
+                </SectionText>
+              </SectionItem>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
     </Section>
   );
 };
@@ -107,15 +210,30 @@ export const Section2 = ({
 }) => {
   return (
     <Section id="section2" title="Секция 2" showContent={showContent}>
-      <SectionText>
-        <CarrotSpan>Знаем ГЕО</CarrotSpan> с которых <br /> прямо сейчас идет{' '}
-        <br /> профит
-      </SectionText>
-      <img
-        src="/our-anwser.png"
-        alt="our-anwser"
-        className="aspect-square w-[17.9166666667vw]"
-      />
+      <AnimatePresence mode="wait">
+        {showContent && (
+          <motion.div
+            className="section-content"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={contentVariants}>
+            <SectionItem>
+              <SectionText>
+                <CarrotSpan>Знаем ГЕО</CarrotSpan> с которых <br /> прямо сейчас
+                идет <br /> профит
+              </SectionText>
+            </SectionItem>
+            <SectionItem isImage>
+              <img
+                src="/our-anwser.png"
+                alt="our-anwser"
+                className="aspect-square w-[17.9166666667vw]"
+              />
+            </SectionItem>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Section>
   );
 };
@@ -127,15 +245,30 @@ export const Section3 = ({
 }) => {
   return (
     <Section id="section3" title="Секция 3" showContent={showContent}>
-      <SectionText>
-        <CarrotSpan>Знаем ГЕО</CarrotSpan> с которых <br /> прямо сейчас идет{' '}
-        <br /> профит
-      </SectionText>
-      <img
-        src="/our-reklams.png"
-        alt="our-reklams"
-        className="aspect-square w-[17.9166666667vw]"
-      />
+      <AnimatePresence mode="wait">
+        {showContent && (
+          <motion.div
+            className="section-content"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={contentVariants}>
+            <SectionItem>
+              <SectionText>
+                <CarrotSpan>Знаем ГЕО</CarrotSpan> с которых <br /> прямо сейчас
+                идет <br /> профит
+              </SectionText>
+            </SectionItem>
+            <SectionItem isImage>
+              <img
+                src="/our-reklams.png"
+                alt="our-reklams"
+                className="aspect-square w-[17.9166666667vw]"
+              />
+            </SectionItem>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Section>
   );
 };
@@ -147,15 +280,30 @@ export const Section4 = ({
 }) => {
   return (
     <Section id="section4" title="Секция 4" showContent={showContent}>
-      <SectionText>
-        Более <CarrotSpan>300 офферов</CarrotSpan> <br /> от топовых
-        рекламодателей <br /> в одном месте
-      </SectionText>
-      <img
-        src="/our-advantages.png"
-        alt="our-advantages"
-        className="aspect-[596/270] w-[31.0166666667vw]"
-      />
+      <AnimatePresence mode="wait">
+        {showContent && (
+          <motion.div
+            className="section-content"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={contentVariants}>
+            <SectionItem>
+              <SectionText>
+                Более <CarrotSpan>300 офферов</CarrotSpan> <br /> от топовых
+                рекламодателей <br /> в одном месте
+              </SectionText>
+            </SectionItem>
+            <SectionItem isImage>
+              <img
+                src="/our-advantages.png"
+                alt="our-advantages"
+                className="aspect-[596/270] w-[31.0166666667vw]"
+              />
+            </SectionItem>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Section>
   );
 };
@@ -167,13 +315,29 @@ export const Section5 = ({
 }) => {
   return (
     <Section id="section5" title="Секция 5" showContent={showContent}>
-      <SectionText>
-        <CarrotSpan>Усиливаем</CarrotSpan> бюджеты <br /> арбитражных команд
-      </SectionText>
-      <SectionDescription>
-        Масштабируем ваши успешные связки предоставляя бюджеты <br /> для
-        получения максимального профита с рекламной кампании
-      </SectionDescription>
+      <AnimatePresence mode="wait">
+        {showContent && (
+          <motion.div
+            className="section-content"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={contentVariants}>
+            <SectionItem>
+              <SectionText>
+                <CarrotSpan>Усиливаем</CarrotSpan> бюджеты <br /> арбитражных
+                команд
+              </SectionText>
+            </SectionItem>
+            <SectionItem>
+              <SectionDescription>
+                Масштабируем ваши успешные связки предоставляя бюджеты <br />{' '}
+                для получения максимального профита с рекламной кампании
+              </SectionDescription>
+            </SectionItem>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Section>
   );
 };
