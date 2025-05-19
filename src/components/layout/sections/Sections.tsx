@@ -1,6 +1,6 @@
 import { goToNextSection, goToPrevSection } from '@/models/journey';
 import { useUnit } from 'effector-react';
-import { ReactNode, useRef, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 
 interface SectionProps {
   id: string;
@@ -128,7 +128,7 @@ const FinanceCard = ({
   imgAlt,
   position,
 }: Omit<CardProps, 'isActive'>) => {
-  let cardClasses = 'absolute transition-all duration-700 ease-in-out w-[19vw]';
+  let cardClasses = 'absolute transition-all duration-300 ease-in-out w-[19vw]';
 
   // Применяем стили в зависимости от позиции
   if (position === 'left') {
@@ -160,6 +160,7 @@ export const FinanceCarousel = () => {
     nextSection: goToNextSection,
   });
   const [activeIndex, setActiveIndex] = useState(0);
+  const skippedFirstScroll = useRef(false);
 
   // Используем простые и понятные флаги состояния скролла
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -169,6 +170,67 @@ export const FinanceCarousel = () => {
     { imgSrc: '/comfortable-payments.svg', imgAlt: 'comfortable-payments' },
     { imgSrc: '/fast-payments.svg', imgAlt: 'fast-payments' },
   ];
+
+  useEffect(() => {
+    console.log('activeIndex', activeIndex);
+  }, [activeIndex]);
+
+  useEffect(() => {
+    const handleDirection = debounce((direction: 'up' | 'down') => {
+      if (!skippedFirstScroll.current) {
+        skippedFirstScroll.current = true;
+        return;
+      }
+
+      if (direction === 'down' && activeIndex < 2) {
+        setActiveIndex((prev) => prev + 1);
+      } else if (direction === 'up' && activeIndex > 0) {
+        setActiveIndex((prev) => prev - 1);
+      } else if (direction === 'down' && activeIndex === 2) {
+        nextSection();
+      } else if (direction === 'up' && activeIndex === 0) {
+        prevSection();
+      }
+    }, 80);
+
+    const handleScroll = (e: WheelEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const scrollDirection = e.deltaY > 0 ? 'down' : 'up';
+      handleDirection(scrollDirection);
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.key === 'ArrowDown') {
+        handleDirection('down');
+      } else if (e.key === 'ArrowUp') {
+        handleDirection('up');
+      }
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function debounce<T extends (...args: any[]) => any>(
+      func: T,
+      wait: number,
+    ): (...args: Parameters<T>) => void {
+      let timeout: ReturnType<typeof setTimeout> | null = null;
+
+      return function (...args: Parameters<T>) {
+        if (timeout) clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+      };
+    }
+
+    document.addEventListener('wheel', handleScroll, { passive: false });
+    document.addEventListener('keydown', handleKeyDown, { passive: false });
+
+    return () => {
+      document.removeEventListener('wheel', handleScroll);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [activeIndex, nextSection, prevSection]);
 
   return (
     <Section id="finance-carousel" title="Финансовая карусель">

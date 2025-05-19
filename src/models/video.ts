@@ -62,10 +62,6 @@ export const stopVideoFx = createEffect(
   },
 );
 
-$previousActiveSection.watch((prev) => {
-  console.log('prev', prev);
-});
-
 export const playVideoTimecodeFx = createEffect(
   ({
     videoElements,
