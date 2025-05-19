@@ -2,6 +2,7 @@ import { VIDEO_BACKWARD_ID, VIDEO_FORWARD_ID } from '@/constants';
 import {
   $activeSection,
   $animationPlaying,
+  $previousActiveSection,
   $sections,
   animationEnded,
   animationPlayed,
@@ -61,6 +62,10 @@ export const stopVideoFx = createEffect(
   },
 );
 
+$previousActiveSection.watch((prev) => {
+  console.log('prev', prev);
+});
+
 export const playVideoTimecodeFx = createEffect(
   ({
     videoElements,
@@ -74,6 +79,12 @@ export const playVideoTimecodeFx = createEffect(
     videoMode: 'forward' | 'backward';
     timecode: { start: number; end: number };
   }) => {
+    //TODO: test
+    if (window.location.pathname.includes('test')) {
+      videoElements.forward!.playbackRate = 10;
+      videoElements.backward!.playbackRate = 10;
+    }
+
     if (
       videoMode === 'backward' &&
       videoElements.backward &&
@@ -128,8 +139,10 @@ sample({
     activeSection: $activeSection,
     videoMode: $videoMode,
     sections: $sections,
+    previousActiveSection: $previousActiveSection,
   },
-  filter: ({ isAnimationPlaying }) => !isAnimationPlaying,
+  filter: ({ isAnimationPlaying, previousActiveSection }) =>
+    !isAnimationPlaying && previousActiveSection !== 'section6',
   fn: ({ videoElements, activeSection, videoMode }) => ({
     videoElements,
     videoMode,
@@ -146,8 +159,10 @@ sample({
     isAnimationPlaying: $animationPlaying,
     videoMode: $videoMode,
     sections: $sections,
+    previousActiveSection: $previousActiveSection,
   },
-  filter: ({ isAnimationPlaying }) => !isAnimationPlaying,
+  filter: ({ isAnimationPlaying, previousActiveSection }) =>
+    !isAnimationPlaying && previousActiveSection !== 'section6',
   fn: ({ videoElements, activeSection, videoMode }) => ({
     videoElements,
     videoMode,
@@ -157,6 +172,13 @@ sample({
       ],
   }),
   target: [playVideoTimecodeFx, animationPlayed],
+});
+
+sample({
+  clock: $previousActiveSection,
+  filter: (prev) => parseInt(prev?.split('section')[1] ?? '100') > 5,
+  fn: () => false,
+  target: $animationPlaying,
 });
 
 sample({

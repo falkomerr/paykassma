@@ -1,4 +1,6 @@
-import { ReactNode } from 'react';
+import { goToNextSection, goToPrevSection } from '@/models/journey';
+import { useUnit } from 'effector-react';
+import { ReactNode, useRef, useState } from 'react';
 
 interface SectionProps {
   id: string;
@@ -10,9 +12,17 @@ interface SectionProps {
 export const Section = ({ children, className = '' }: SectionProps) => {
   return (
     <section
-      className={`relative z-50 flex h-fit h-screen w-fit flex-col items-start justify-center px-[3.75rem] ${className}`}>
+      className={`relative z-50 flex h-fit h-screen w-fit flex-col items-start justify-center gap-y-6 px-[3.75rem] ${className}`}>
       <div>{children}</div>
     </section>
+  );
+};
+
+export const FeatureBlock = ({ children }: { children: ReactNode }) => {
+  return (
+    <div className="gilroy relative z-10 w-fit rounded-xl border-1 border-[#9E8C38] px-[24px] py-[16px] text-[1.0741666667vw] whitespace-nowrap text-white shadow-[inset_0_0_15px_#9E8C38]">
+      {children}
+    </div>
   );
 };
 
@@ -38,7 +48,8 @@ export const Section2 = () => {
       <img
         src="/our-anwser.png"
         alt="our-anwser"
-        className="aspect-square w-[15.9166666667vw]"
+        draggable={false}
+        className="aspect-square w-[19vw]"
       />
     </Section>
   );
@@ -54,7 +65,8 @@ export const Section3 = () => {
       <img
         src="/our-reklams.png"
         alt="our-reklams"
-        className="aspect-square w-[15.9166666667vw]"
+        draggable={false}
+        className="aspect-square w-[19vw]"
       />
     </Section>
   );
@@ -67,11 +79,13 @@ export const Section4 = () => {
         Более <CarrotSpan>300 офферов</CarrotSpan> <br /> от топовых <br />
         рекламодателей в одном <br /> месте
       </SectionText>
-      <img
-        src="/our-advantages.png"
-        alt="our-advantages"
-        className="aspect-[596/270] w-[29.0166666667vw]"
-      />
+
+      <div className="mt-6 flex max-w-[35.5rem] flex-wrap gap-6">
+        <FeatureBlock>Диверсифицируй риски</FeatureBlock>
+        <FeatureBlock>Переключай потоки</FeatureBlock>
+        <FeatureBlock>Тестируй топовые офферы без KPI</FeatureBlock>
+        <FeatureBlock>Получай гарантированные выплаты</FeatureBlock>
+      </div>
     </Section>
   );
 };
@@ -86,6 +100,137 @@ export const Section5 = () => {
         Масштабируем ваши успешные связки предоставляя бюджеты <br /> для
         получения максимального профита с рекламной кампании
       </SectionDescription>
+    </Section>
+  );
+};
+
+export const Section6 = () => {
+  return (
+    <Section id="section6" title="Секция 6">
+      <ChapterText>Глава 2: Конференции</ChapterText>
+      <SectionText>
+        Место встречи изменить нельзя, <br />
+        <CarrotSpan>увидимся </CarrotSpan> на конференциях
+      </SectionText>
+    </Section>
+  );
+};
+
+// Новый компонент карточки для карусели
+interface CardProps {
+  imgSrc: string;
+  imgAlt: string;
+  position: 'left' | 'center' | 'right' | 'hidden';
+}
+
+const FinanceCard = ({
+  imgSrc,
+  imgAlt,
+  position,
+}: Omit<CardProps, 'isActive'>) => {
+  let cardClasses = 'absolute transition-all duration-700 ease-in-out w-[19vw]';
+
+  // Применяем стили в зависимости от позиции
+  if (position === 'left') {
+    cardClasses += ' z-30 opacity-100 translate-x-0 scale-100';
+  } else if (position === 'center') {
+    cardClasses += ' z-20 opacity-20 translate-x-[80%] scale-[0.85] rotate-6';
+  } else if (position === 'right') {
+    cardClasses += ' z-10 opacity-20 translate-x-[160%] scale-[0.7] rotate-12';
+  } else if (position === 'hidden') {
+    cardClasses += ' z-10 opacity-0 scale-50';
+  }
+
+  return (
+    <div className={cardClasses}>
+      <img
+        src={imgSrc}
+        alt={imgAlt}
+        draggable={false}
+        className="aspect-square w-full"
+      />
+    </div>
+  );
+};
+
+// Объединенные секции 7, 8 и 9 в виде карусели
+export const FinanceCarousel = () => {
+  const { prevSection, nextSection } = useUnit({
+    prevSection: goToPrevSection,
+    nextSection: goToNextSection,
+  });
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // Используем простые и понятные флаги состояния скролла
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const cards = [
+    { imgSrc: '/pay-models.svg', imgAlt: 'pay-models' },
+    { imgSrc: '/comfortable-payments.svg', imgAlt: 'comfortable-payments' },
+    { imgSrc: '/fast-payments.svg', imgAlt: 'fast-payments' },
+  ];
+
+  return (
+    <Section id="finance-carousel" title="Финансовая карусель">
+      <CarrotSpan>Глава 3: Финансовые взаимодействия</CarrotSpan>
+      <SectionText>
+        <CarrotSpan>Наша вариативность</CarrotSpan>
+        <br />
+        финансовых
+        <br />
+        взаимодействий
+      </SectionText>
+
+      <div ref={carouselRef} className="relative mt-8 h-[20vw] w-[40vw]">
+        {cards.map((card, index) => {
+          // Определяем позицию карточки в зависимости от активного индекса
+          let position: 'left' | 'center' | 'right' | 'hidden' = 'hidden';
+
+          // Активная карточка всегда слева
+          if (index === activeIndex) {
+            position = 'left';
+          }
+          // Карточка после активной - в центре
+          else if (
+            // Если активная карточка не последняя, то следующая будет в центре
+            activeIndex < cards.length - 1 &&
+            index === activeIndex + 1
+          ) {
+            position = 'center';
+          }
+          // Карточка через одну после активной - справа
+          else if (
+            // Если активная не предпоследняя и не последняя, то через одну будет справа
+            activeIndex < cards.length - 2 &&
+            index === activeIndex + 2
+          ) {
+            position = 'right';
+          }
+
+          return (
+            <FinanceCard
+              key={card.imgAlt}
+              imgSrc={card.imgSrc}
+              imgAlt={card.imgAlt}
+              position={position}
+            />
+          );
+        })}
+      </div>
+    </Section>
+  );
+};
+
+// Заменяем старые секции 7, 8 и 9 на карусель - удаляем Section8 и Section9
+export const Section7 = FinanceCarousel;
+// Удаляем Section8 и Section9, оставляем только Section10
+export const Section10 = () => {
+  return (
+    <Section id="section10" title="Секция 10">
+      <ChapterText>Глава 4: Типы трафика</ChapterText>
+      <SectionText>
+        <CarrotSpan>Монетизируем</CarrotSpan> следующие типы трафика
+      </SectionText>
     </Section>
   );
 };

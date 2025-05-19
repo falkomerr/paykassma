@@ -165,8 +165,8 @@ export const dictionary: NestedDictionary = {
       en: 'Your reliable partner in the world of finance',
     },
     description: {
-      ru: 'CPA-сеть с одним из самых известных платёжных решений в igaming',
-      en: 'CPA network with one of the most famous payment solutions in igaming',
+      ru: 'CPA-сеть с одним из самых известных платёжных решений в iGaming',
+      en: 'CPA network with one of the most famous payment solutions in iGaming',
     },
   },
 

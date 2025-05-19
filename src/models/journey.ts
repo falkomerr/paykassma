@@ -1,57 +1,23 @@
-import { createEffect, createEvent, createStore, sample } from 'effector';
-import { reset } from 'patronum';
+import {
+  createEffect,
+  createEvent,
+  createStore,
+  sample,
+  Store,
+} from 'effector';
 
-type Journey =
-  | 'start'
-  | 'chapter1'
-  | 'chapter2'
-  | 'chapter3'
-  | 'chapter4'
-  | 'chapter5';
+function previous<T>($store: Store<T>) {
+  const $stack = createStore([$store.defaultState]);
 
-export const jorneyReseted = createEvent();
-export const journeyStarted = createEvent();
-export const chapter2Started = createEvent();
-export const chapter3Started = createEvent();
-export const chapter4Started = createEvent();
-export const chapter5Started = createEvent();
+  sample({
+    clock: $store,
+    source: $stack,
+    fn: ([current], value) => [value, current],
+    target: $stack,
+  });
 
-export const $journey = createStore<Journey>('start');
-
-reset({
-  clock: jorneyReseted,
-  target: $journey,
-});
-
-sample({
-  clock: journeyStarted,
-  fn: () => 'chapter1' as const,
-  target: $journey,
-});
-
-sample({
-  clock: chapter2Started,
-  fn: () => 'chapter2' as const,
-  target: $journey,
-});
-
-sample({
-  clock: chapter3Started,
-  fn: () => 'chapter3' as const,
-  target: $journey,
-});
-
-sample({
-  clock: chapter4Started,
-  fn: () => 'chapter4' as const,
-  target: $journey,
-});
-
-sample({
-  clock: chapter5Started,
-  fn: () => 'chapter5' as const,
-  target: $journey,
-});
+  return $stack.map((values) => values[1]) as Store<T>;
+}
 
 // События для смены секций
 export const sectionChanged = createEvent<string>();
@@ -66,16 +32,30 @@ export const initGateAudio = createEvent();
 export const $animationPlaying = createStore(false);
 export const $gateOpened = createStore(false);
 
+export const ANIMATED_SECTIONS = [
+  'section1',
+  'section2',
+  'section3',
+  'section4',
+  'section5',
+];
+
 // Константа для всех задержек, чтобы они были согласованы
 export const SECTION_TRANSITION_DELAY = 800; // мс
+// Минимальная задержка между переключениями для НЕ-анимированных секций
+export const NON_ANIMATED_TRANSITION_DELAY = 400; // мс
 
 // Эффекты для переключения секций
-export const changeSectionFx = createEffect(async () => {
-  // Удаляем обновление URL - больше не сохраняем текущую секцию
+export const changeSectionFx = createEffect(async (sectionId: string) => {
+  // Проверяем, является ли секция анимированной
+  const isAnimatedSection = ANIMATED_SECTIONS.includes(sectionId);
+  const delay = isAnimatedSection
+    ? SECTION_TRANSITION_DELAY
+    : NON_ANIMATED_TRANSITION_DELAY;
 
-  // Имитируем задержку для анимаций
+  // Имитируем задержку для анимаций или просто для стабильности переключения
   return new Promise<void>((resolve) => {
-    setTimeout(resolve, SECTION_TRANSITION_DELAY);
+    setTimeout(resolve, delay);
   });
 });
 
@@ -92,6 +72,9 @@ export const $sections = createStore<string[]>([
   'section3',
   'section4',
   'section5',
+  'section6',
+  'section7',
+  'section8',
 ]);
 export const $gateAudioElement = createStore<HTMLAudioElement | null>(null);
 
@@ -100,6 +83,8 @@ export const $activeSection = createStore('section1').on(
   sectionChanged,
   (_, sectionId) => sectionId,
 );
+
+export const $previousActiveSection = previous($activeSection);
 
 export const playFx = createEffect((audio: HTMLAudioElement) => {
   audio.play();
@@ -137,8 +122,13 @@ sample({
   filter: ({ isChanging, animationPlaying, sections, activeSection }) => {
     const currentIndex = sections.indexOf(activeSection);
     const isLastSection = currentIndex === sections.length - 1;
-    // Не выполняем действие, если анимация играет, секция меняется или мы на последней секции
-    return !isChanging && !animationPlaying && !isLastSection;
+    const isAnimatedSection = ANIMATED_SECTIONS.includes(activeSection);
+
+    // Не выполняем действие, если секция меняется или мы на последней секции
+    // Проверяем animationPlaying только если текущая секция анимированная
+    return (
+      !isChanging && !(isAnimatedSection && animationPlaying) && !isLastSection
+    );
   },
   fn: ({ sections, activeSection }) => {
     const currentIndex = sections.indexOf(activeSection);
@@ -159,8 +149,13 @@ sample({
   filter: ({ isChanging, animationPlaying, sections, activeSection }) => {
     const currentIndex = sections.indexOf(activeSection);
     const isFirstSection = currentIndex === 0;
-    // Не выполняем действие, если анимация играет, секция меняется или мы на первой секции
-    return !isChanging && !animationPlaying && !isFirstSection;
+    const isAnimatedSection = ANIMATED_SECTIONS.includes(activeSection);
+
+    // Не выполняем действие, если секция меняется или мы на первой секции
+    // Проверяем animationPlaying только если текущая секция анимированная
+    return (
+      !isChanging && !(isAnimatedSection && animationPlaying) && !isFirstSection
+    );
   },
   fn: ({ sections, activeSection }) => {
     const currentIndex = sections.indexOf(activeSection);
@@ -175,9 +170,12 @@ sample({
   source: {
     isChanging: $isChangingSection,
     animationPlaying: $animationPlaying,
+    activeSection: $activeSection,
   },
-  filter: ({ isChanging, animationPlaying }) =>
-    !isChanging && !animationPlaying,
+  filter: ({ isChanging, animationPlaying, activeSection }) => {
+    const isAnimatedSection = ANIMATED_SECTIONS.includes(activeSection);
+    return !isChanging && !(isAnimatedSection && animationPlaying);
+  },
   fn: (_, sectionId) => sectionId,
   target: [changeSectionFx, sectionChanged],
 });
@@ -187,6 +185,9 @@ export const initJourneyFx = createEffect(() => {
   // Переменная для дебаунса событий прокрутки
   let wheelDelayTimer: ReturnType<typeof setTimeout> | null = null;
   let isWheelHandled = false;
+  // Переменная для накопления прокрутки от тачпада
+  let accumulatedDelta = 0;
+  const DELTA_THRESHOLD = 50; // Порог для события прокрутки
   // Идентификатор последнего действия для предотвращения множественных переключений
   let lastActionTime = 0;
   const MIN_ACTION_INTERVAL = SECTION_TRANSITION_DELAY; // Используем общую константу
@@ -198,68 +199,86 @@ export const initJourneyFx = createEffect(() => {
     e.preventDefault();
 
     const now = Date.now();
+    const activeSection = $activeSection.getState();
+    const isAnimatedSection = ANIMATED_SECTIONS.includes(activeSection);
 
     // Проверяем, не заблокирована ли смена секций, не находимся ли в процессе прокрутки,
     // и достаточно ли времени прошло с последнего действия
     if (
       $isChangingSection.getState() ||
-      $animationPlaying.getState() ||
+      (isAnimatedSection && $animationPlaying.getState()) ||
       isWheelHandled ||
       now - lastActionTime < MIN_ACTION_INTERVAL ||
       isScrolling
     )
       return;
 
-    const activeSection = $activeSection.getState();
     const sections = $sections.getState();
     const currentIndex = sections.indexOf(activeSection);
     const isFirstSection = currentIndex === 0;
     const isLastSection = currentIndex === sections.length - 1;
 
-    // Проверяем только направление скроллинга и возможность перехода
-    if (e.deltaY > 0 && !isLastSection) {
-      // Устанавливаем флаг обработки и прокрутки только если можно выполнить переход
-      isWheelHandled = true;
-      isScrolling = true;
-      // Записываем время действия
-      lastActionTime = now;
-      goToNextSection();
-    } else if (e.deltaY < 0 && !isFirstSection) {
-      // Устанавливаем флаг обработки и прокрутки только если можно выполнить переход
-      isWheelHandled = true;
-      isScrolling = true;
-      // Записываем время действия
-      lastActionTime = now;
-      goToPrevSection();
-    }
+    // Аккумулируем дельту прокрутки (особенно важно для тачпада)
+    accumulatedDelta += e.deltaY;
 
-    // Сбрасываем флаг обработки через задержку только если он был установлен
-    if (isWheelHandled && wheelDelayTimer) {
+    // Сбрасываем накопленную дельту через задержку
+    if (wheelDelayTimer) {
       clearTimeout(wheelDelayTimer);
     }
 
-    if (isWheelHandled) {
-      wheelDelayTimer = setTimeout(() => {
-        isWheelHandled = false;
-        isScrolling = false;
-      }, MIN_ACTION_INTERVAL); // Используем константу для согласованности
+    wheelDelayTimer = setTimeout(() => {
+      accumulatedDelta = 0;
+      isWheelHandled = false;
+      isScrolling = false;
+    }, 150); // Короткая задержка для сброса накопленной дельты
+
+    // Проверяем только направление скроллинга и возможность перехода,
+    // используя накопленную дельту прокрутки для предотвращения случайных скроллов
+    if (
+      accumulatedDelta > DELTA_THRESHOLD &&
+      !isLastSection &&
+      !isWheelHandled
+    ) {
+      // Устанавливаем флаг обработки и прокрутки только если можно выполнить переход
+      isWheelHandled = true;
+      isScrolling = true;
+      // Записываем время действия
+      lastActionTime = now;
+      // Сбрасываем накопленную дельту
+      accumulatedDelta = 0;
+      goToNextSection();
+    } else if (
+      accumulatedDelta < -DELTA_THRESHOLD &&
+      !isFirstSection &&
+      !isWheelHandled
+    ) {
+      // Устанавливаем флаг обработки и прокрутки только если можно выполнить переход
+      isWheelHandled = true;
+      isScrolling = true;
+      // Записываем время действия
+      lastActionTime = now;
+      // Сбрасываем накопленную дельту
+      accumulatedDelta = 0;
+      goToPrevSection();
     }
   };
 
   // Обработчик нажатия клавиш
   const handleKeyDown = (e: KeyboardEvent) => {
     const now = Date.now();
+    const activeSection = $activeSection.getState();
+    const isAnimatedSection = ANIMATED_SECTIONS.includes(activeSection);
 
     // Проверяем, не заблокировано ли переключение
     // и достаточно ли времени прошло с последнего действия
+    // Проверяем animationPlaying только если текущая секция анимированная
     if (
       $isChangingSection.getState() ||
-      $animationPlaying.getState() ||
+      (isAnimatedSection && $animationPlaying.getState()) ||
       now - lastActionTime < MIN_ACTION_INTERVAL
     )
       return;
 
-    const activeSection = $activeSection.getState();
     const sections = $sections.getState();
     const currentIndex = sections.indexOf(activeSection);
     const isFirstSection = currentIndex === 0;
@@ -295,6 +314,7 @@ export const initJourneyFx = createEffect(() => {
     // Сбрасываем флаг прокрутки с задержкой
     setTimeout(() => {
       isScrolling = false;
+      accumulatedDelta = 0; // Также сбрасываем накопленную дельту
     }, 100);
   });
 

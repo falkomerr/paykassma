@@ -87,6 +87,9 @@ importers:
       '@vitejs/plugin-react-swc':
         specifier: ^3.8.0
         version: 3.8.0(vite@6.2.1(@types/node@22.15.14)(jiti@2.4.2)(lightningcss@1.29.2))
+      effector-logger:
+        specifier: ^0.15.0
+        version: 0.15.0(effector@23.3.0)
       eslint:
         specifier: ^9.21.0
         version: 9.22.0(jiti@2.4.2)
@@ -1314,6 +1317,9 @@ packages:
   detect-node-es@1.1.0:
     resolution: {integrity: sha512-ypdmJU/TbBby2Dxibuv7ZLW3Bs1QEmM7nHjEANfohJLvE0XVujisn1qPJcZxg+qDucsr+bP6fLD1rPS3AhJ7EQ==}
 
+  detect-node@2.0.4:
+    resolution: {integrity: sha512-ZIzRpLJrOj7jjP2miAtgqIfmzbxa4ZOr5jJc601zklsfEx9oTzmmj2nVpIPRpNlRTIh8lc1kyViIY7BWSGNmKw==}
+
   diff@4.0.2:
     resolution: {integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==}
     engines: {node: '>=0.3.1'}
@@ -1325,6 +1331,11 @@ packages:
     resolution: {integrity: sha512-pk+k0oK0PVXdlT4oRp4lwh+unuKB7Ng4iZ2HB+EZ7QCEQizX360Rp/F4aRpgpRgdP2ufB35N+1KppHmYjqIGSg==}
     engines: {node: '>=16'}
     hasBin: true
+
+  effector-logger@0.15.0:
+    resolution: {integrity: sha512-Eq/00DPW9N0Tsu0z+VlXQtlR3TdAJQraD56iadFHCBnDU31fBJxmD1wwED/yGFKI5QGMgITGFUXnKHTN1hcrNg==}
+    peerDependencies:
+      effector: ^22.8.8 || ^23.0.0
 
   effector-react@23.3.0:
     resolution: {integrity: sha512-QR0+x1EnbiWhO80Yc0GVF+I9xCYoxBm3t+QLB5Wg+1uY1Q1BrSWDmKvJaJJZ/+9BU4RAr25yS5J2EkdWnicu8g==}
@@ -1751,6 +1762,9 @@ packages:
 
   jsonfile@6.1.0:
     resolution: {integrity: sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==}
+
+  just-debounce-it@1.5.0:
+    resolution: {integrity: sha512-itSWJS5d2DTSCizVJ2Z0Djx/dGmUGfZe7WNfUfVP23+htGcIcPHbEjL4eB8ljojTs/+oYwLexImRRCP0A2WXjA==}
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
@@ -3621,6 +3635,8 @@ snapshots:
 
   detect-node-es@1.1.0: {}
 
+  detect-node@2.0.4: {}
+
   diff@4.0.2: {}
 
   eastasianwidth@0.2.0: {}
@@ -3636,6 +3652,12 @@ snapshots:
       pretty-ms: 7.0.1
       signal-exit: 4.0.2
       time-span: 4.0.0
+
+  effector-logger@0.15.0(effector@23.3.0):
+    dependencies:
+      detect-node: 2.0.4
+      effector: 23.3.0
+      just-debounce-it: 1.5.0
 
   effector-react@23.3.0(effector@23.3.0)(react@19.0.0):
     dependencies:
@@ -4046,6 +4068,8 @@ snapshots:
       universalify: 2.0.1
     optionalDependencies:
       graceful-fs: 4.2.11
+
+  just-debounce-it@1.5.0: {}
 
   keyv@4.5.4:
     dependencies:

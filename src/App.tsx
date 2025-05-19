@@ -11,8 +11,10 @@ import {
   $animationPlaying,
   $gateOpened,
   $sections,
+  ANIMATED_SECTIONS,
 } from './models/journey';
 
+import { attachLogger } from 'effector-logger';
 import { AnimatePresence, motion } from 'framer-motion';
 import { BackgroundVideo } from './components/layout/BackgroundVideo';
 import { Hero } from './components/layout/Hero';
@@ -23,8 +25,13 @@ import { cn } from './lib/utils';
 import { $volume, volumeChanged } from './models/audio';
 import './styles/sections.css';
 
+attachLogger();
+
 const AppLayout = () => {
-  const isGateOpened = useUnit($gateOpened);
+  const { isGateOpened, currentSection } = useUnit({
+    isGateOpened: $gateOpened,
+    currentSection: $activeSection,
+  });
 
   return (
     <div className="min-h-screen overflow-hidden bg-black text-white">
@@ -44,7 +51,17 @@ const AppLayout = () => {
             'absolute inset-0 flex items-center justify-center bg-black opacity-100 transition-opacity duration-1000 ease-in-out',
             !isGateOpened && 'opacity-0',
           )}>
-          {isGateOpened && <BackgroundVideo />}
+          <AnimatePresence>
+            {isGateOpened && ANIMATED_SECTIONS.includes(currentSection) && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}>
+                <BackgroundVideo />
+              </motion.div>
+            )}
+          </AnimatePresence>
           <AudioContainer />
         </motion.div>
       </AnimatePresence>
@@ -69,7 +86,37 @@ export const App = () => {
             <>
               <Loader />
               <AppLayout />
-              {isGateOpened && <SectionsContainer />}
+              <AnimatePresence>
+                {isGateOpened && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.6 }}>
+                    <SectionsContainer />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </>
+          }
+        />
+        <Route
+          path="/test"
+          element={
+            <>
+              <Loader />
+              <AppLayout />
+              <AnimatePresence>
+                {isGateOpened && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}>
+                    <SectionsContainer />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </>
           }
         />
@@ -105,10 +152,10 @@ const AudioContainer = () => {
   });
 
   useEffect(() => {
-    if (!isAnimationPlaying) {
+    setTimeout(() => {
       setShowCurrentSection(Number(currentSection.split('section').at(1)));
-    }
-  }, [isAnimationPlaying, currentSection]);
+    }, 400);
+  }, [currentSection]);
 
   const gradientText =
     'bg-gradient-to-t from-[#FFD01F] via-[#FFFD64] via-30% to-[#FFC61D] bg-clip-text text-transparent';
@@ -151,16 +198,22 @@ const Loader = () => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    if (window.location.pathname.includes('test')) {
+      setIsVisible(false);
+      setProgress(100);
+      return;
+    }
+
     const timeout = setTimeout(() => {
       setIsVisible(false);
-    }, 4000);
+    }, 5000);
 
     const interval = setInterval(() => {
       setProgress((prev) => {
         const newProgress = prev + 1;
         return newProgress > 100 ? 100 : newProgress;
       });
-    }, 40);
+    }, 35);
 
     return () => {
       clearTimeout(timeout);
