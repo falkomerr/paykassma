@@ -12,8 +12,8 @@ interface SectionProps {
 export const Section = ({ children, className = '' }: SectionProps) => {
   return (
     <section
-      className={`relative z-50 flex h-fit h-screen w-fit flex-col items-start justify-center gap-y-6 px-[3.75rem] ${className}`}>
-      <div>{children}</div>
+      className={`relative z-40 flex h-fit h-screen w-fit flex-col items-start justify-center gap-y-6 px-[3.75rem] ${className}`}>
+      {children}
     </section>
   );
 };
@@ -106,12 +106,28 @@ export const Section5 = () => {
 
 export const Section6 = () => {
   return (
-    <Section id="section6" title="Секция 6">
-      <ChapterText>Глава 2: Конференции</ChapterText>
-      <SectionText>
+    <Section
+      id="section6"
+      title="Секция 6"
+      className="flex w-full flex-col items-center">
+      <ChapterText className="w-full text-center">
+        Глава 2: Конференции
+      </ChapterText>
+      <SectionText className="-mt-8 w-full text-center text-[2.8645833333vw]">
         Место встречи изменить нельзя, <br />
         <CarrotSpan>увидимся </CarrotSpan> на конференциях
       </SectionText>
+      <div className="mx-auto flex w-full items-center justify-center gap-x-5">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <img
+            key={index}
+            src="/meet-card.png"
+            alt="meet-card"
+            draggable={false}
+            className="aspect-[435/389] w-[17.5vw]"
+          />
+        ))}
+      </div>
     </Section>
   );
 };
@@ -134,9 +150,11 @@ const FinanceCard = ({
   if (position === 'left') {
     cardClasses += ' z-30 opacity-100 translate-x-0 scale-100';
   } else if (position === 'center') {
-    cardClasses += ' z-20 opacity-20 translate-x-[80%] scale-[0.85] rotate-6';
+    cardClasses +=
+      ' z-20 opacity-0 translate-x-[15%] translate-y-[3%] rotate-6';
   } else if (position === 'right') {
-    cardClasses += ' z-10 opacity-20 translate-x-[160%] scale-[0.7] rotate-12';
+    cardClasses +=
+      ' z-10 opacity-0 translate-x-[30%] translate-y-[6%] rotate-12';
   } else if (position === 'hidden') {
     cardClasses += ' z-10 opacity-0 scale-50';
   }
@@ -235,7 +253,7 @@ export const FinanceCarousel = () => {
   return (
     <Section id="finance-carousel" title="Финансовая карусель">
       <CarrotSpan>Глава 3: Финансовые взаимодействия</CarrotSpan>
-      <SectionText>
+      <SectionText className="-mt-8">
         <CarrotSpan>Наша вариативность</CarrotSpan>
         <br />
         финансовых
@@ -288,26 +306,51 @@ export const Section7 = FinanceCarousel;
 // Удаляем Section8 и Section9, оставляем только Section10
 export const Section10 = () => {
   return (
-    <Section id="section10" title="Секция 10">
-      <ChapterText>Глава 4: Типы трафика</ChapterText>
-      <SectionText>
-        <CarrotSpan>Монетизируем</CarrotSpan> следующие типы трафика
+    <Section
+      id="section10"
+      title="Секция 10"
+      className="flex w-full flex-col items-center">
+      <img
+        src="/socials.png"
+        alt="socials"
+        draggable={false}
+        className="absolute top-20 left-1/2 aspect-[2506-1024] w-full -translate-x-[40%]"
+      />
+      <ChapterText className="mt-20 w-full text-center">
+        Глава 4: Типы трафика
+      </ChapterText>
+      <SectionText className="-mt-8 w-full text-center text-[2.8645833333vw]">
+        <CarrotSpan>Монетизируем</CarrotSpan> следующие <br /> типы трафика
       </SectionText>
     </Section>
   );
 };
 
-export const ChapterText = ({ children }: { children: ReactNode }) => {
+export const ChapterText = ({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) => {
   return (
-    <p className="bg-gradient-to-r from-[#FFD01F] via-[#FFFD64] via-30% to-[#FFC61D] bg-clip-text text-[1.3541666667vw] text-transparent">
+    <p
+      className={`bg-gradient-to-r from-[#FFD01F] via-[#FFFD64] via-30% to-[#FFC61D] bg-clip-text text-[1.3541666667vw] text-transparent ${className}`}>
       {children}
     </p>
   );
 };
 
-export const SectionText = ({ children }: { children: ReactNode }) => {
+export const SectionText = ({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) => {
   return (
-    <p className="daysone text-[1.9vw] text-white uppercase drop-shadow-[0px_5.72px_48.66px_#FECF4D66]">
+    <p
+      className={`daysone text-[1.9vw] text-white uppercase drop-shadow-[0px_5.72px_48.66px_#FECF4D66] ${className}`}>
       {children}
     </p>
   );

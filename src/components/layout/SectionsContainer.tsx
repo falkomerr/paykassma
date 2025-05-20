@@ -56,7 +56,7 @@ export const SectionsContainer = () => {
   };
 
   return (
-    <div className="absolute top-0 left-0 h-fit">
+    <div className="absolute top-0 left-0 h-fit w-full">
       <AnimatePresence>
         {activeSection === 'section1' &&
           !isAnimationPlaying &&
