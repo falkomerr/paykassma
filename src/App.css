@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import url('https://fonts.googleapis.com/css2?family=Days+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -154,6 +155,10 @@
 
 .daysone {
   font-family: 'Days One', Arial, sans-serif;
+}
+
+.inter {
+  font-family: 'Inter', sans-serif;
 }
 
 /* Анимация вращения с эффектом разгона и замедления */

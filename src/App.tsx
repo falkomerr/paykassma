@@ -5,7 +5,11 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import { ChipIcon } from './assets/chip-icon';
 import { Header } from './components/layout/Header';
-import { appMounted } from './models/app-model';
+import {
+  $loaderFinished,
+  appMounted,
+  loaderFinished,
+} from './models/app-model';
 import {
   $activeSection,
   $animationPlaying,
@@ -21,6 +25,8 @@ import { Hero } from './components/layout/Hero';
 import { SectionsContainer } from './components/layout/SectionsContainer';
 import { AudioVilence } from './components/ui/AudioVilence';
 import { Button } from './components/ui/Button';
+import { LoginForm } from './features/login-form';
+import { RegisterForm } from './features/register-form';
 import { cn } from './lib/utils';
 import { $volume, volumeChanged } from './models/audio';
 import './styles/sections.css';
@@ -57,7 +63,7 @@ const AppLayout = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}>
+                transition={{ duration: 0.6, delay: 0.4 }}>
                 <BackgroundVideo />
               </motion.div>
             )}
@@ -120,6 +126,8 @@ export const App = () => {
             </>
           }
         />
+        <Route path="/register" element={<RegisterForm />} />
+        <Route path="/login" element={<LoginForm />} />
         <Route path="/spline" element={<SplineContainer />} />
       </Routes>
     </BrowserRouter>
@@ -194,8 +202,10 @@ const AudioContainer = () => {
 };
 
 const Loader = () => {
-  const [isVisible, setIsVisible] = useState(true);
+  const isLoaderFinished = useUnit($loaderFinished);
+  const finishLoader = useUnit(loaderFinished);
   const [progress, setProgress] = useState(0);
+  const [isVisible, setIsVisible] = useState(!loaderFinished);
 
   useEffect(() => {
     if (window.location.pathname.includes('test')) {
@@ -206,6 +216,7 @@ const Loader = () => {
 
     const timeout = setTimeout(() => {
       setIsVisible(false);
+      finishLoader();
     }, 5000);
 
     const interval = setInterval(() => {
@@ -221,7 +232,7 @@ const Loader = () => {
     };
   }, []);
 
-  if (!isVisible) return null;
+  if (!isVisible || isLoaderFinished) return null;
 
   return (
     <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-between bg-black py-15">

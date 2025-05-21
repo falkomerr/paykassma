@@ -62,18 +62,22 @@ export const Header = () => {
           </SelectContent>
         </Select>
         <div className="flex items-center gap-4">
-          <AnimatedButton
-            variant="default"
-            onClick={() => handleRegister()}
-            disabled={isAuthLoading}>
-            {t('buttons.register')}
-          </AnimatedButton>
-          <AnimatedButton
-            variant="login"
-            onClick={() => handleLogin()}
-            disabled={isAuthLoading}>
-            {t('buttons.login')}
-          </AnimatedButton>
+          <a href="/register">
+            <AnimatedButton
+              variant="default"
+              onClick={() => handleRegister()}
+              disabled={isAuthLoading}>
+              {t('buttons.register')}
+            </AnimatedButton>
+          </a>
+          <a href="/login">
+            <AnimatedButton
+              variant="login"
+              onClick={() => handleLogin()}
+              disabled={isAuthLoading}>
+              {t('buttons.login')}
+            </AnimatedButton>
+          </a>
         </div>
       </div>
     </header>
