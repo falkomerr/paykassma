@@ -11,3 +11,9 @@ sample({
 });
 
 export const $loaderFinished = createStore(false);
+
+sample({
+  clock: loaderFinished,
+  fn: () => true,
+  target: $loaderFinished,
+});

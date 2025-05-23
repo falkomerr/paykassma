@@ -18,7 +18,7 @@ export const AnimatedButton = ({
   return (
     <button
       className={cn(
-        'group/button relative inline-flex cursor-pointer items-center justify-center overflow-hidden text-base font-medium text-white focus:outline-none',
+        'group/button relative z-[999] inline-flex cursor-pointer items-center justify-center overflow-hidden text-base font-medium text-white focus:outline-none',
         size === 'big'
           ? 'h-[4.0104166667vw] w-[16.3541666667vw] px-10'
           : cn(
@@ -49,11 +49,11 @@ export const AnimatedButton = ({
         />
       )}
       {hasOwnAnimation ? (
-        <span className="relative z-10 px-2 text-center whitespace-nowrap">
+        <span className="relative z-[999] px-2 text-center whitespace-nowrap">
           {children}
         </span>
       ) : (
-        <div className="relative z-10 h-[14px] w-full overflow-hidden text-center 2xl:h-[16px]">
+        <div className="relative z-[999] h-[14px] w-full overflow-hidden text-center 2xl:h-[16px]">
           <div className="absolute w-full text-center text-[14px] leading-[1] whitespace-nowrap transition-transform duration-300 group-hover/button:-translate-y-full 2xl:text-[16px]">
             {children}
           </div>

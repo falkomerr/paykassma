@@ -57,9 +57,7 @@ export const RegisterForm = () => {
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="inter text-[0.875rem] font-medium">
-              Ваше имя
-            </FormLabel>
+            <FormLabel>Ваше имя</FormLabel>
             <FormControl>
               <Input {...field} autoComplete="name" className="font-inter" />
             </FormControl>
@@ -72,9 +70,7 @@ export const RegisterForm = () => {
         name="tg"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="inter text-[0.875rem] font-medium">
-              Ваш ник в Telegram
-            </FormLabel>
+            <FormLabel>Ваш ник в Telegram</FormLabel>
             <FormControl>
               <Input
                 {...field}
@@ -92,9 +88,7 @@ export const RegisterForm = () => {
         name="email"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="inter text-[0.875rem] font-medium">
-              Ваша почта
-            </FormLabel>
+            <FormLabel>Ваша почта</FormLabel>
             <FormControl>
               <Input {...field} autoComplete="email" className="font-inter" />
             </FormControl>
@@ -107,9 +101,7 @@ export const RegisterForm = () => {
         name="phone"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="inter text-[0.875rem] font-medium">
-              Ваш телефон
-            </FormLabel>
+            <FormLabel>Ваш телефон</FormLabel>
             <FormControl>
               <Input {...field} autoComplete="tel" className="font-inter" />
             </FormControl>
@@ -122,9 +114,7 @@ export const RegisterForm = () => {
         name="howYouKnow"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="inter text-[0.875rem] font-medium">
-              Как вы узнали о нас?
-            </FormLabel>
+            <FormLabel>Как вы узнали о нас?</FormLabel>
             <FormControl>
               <Input {...field} autoComplete="off" className="font-inter" />
             </FormControl>
@@ -137,9 +127,7 @@ export const RegisterForm = () => {
         name="password"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="inter text-[0.875rem] font-medium">
-              Пароль
-            </FormLabel>
+            <FormLabel>Пароль</FormLabel>
             <FormControl>
               <Input
                 {...field}
@@ -157,9 +145,7 @@ export const RegisterForm = () => {
         name="confirmPassword"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="inter text-[0.875rem] font-medium">
-              Повторите пароль
-            </FormLabel>
+            <FormLabel>Повторите пароль</FormLabel>
             <FormControl>
               <Input
                 {...field}
@@ -174,17 +160,17 @@ export const RegisterForm = () => {
       />
       <button
         type="submit"
-        className="relative h-[74px] w-[587px] cursor-pointer overflow-hidden rounded-lg">
+        className="relative aspect-[587/74] w-[30.1041666667vw] cursor-pointer overflow-hidden rounded-[0.78125vw]">
         <img
           src="/register-button-bg.svg"
           alt="register button"
           className="absolute inset-0 h-full w-full scale-y-[0.8] object-cover"
         />
-        <span className="font-inter relative z-10 text-lg font-medium tracking-[0.08rem] text-white">
+        <span className="font-inter relative z-10 text-[0.9416666667vw] font-medium tracking-[0.09rem] text-white">
           Зарегистрироваться
         </span>
       </button>
-      <p className="font-inter max-w-[33.625rem] text-sm text-[#CCC] [&_span]:cursor-pointer [&_span]:underline">
+      <p className="font-inter max-w-[28.0208333333] text-[0.7291666667vw] text-[#CCC] [&_span]:cursor-pointer [&_span]:underline">
         Нажимая на кнопку, вы даете согласие на{' '}
         <span>Обработку персональных данных</span> и{' '}
         <span>Условиями публичной офертой</span>{' '}
@@ -212,11 +198,11 @@ export const FormWrapper = ({
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="inter flex h-screen w-screen items-center justify-center bg-black text-white">
-        <div className="flex flex-col gap-y-8">{children}</div>
+        <div className="flex flex-col gap-y-[0.78125vw]">{children}</div>
         <img
           src="/big-logo.png"
           alt="logo"
-          className="aspect-[487/567] w-[32.3645833333vw]"
+          className="aspect-[487/567] w-[28.3645833333vw]"
         />
       </form>
     </Form>

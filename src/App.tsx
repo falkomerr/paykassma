@@ -205,17 +205,15 @@ const Loader = () => {
   const isLoaderFinished = useUnit($loaderFinished);
   const finishLoader = useUnit(loaderFinished);
   const [progress, setProgress] = useState(0);
-  const [isVisible, setIsVisible] = useState(!loaderFinished);
 
   useEffect(() => {
     if (window.location.pathname.includes('test')) {
-      setIsVisible(false);
+      finishLoader();
       setProgress(100);
       return;
     }
 
     const timeout = setTimeout(() => {
-      setIsVisible(false);
       finishLoader();
     }, 5000);
 
@@ -230,9 +228,9 @@ const Loader = () => {
       clearTimeout(timeout);
       clearInterval(interval);
     };
-  }, []);
+  }, [finishLoader]);
 
-  if (!isVisible || isLoaderFinished) return null;
+  if (isLoaderFinished) return null;
 
   return (
     <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-between bg-black py-15">
@@ -247,9 +245,17 @@ const Loader = () => {
             <clipPath id="logo-fill-mask">
               <path d="M143.096 26.6466H61.7774C49.0846 26.6466 38.4478 36.4388 37.5631 48.9409L25.7148 216.223H107.034C119.727 216.223 130.363 206.43 131.248 193.929L132.857 171.182H155.839C168.532 171.182 179.169 161.39 180.054 148.888L188.715 26.6466H143.096ZM129.434 39.5894L121.034 158.656H88.1279L95.8341 49.8144C95.9795 45.8385 99.7386 39.5894 107.232 39.5894H129.434ZM118.596 193.055C118.173 199.026 113.096 203.7 107.034 203.7H39.3174L50.4387 49.888C50.864 44.8456 54.2879 39.5894 61.7082 39.5894H86.0393C84.4107 42.5275 83.433 45.4122 83.1816 48.9409L74.5254 171.182H120.144L118.596 193.055ZM167.406 148.015C166.984 153.985 161.907 158.66 155.844 158.66H133.746L142.212 39.1685H175.117L167.406 148.015Z" />
             </clipPath>
+            <clipPath id="logo-glow-mask">
+              <rect
+                x="0"
+                y="0"
+                width={(214.43 * progress) / 100}
+                height="242.869"
+              />
+            </clipPath>
           </defs>
 
-          <g filter="url(#filter0_f_56_132)">
+          <g filter="url(#filter0_f_56_132)" clipPath="url(#logo-glow-mask)">
             <path
               d="M145.612 20.0001H58.5912C45.0085 20.0001 33.6258 30.479 32.679 43.8577L20 222.869H107.021C120.604 222.869 131.987 212.39 132.933 199.012L134.655 174.671H159.249C172.832 174.671 184.214 164.192 185.161 150.813L194.43 20.0001H145.612ZM130.992 33.8505L122.002 161.266H86.7895L95.036 44.7925C95.1917 40.5378 99.2143 33.8505 107.233 33.8505H130.992ZM119.394 198.078C118.942 204.467 113.509 209.469 107.021 209.469H34.5564L46.4575 44.8712C46.9126 39.4752 50.5766 33.8505 58.5172 33.8505H84.5544C82.8117 36.9946 81.7654 40.0815 81.4963 43.8577L72.2332 174.671H121.051L119.394 198.078ZM171.627 149.879C171.175 156.268 165.742 161.271 159.254 161.271H135.607L144.666 33.4001H179.879L171.627 149.879Z"
               fill="url(#paint0_linear_56_132)"

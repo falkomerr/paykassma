@@ -36,9 +36,7 @@ export const LoginForm = () => {
         name="email"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="inter text-[0.875rem] font-medium">
-              Ваша почта
-            </FormLabel>
+            <FormLabel>Ваша почта</FormLabel>
             <FormControl>
               <Input {...field} autoComplete="email" className="font-inter" />
             </FormControl>
@@ -51,9 +49,7 @@ export const LoginForm = () => {
         name="password"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="inter text-[0.875rem] font-medium">
-              Пароль
-            </FormLabel>
+            <FormLabel>Пароль</FormLabel>
             <FormControl>
               <Input
                 {...field}
@@ -69,13 +65,13 @@ export const LoginForm = () => {
 
       <button
         type="submit"
-        className="relative h-[74px] w-[587px] cursor-pointer overflow-hidden rounded-lg">
+        className="relative aspect-[587/74] w-[30.1041666667vw] cursor-pointer overflow-hidden rounded-[0.78125vw]">
         <img
           src="/login-button.svg"
           alt="login button"
           className="absolute inset-0 h-full w-full scale-y-[0.8] object-cover"
         />
-        <span className="font-inter relative z-10 text-lg font-medium tracking-[0.08rem] text-white">
+        <span className="font-inter relative z-10 text-[0.9416666667vw] font-medium tracking-[0.09rem] text-white">
           Войти
         </span>
       </button>

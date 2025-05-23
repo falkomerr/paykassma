@@ -185,13 +185,9 @@ export const FinanceCarousel = () => {
 
   const cards = [
     { imgSrc: '/pay-models.svg', imgAlt: 'pay-models' },
-    { imgSrc: '/comfortable-payments.svg', imgAlt: 'comfortable-payments' },
+    { imgSrc: '/comfortable-payments.png', imgAlt: 'comfortable-payments' },
     { imgSrc: '/fast-payments.svg', imgAlt: 'fast-payments' },
   ];
-
-  useEffect(() => {
-    console.log('activeIndex', activeIndex);
-  }, [activeIndex]);
 
   useEffect(() => {
     const handleDirection = debounce((direction: 'up' | 'down') => {

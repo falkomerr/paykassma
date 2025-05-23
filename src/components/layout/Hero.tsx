@@ -1,17 +1,25 @@
+import { $hovered, hoveredOrBlured } from '@/models/hero-model';
 import { gateOpened } from '@/models/journey';
 import Spline from '@splinetool/react-spline';
 import { useUnit } from 'effector-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslation } from '../../hooks/useTranslation';
 import { AnimatedButton } from '../ui/AnimatedButton';
 
 export const Hero = () => {
-  const openGate = useUnit(gateOpened);
+  const { openGate, hoverOrBlur } = useUnit({
+    openGate: gateOpened,
+    hoverOrBlur: hoveredOrBlured,
+  });
+  const { hovered } = useUnit({
+    hovered: $hovered,
+  });
   const { t } = useTranslation();
 
   return (
     <section
       id="home"
-      className="relative z-10 flex min-h-[calc(100vh-120px)] flex-col items-center justify-center">
+      className="relative z-20 flex max-h-screen min-h-[calc(100vh-120px)] flex-col items-center justify-center">
       <div className="h-[35rem] h-screen w-screen bg-black">
         <Spline
           scene="https://prod.spline.design/VesmLhzpdoKoAkRX/scene.splinecode"
@@ -22,51 +30,26 @@ export const Hero = () => {
         {t('hero.description')}
       </div>
 
+      <AnimatePresence mode="wait">
+        {hovered && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 2.5 }}
+            className="absolute inset-x-0 bottom-0 z-10 h-200">
+            <HoverButtonEffectSpline />
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div className="group absolute top-[85%]">
-        {/* <svg
-          className="absolute -translate-x-1/4 -translate-y-1/3 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-          width="591"
-          height="319"
-          viewBox="0 0 591 319"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg">
-          <g filter="url(#filter0_f_15_29353)">
-            <ellipse
-              cx="295.5"
-              cy="159.5"
-              rx="169.5"
-              ry="33.5"
-              fill="#FFA500"
-            />
-          </g>
-          <defs>
-            <filter
-              id="filter0_f_15_29353"
-              x="0.800003"
-              y="0.800003"
-              width="589.4"
-              height="317.4"
-              filterUnits="userSpaceOnUse"
-              color-interpolation-filters="sRGB">
-              <feFlood flood-opacity="0" result="BackgroundImageFix" />
-              <feBlend
-                mode="normal"
-                in="SourceGraphic"
-                in2="BackgroundImageFix"
-                result="shape"
-              />
-              <feGaussianBlur
-                stdDeviation="62.6"
-                result="effect1_foregroundBlur_15_29353"
-              />
-            </filter>
-          </defs>
-        </svg> */}
         <AnimatedButton
+          onMouseEnter={() => hoverOrBlur(true)}
+          onMouseLeave={() => hoverOrBlur(false)}
           variant="login"
           size="big"
           hasOwnAnimation={true}
-          className="group/button cursor-pointer"
+          className="group/button relative z-20 cursor-pointer"
           onClick={openGate}>
           <div className="relative flex h-[3.40104166667vw] w-[14.8541666667vw] items-center justify-center transition-all duration-500 group-hover/button:h-[3.1vw] group-hover/button:w-[14.1vw]">
             <div className="absolute inset-0 top-[34%] h-[1.11625vw] w-full overflow-hidden">
@@ -81,5 +64,11 @@ export const Hero = () => {
         </AnimatedButton>
       </div>
     </section>
+  );
+};
+
+const HoverButtonEffectSpline = () => {
+  return (
+    <Spline scene="https://prod.spline.design/flZ40S72FHxLA7Nv/scene.splinecode" />
   );
 };
