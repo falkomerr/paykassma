@@ -196,6 +196,7 @@ export const initJourneyFx = createEffect(() => {
 
   // Обработчик колесика мыши
   const handleWheel = (e: WheelEvent) => {
+    if (e.deltaX !== 0) return;
     e.preventDefault();
 
     const now = Date.now();

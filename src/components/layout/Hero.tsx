@@ -59,7 +59,7 @@ export const Hero = () => {
           className="group/button relative z-20 cursor-pointer"
           onClick={openGate}>
           <div className="relative flex hidden items-center justify-center transition-all duration-500 group-hover/button:h-[3.1vw] group-hover/button:w-[14.1vw] lg:block lg:h-[3.40104166667vw] lg:w-[14.8541666667vw]">
-            <div className="absolute inset-0 top-[34%] h-[1.11625vw] w-full overflow-hidden">
+            <div className="absolute inset-0 top-[32%] h-[1.11625vw] w-full overflow-hidden">
               <div className="absolute w-full text-[1.15625vw] leading-[1] opacity-100 transition-all duration-300 group-hover/button:-translate-y-full group-hover/button:opacity-0">
                 {t('buttons.submit')}
               </div>

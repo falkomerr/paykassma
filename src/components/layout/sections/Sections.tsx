@@ -1,3 +1,4 @@
+import { ScrollArea, ScrollBar } from '@/components/components/ui/scrollarea';
 import { goToNextSection, goToPrevSection } from '@/models/journey';
 import { useUnit } from 'effector-react';
 import { ReactNode, useEffect, useRef, useState } from 'react';
@@ -119,19 +120,20 @@ export const Section6 = () => {
         Место встречи изменить нельзя, <br />
         <CarrotSpan>увидимся </CarrotSpan> на конференциях
       </SectionText>
-      <div className="w-full overflow-x-hidden">
-        <div className="flex w-fit gap-x-5 overflow-x-scroll px-4">
+      <ScrollArea className="h-fit w-full">
+        <div className="flex h-fit w-fit gap-x-5 px-4">
           {Array.from({ length: 5 }).map((_, index) => (
             <img
               key={index}
               src="/meet-card.png"
               alt="meet-card"
               draggable={false}
-              className="aspect-[435/389] w-[17.5vw] shrink-0 max-lg:min-w-[20.8125rem]"
+              className="aspect-[435/389] max-h-[300px] w-[17.5vw] shrink-0 max-lg:min-w-[20.8125rem]"
             />
           ))}
         </div>
-      </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
     </Section>
   );
 };
