@@ -54,7 +54,7 @@ export const AnimatedButton = ({
         </span>
       ) : (
         <div className="relative z-[999] h-[14px] w-full overflow-hidden text-center 2xl:h-[16px]">
-          <div className="absolute w-full text-center text-[14px] leading-[1] whitespace-nowrap transition-transform duration-300 group-hover/button:-translate-y-full 2xl:text-[16px]">
+          <div className="absolute w-full text-center text-[14px] leading-[1] whitespace-nowrap opacity-100 transition-all duration-300 group-hover/button:-translate-y-full group-hover/button:opacity-0 2xl:text-[16px]">
             {children}
           </div>
           <div className="absolute w-full translate-y-full text-center text-[14px] leading-[1] whitespace-nowrap transition-transform duration-300 group-hover/button:translate-y-0 2xl:text-[16px]">

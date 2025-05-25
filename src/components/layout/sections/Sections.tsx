@@ -12,7 +12,7 @@ interface SectionProps {
 export const Section = ({ children, className = '' }: SectionProps) => {
   return (
     <section
-      className={`relative z-40 flex h-fit h-screen w-fit flex-col items-start justify-center gap-y-6 px-[3.75rem] ${className}`}>
+      className={`relative z-40 flex h-fit h-screen w-full flex-col items-start justify-start bg-gradient-to-b from-black from-30% to-transparent to-50% px-5 max-lg:py-[8rem] lg:w-fit lg:justify-center lg:from-transparent lg:px-[3.75rem] ${className}`}>
       {children}
     </section>
   );
@@ -20,7 +20,7 @@ export const Section = ({ children, className = '' }: SectionProps) => {
 
 export const FeatureBlock = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="gilroy relative z-10 w-fit rounded-xl border-1 border-[#9E8C38] px-[24px] py-[16px] text-[1.0741666667vw] whitespace-nowrap text-white shadow-[inset_0_0_15px_#9E8C38]">
+    <div className="gilroy relative z-10 w-fit rounded-xl border-1 border-[#9E8C38] px-[24px] py-[16px] text-[3.5vw] whitespace-nowrap text-white shadow-[inset_0_0_15px_#9E8C38] backdrop-blur-lg lg:text-[1.0741666667vw] xl:backdrop-blur-none">
       {children}
     </div>
   );
@@ -46,10 +46,10 @@ export const Section2 = () => {
         <br /> профит
       </SectionText>
       <img
-        src="/our-anwser.png"
+        src="/our-anwser.svg"
         alt="our-anwser"
         draggable={false}
-        className="aspect-square w-[19vw]"
+        className="mt-4 aspect-[302/320] w-[70vw] overflow-hidden rounded-[30px] object-cover backdrop-blur-xl lg:w-[19vw]"
       />
     </Section>
   );
@@ -63,10 +63,10 @@ export const Section3 = () => {
         <br /> профит
       </SectionText>
       <img
-        src="/our-reklams.png"
+        src="/our-reklams.svg"
         alt="our-reklams"
         draggable={false}
-        className="aspect-square w-[19vw]"
+        className="mt-4 aspect-[302/320] w-[70vw] overflow-hidden rounded-[30px] object-cover backdrop-blur-xl lg:w-[19vw]"
       />
     </Section>
   );
@@ -83,7 +83,9 @@ export const Section4 = () => {
       <div className="mt-6 flex max-w-[35.5rem] flex-wrap gap-6">
         <FeatureBlock>Диверсифицируй риски</FeatureBlock>
         <FeatureBlock>Переключай потоки</FeatureBlock>
-        <FeatureBlock>Тестируй топовые офферы без KPI</FeatureBlock>
+        <FeatureBlock>
+          Тестируй топовые <CarrotSpan>офферы без KPI</CarrotSpan>
+        </FeatureBlock>
         <FeatureBlock>Получай гарантированные выплаты</FeatureBlock>
       </div>
     </Section>
@@ -113,20 +115,22 @@ export const Section6 = () => {
       <ChapterText className="w-full text-center">
         Глава 2: Конференции
       </ChapterText>
-      <SectionText className="-mt-8 w-full text-center text-[2.8645833333vw]">
+      <SectionText className="w-full text-center text-[2.8645833333vw]">
         Место встречи изменить нельзя, <br />
         <CarrotSpan>увидимся </CarrotSpan> на конференциях
       </SectionText>
-      <div className="mx-auto flex w-full items-center justify-center gap-x-5">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <img
-            key={index}
-            src="/meet-card.png"
-            alt="meet-card"
-            draggable={false}
-            className="aspect-[435/389] w-[17.5vw]"
-          />
-        ))}
+      <div className="w-full overflow-x-hidden">
+        <div className="flex w-fit gap-x-5 overflow-x-scroll px-4">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <img
+              key={index}
+              src="/meet-card.png"
+              alt="meet-card"
+              draggable={false}
+              className="aspect-[435/389] w-[17.5vw] shrink-0 max-lg:min-w-[20.8125rem]"
+            />
+          ))}
+        </div>
       </div>
     </Section>
   );
@@ -144,7 +148,8 @@ const FinanceCard = ({
   imgAlt,
   position,
 }: Omit<CardProps, 'isActive'>) => {
-  let cardClasses = 'absolute transition-all duration-300 ease-in-out w-[19vw]';
+  let cardClasses =
+    'absolute transition-all duration-300 ease-in-out w-[50vw] lg:w-[19vw]';
 
   // Применяем стили в зависимости от позиции
   if (position === 'left') {
@@ -249,7 +254,7 @@ export const FinanceCarousel = () => {
   return (
     <Section id="finance-carousel" title="Финансовая карусель">
       <CarrotSpan>Глава 3: Финансовые взаимодействия</CarrotSpan>
-      <SectionText className="-mt-8">
+      <SectionText>
         <CarrotSpan>Наша вариативность</CarrotSpan>
         <br />
         финансовых
@@ -310,12 +315,12 @@ export const Section10 = () => {
         src="/socials.png"
         alt="socials"
         draggable={false}
-        className="absolute top-20 left-1/2 aspect-[2506-1024] w-full -translate-x-[40%]"
+        className="absolute top-40 left-1/2 aspect-[2506-1024] w-full -translate-x-[40%] lg:top-20"
       />
-      <ChapterText className="mt-20 w-full text-center">
+      <ChapterText className="mt-50 w-full text-center lg:mt-20">
         Глава 4: Типы трафика
       </ChapterText>
-      <SectionText className="-mt-8 w-full text-center text-[2.8645833333vw]">
+      <SectionText className="w-full text-center text-[2.8645833333vw]">
         <CarrotSpan>Монетизируем</CarrotSpan> следующие <br /> типы трафика
       </SectionText>
     </Section>
@@ -331,7 +336,7 @@ export const ChapterText = ({
 }) => {
   return (
     <p
-      className={`bg-gradient-to-r from-[#FFD01F] via-[#FFFD64] via-30% to-[#FFC61D] bg-clip-text text-[1.3541666667vw] text-transparent ${className}`}>
+      className={`bg-gradient-to-r from-[#FFD01F] via-[#FFFD64] via-30% to-[#FFC61D] bg-clip-text text-[5vw] text-transparent lg:text-[1.3541666667vw] ${className}`}>
       {children}
     </p>
   );
@@ -346,7 +351,7 @@ export const SectionText = ({
 }) => {
   return (
     <p
-      className={`daysone text-[1.9vw] text-white uppercase drop-shadow-[0px_5.72px_48.66px_#FECF4D66] ${className}`}>
+      className={`daysone text-[6.4vw] text-white uppercase drop-shadow-[0px_5.72px_48.66px_#FECF4D66] lg:text-[1.9vw] ${className}`}>
       {children}
     </p>
   );
@@ -362,7 +367,7 @@ export const CarrotSpan = ({ children }: { children: ReactNode }) => {
 
 export const SectionDescription = ({ children }: { children: ReactNode }) => {
   return (
-    <p className="gilroy text-[1.0741666667vw] text-white uppercase drop-shadow-[0px_5.72px_48.66px_#FECF4D66]">
+    <p className="gilroy max-w-[60vw] text-[3vw] text-white uppercase drop-shadow-[0px_5.72px_48.66px_#FECF4D66] lg:max-w-screen lg:text-[1.0741666667vw]">
       {children}
     </p>
   );

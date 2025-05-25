@@ -60,6 +60,7 @@ const AppLayout = () => {
           <AnimatePresence>
             {isGateOpened && ANIMATED_SECTIONS.includes(currentSection) && (
               <motion.div
+                className="h-screen w-screen"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -169,7 +170,7 @@ const AudioContainer = () => {
     'bg-gradient-to-t from-[#FFD01F] via-[#FFFD64] via-30% to-[#FFC61D] bg-clip-text text-transparent';
 
   return (
-    <div className="fixed bottom-[1.6875rem] z-40 flex h-[5.625rem] w-full items-center justify-between px-[3.75rem]">
+    <div className="fixed bottom-0 z-40 flex h-[5.625rem] w-full items-center justify-between bg-gradient-to-t from-black to-transparent px-5 pb-[1.5625rem] lg:bottom-[1.6875rem] lg:from-transparent lg:px-[3.75rem] lg:pb-0">
       <div className="relative z-50 ml-[2.75rem] flex items-center justify-center">
         <ChipIcon
           className={cn('absolute', isAnimationPlaying && 'animate-ease-spin')}
@@ -181,19 +182,19 @@ const AudioContainer = () => {
       </div>
       <img
         src="/audio-line.svg"
-        className="absolute inset-0 top-1/2 h-[3px] w-full translate-y-1/2"
+        className="absolute inset-0 top-1/2 h-[3px] w-full -translate-y-[0.75rem] lg:translate-y-1/2"
         width={1802}
         height={3}
       />
-      <div className="absolute top-1/2 right-0 z-50 mr-[3.75rem] flex -translate-y-[17.5%] items-start justify-center gap-x-4 object-cover">
-        <p className="text-[1rem] font-medium">
+      <div className="absolute top-1/2 right-0 z-50 mr-5 flex -translate-y-[40%] items-start justify-center gap-x-4 object-cover lg:mr-[3.75rem] lg:-translate-y-[17.5%]">
+        <p className="hidden text-[1rem] font-medium lg:flex">
           SOUND{' '}
           <span className={gradientText}>{volume === 0 ? 'OFF' : 'ON'}</span>
         </p>
         <Button
           onClick={() => changeVolume(volume === 0 ? 1 : 0)}
           variant="transparent"
-          className="-[4rem] relative z-[999] size-[4rem] -translate-y-1/4 cursor-pointer">
+          className="relative z-[999] size-[4rem] -translate-y-1/4 cursor-pointer">
           <AudioVilence />
         </Button>
       </div>
