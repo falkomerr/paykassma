@@ -2,7 +2,7 @@ import { $hovered, hoveredOrBlured } from '@/models/hero-model';
 import { gateOpened } from '@/models/journey';
 import Spline from '@splinetool/react-spline';
 import { useUnit } from 'effector-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useTranslation } from '../../hooks/useTranslation';
 import { AnimatedButton } from '../ui/AnimatedButton';
 
@@ -37,18 +37,13 @@ export const Hero = () => {
         {t('hero.description')}
       </div>
 
-      <AnimatePresence mode="wait">
-        {hovered && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 2.5 }}
-            className="absolute inset-x-0 bottom-0 z-10 h-200">
-            <HoverButtonEffectSpline />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: hovered ? 1 : 0 }}
+        transition={{ duration: 2.5, ease: 'linear' }}
+        className="absolute inset-x-0 bottom-0 z-10 h-[40vh]">
+        <HoverButtonEffectSpline />
+      </motion.div>
       <div className="group top-[85%] lg:absolute">
         <AnimatedButton
           onMouseEnter={() => hoverOrBlur(true)}
