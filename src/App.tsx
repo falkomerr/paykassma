@@ -206,6 +206,7 @@ const Loader = () => {
   const isLoaderFinished = useUnit($loaderFinished);
   const finishLoader = useUnit(loaderFinished);
   const [progress, setProgress] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     if (window.location.pathname.includes('test')) {
@@ -231,10 +232,28 @@ const Loader = () => {
     };
   }, [finishLoader]);
 
-  if (isLoaderFinished) return null;
+  useEffect(() => {
+    if (isLoaderFinished) {
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoaderFinished]);
 
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-between bg-black py-15">
+    <motion.div
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-between bg-black py-15"
+      initial={{
+        opacity: 1,
+      }}
+      animate={{
+        opacity: isLoaderFinished ? 0 : 1,
+      }}
+      style={{
+        zIndex: isVisible ? 9999 : -1,
+      }}
+      transition={{ duration: 0.3 }}>
       <div className="absolute relative top-1/2 -translate-y-1/2">
         <svg
           width="215"
@@ -495,6 +514,6 @@ const Loader = () => {
           {Math.round(progress)}%
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
