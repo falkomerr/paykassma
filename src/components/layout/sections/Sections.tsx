@@ -51,7 +51,7 @@ export const Section2 = () => {
         src="/our-anwser.svg"
         alt="our-anwser"
         draggable={false}
-        className="mt-4 aspect-[302/320] w-[70vw] overflow-hidden rounded-[30px] object-cover backdrop-blur-xl lg:w-[19vw]"
+        className="mt-4 aspect-[302/320] w-[70vw] cursor-pointer overflow-hidden rounded-[30px] object-cover backdrop-blur-xl lg:w-[19vw]"
       />
     </Section>
   );
@@ -73,7 +73,7 @@ export const Section3 = () => {
         src="/our-reklams.svg"
         alt="our-reklams"
         draggable={false}
-        className="mt-4 aspect-[302/320] w-[70vw] overflow-hidden rounded-[30px] object-cover backdrop-blur-xl lg:w-[19vw]"
+        className="mt-4 aspect-[302/320] w-[70vw] cursor-pointer overflow-hidden rounded-[30px] object-cover backdrop-blur-xl lg:w-[19vw]"
       />
     </Section>
   );
