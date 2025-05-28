@@ -173,9 +173,12 @@ const AudioContainer = () => {
     <div className="fixed bottom-0 z-40 flex h-[5.625rem] w-full items-center justify-between bg-gradient-to-t from-black to-transparent px-5 pb-[1.5625rem] lg:bottom-[1.6875rem] lg:from-transparent lg:px-[3.75rem] lg:pb-0">
       <div className="relative z-50 ml-[2.75rem] flex items-center justify-center">
         <ChipIcon
-          className={cn('absolute', isAnimationPlaying && 'animate-ease-spin')}
+          className={cn(
+            'absolute scale-[0.8]',
+            isAnimationPlaying && 'animate-ease-spin',
+          )}
         />
-        <p className="absolute top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white">
+        <p className="absolute top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 text-lg font-bold text-white">
           <span className={gradientText}>{showCurrentSection}</span>/
           <span>{sections.length}</span>
         </p>

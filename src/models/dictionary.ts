@@ -32,6 +32,10 @@ export const dictionary: NestedDictionary = {
       ru: 'Страница не найдена',
       en: 'Page not found',
     },
+    percent: {
+      ru: '%',
+      en: '%',
+    },
   },
 
   // Заголовки
@@ -151,6 +155,199 @@ export const dictionary: NestedDictionary = {
     address: {
       ru: 'Адрес',
       en: 'Address',
+    },
+  },
+
+  // Аудио контейнер
+  audio: {
+    sound: {
+      ru: 'ЗВУК',
+      en: 'SOUND',
+    },
+    on: {
+      ru: 'ВКЛ',
+      en: 'ON',
+    },
+    off: {
+      ru: 'ВЫКЛ',
+      en: 'OFF',
+    },
+  },
+
+  // Секции
+  sections: {
+    // Заголовки глав
+    chapters: {
+      advantages: {
+        ru: 'Глава 1: Преимущества',
+        en: 'Chapter 1: Advantages',
+      },
+      conferences: {
+        ru: 'Глава 2: Конференции',
+        en: 'Chapter 2: Conferences',
+      },
+      finance: {
+        ru: 'Глава 3: Финансовые взаимодействия',
+        en: 'Chapter 3: Financial Interactions',
+      },
+      trafficTypes: {
+        ru: 'Глава 4: Типы трафика',
+        en: 'Chapter 4: Traffic Types',
+      },
+    },
+
+    // Секция 1
+    section1: {
+      title: {
+        ru: 'Секция 1',
+        en: 'Section 1',
+      },
+      content: {
+        ru: 'Мы масштабируем \nвашу прибыль',
+        en: 'We scale \nyour profit',
+      },
+    },
+
+    // Секция 2
+    section2: {
+      title: {
+        ru: 'Секция 2',
+        en: 'Section 2',
+      },
+      content: {
+        ru: ' с которых \nпрямо сейчас идет \nпрофит',
+        en: ' that bring \nprofit right \nnow',
+      },
+    },
+
+    // Секция 3
+    section3: {
+      title: {
+        ru: 'Секция 3',
+        en: 'Section 3',
+      },
+      content: {
+        ru: ' с которых \nпрямо сейчас идет \nпрофит',
+        en: ' that bring \nprofit right \nnow',
+      },
+    },
+
+    // Секция 4
+    section4: {
+      title: {
+        ru: 'Секция 4',
+        en: 'Section 4',
+      },
+      content: {
+        ru: 'Более 300 офферов \nот топовых \nрекламодателей \nв одном месте',
+        en: 'More than 300 offers \nfrom top advertisers \nin one place',
+      },
+      features: {
+        diversify: {
+          ru: 'Диверсифицируй риски',
+          en: 'Diversify risks',
+        },
+        switchTraffic: {
+          ru: 'Переключай потоки',
+          en: 'Switch traffic flows',
+        },
+        testOffers: {
+          ru: 'Тестируй топовые офферы без KPI',
+          en: 'Test top offers without KPI',
+        },
+        guaranteedPayments: {
+          ru: 'Получай гарантированные выплаты',
+          en: 'Get guaranteed payments',
+        },
+      },
+    },
+
+    // Секция 5
+    section5: {
+      title: {
+        ru: 'Секция 5',
+        en: 'Section 5',
+      },
+      content: {
+        ru: 'Усиливаем бюджеты \nарбитражных команд',
+        en: 'We strengthen the budgets of \narbitrage teams',
+      },
+      description: {
+        ru: 'Масштабируем ваши успешные связки предоставляя бюджеты \nдля получения  максимального профита с рекламной кампании',
+        en: 'We scale your successful bundles  by providing budgets \nto get maximum profit from your advertising campaign',
+      },
+    },
+
+    // Секция 6
+    section6: {
+      title: {
+        ru: 'Секция 6',
+        en: 'Section 6',
+      },
+      content: {
+        ru: 'Место встречи изменить нельзя, \nувидимся на конференциях',
+        en: 'The meeting place cannot be changed, \nsee you at the conferences',
+      },
+    },
+
+    // Финансовая карусель (ex-section7,8,9)
+    financeCarousel: {
+      title: {
+        ru: 'Финансовая карусель',
+        en: 'Financial carousel',
+      },
+      content: {
+        ru: '\nфинансовых \nвзаимодействий',
+        en: 'Our variety of financial \ninteractions',
+      },
+    },
+
+    // Секция 10
+    section10: {
+      title: {
+        ru: 'Секция 10',
+        en: 'Section 10',
+      },
+      content: {
+        ru: 'Монетизируем следующие \nтипы трафика',
+        en: 'We monetize the following \ntypes of traffic',
+      },
+    },
+
+    // Общие компоненты секций
+    common: {
+      igaming: {
+        ru: 'в Igaming',
+        en: 'in Igaming',
+      },
+      knowGeo: {
+        ru: 'Знаем ГЕО',
+        en: 'Know GEO',
+      },
+      offers300: {
+        ru: '300 офферов',
+        en: '300 offers',
+      },
+      withoutKpi: {
+        ru: 'офферы без KPI',
+        en: 'offers without KPI',
+      },
+      strengthen: {
+        ru: 'Усиливаем',
+        en: 'Strengthen',
+      },
+      meet: {
+        ru: 'увидимся',
+        en: 'see you',
+      },
+      ourVariability: {
+        ru: 'Наша вариативность',
+        en: 'Our variability',
+      },
+      monetize: {
+        ru: 'Монетизируем',
+        en: 'Monetize',
+      },
     },
   },
 

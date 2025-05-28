@@ -1,7 +1,9 @@
 import { ScrollArea, ScrollBar } from '@/components/components/ui/scrollarea';
 import { goToNextSection, goToPrevSection } from '@/models/journey';
 import { useUnit } from 'effector-react';
+import { motion } from 'framer-motion';
 import { ReactNode, useEffect, useRef, useState } from 'react';
+import { useTranslation } from '../../../hooks/useTranslation';
 
 interface SectionProps {
   id: string;
@@ -19,34 +21,33 @@ export const Section = ({ children, className = '' }: SectionProps) => {
   );
 };
 
-export const FeatureBlock = ({ children }: { children: ReactNode }) => {
-  return (
-    <div className="gilroy relative z-10 w-fit rounded-xl border-1 border-[#9E8C38] px-[24px] py-[16px] text-[3.5vw] whitespace-nowrap text-white shadow-[inset_0_0_15px_#9E8C38] backdrop-blur-lg lg:text-[1.0741666667vw] xl:backdrop-blur-none">
-      {children}
-    </div>
-  );
-};
-
 export const Section1 = () => {
+  const { t } = useTranslation();
+
   return (
-    <Section id="section1" title="Секция 1">
-      <ChapterText>Глава 1: Преимущества</ChapterText>
+    <Section id="section1" title={t('sections.section1.title')}>
+      <ChapterText>{t('sections.chapters.advantages')}</ChapterText>
       <SectionText>
-        Мы масштабируем <br /> вашу прибыль <br />
-        <CarrotSpan>в Igaming</CarrotSpan>
+        {t('sections.section1.content')} <br />
+        <CarrotSpan>{t('sections.common.igaming')}</CarrotSpan>
       </SectionText>
     </Section>
   );
 };
 
 export const Section2 = () => {
+  const { t } = useTranslation();
+
   return (
-    <Section id="section2" title="Секция 2">
+    <Section id="section2" title={t('sections.section2.title')}>
       <SectionText>
-        <CarrotSpan>Знаем ГЕО</CarrotSpan> с которых <br /> прямо сейчас идет{' '}
-        <br /> профит
+        <CarrotSpan>{t('sections.common.knowGeo')}</CarrotSpan>
+        {t('sections.section2.content')}
       </SectionText>
-      <img
+      <motion.img
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.75 }}
         src="/our-anwser.svg"
         alt="our-anwser"
         draggable={false}
@@ -57,13 +58,18 @@ export const Section2 = () => {
 };
 
 export const Section3 = () => {
+  const { t } = useTranslation();
+
   return (
-    <Section id="section3" title="Секция 3">
+    <Section id="section3" title={t('sections.section3.title')}>
       <SectionText>
-        <CarrotSpan>Знаем ГЕО</CarrotSpan> с которых <br /> прямо сейчас идет{' '}
-        <br /> профит
+        <CarrotSpan>{t('sections.common.knowGeo')}</CarrotSpan>
+        {t('sections.section3.content')}
       </SectionText>
-      <img
+      <motion.img
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.75 }}
         src="/our-reklams.svg"
         alt="our-reklams"
         draggable={false}
@@ -74,56 +80,76 @@ export const Section3 = () => {
 };
 
 export const Section4 = () => {
+  const { t } = useTranslation();
+
   return (
-    <Section id="section4" title="Секция 4">
+    <Section id="section4" title={t('sections.section4.title')}>
       <SectionText>
-        Более <CarrotSpan>300 офферов</CarrotSpan> <br /> от топовых <br />
-        рекламодателей в одном <br /> месте
+        {t('sections.section4.content').split('300 офферов')[0]}
+        <CarrotSpan>{t('sections.common.offers300')}</CarrotSpan>
+        {t('sections.section4.content').split('300 офферов')[1]}
       </SectionText>
 
       <div className="mt-6 flex max-w-[35.5rem] flex-wrap gap-6">
-        <FeatureBlock>Диверсифицируй риски</FeatureBlock>
-        <FeatureBlock>Переключай потоки</FeatureBlock>
-        <FeatureBlock>
-          Тестируй топовые <CarrotSpan>офферы без KPI</CarrotSpan>
-        </FeatureBlock>
-        <FeatureBlock>Получай гарантированные выплаты</FeatureBlock>
+        {[
+          t('sections.section4.features.diversify'),
+          t('sections.section4.features.switchTraffic'),
+          t('sections.section4.features.testOffers'),
+          t('sections.section4.features.guaranteedPayments'),
+        ].map((feature, index) => (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: index * 0.75 }}
+            key={index}
+            className="gilroy relative z-10 w-fit rounded-xl border-1 border-[#9E8C38] px-[24px] py-[16px] text-[3.5vw] whitespace-nowrap text-white shadow-[inset_0_0_15px_#9E8C38] backdrop-blur-lg lg:text-[1.0741666667vw] xl:backdrop-blur-none">
+            {feature}
+          </motion.div>
+        ))}
       </div>
     </Section>
   );
 };
 
 export const Section5 = () => {
+  const { t } = useTranslation();
+
   return (
-    <Section id="section5" title="Секция 5">
+    <Section id="section5" title={t('sections.section5.title')}>
       <SectionText>
-        <CarrotSpan>Усиливаем</CarrotSpan> бюджеты <br /> арбитражных команд
+        <CarrotSpan>{t('sections.common.strengthen')}</CarrotSpan>
+        {t('sections.section5.content').split('Усиливаем')[1]}
       </SectionText>
       <SectionDescription>
-        Масштабируем ваши успешные связки предоставляя бюджеты <br /> для
-        получения максимального профита с рекламной кампании
+        {t('sections.section5.description')}
       </SectionDescription>
     </Section>
   );
 };
 
 export const Section6 = () => {
+  const { t } = useTranslation();
+
   return (
     <Section
       id="section6"
-      title="Секция 6"
+      title={t('sections.section6.title')}
       className="flex w-full flex-col items-center">
       <ChapterText className="w-full text-center">
-        Глава 2: Конференции
+        {t('sections.chapters.conferences')}
       </ChapterText>
       <SectionText className="w-full text-center text-[2.8645833333vw]">
-        Место встречи изменить нельзя, <br />
-        <CarrotSpan>увидимся </CarrotSpan> на конференциях
+        {t('sections.section6.content').split('увидимся')[0]}
+        <CarrotSpan>{t('sections.common.meet')} </CarrotSpan>
+        {t('sections.section6.content').split('увидимся')[1]}
       </SectionText>
-      <ScrollArea className="h-fit w-full">
+      <ScrollArea className="mt-8 h-fit w-full">
         <div className="flex h-fit w-fit gap-x-5 px-4">
           {Array.from({ length: 5 }).map((_, index) => (
-            <img
+            <motion.img
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.75 }}
               key={index}
               src="/meet-card.png"
               alt="meet-card"
@@ -180,6 +206,7 @@ const FinanceCard = ({
 
 // Объединенные секции 7, 8 и 9 в виде карусели
 export const FinanceCarousel = () => {
+  const { t } = useTranslation();
   const { prevSection, nextSection } = useUnit({
     prevSection: goToPrevSection,
     nextSection: goToNextSection,
@@ -254,14 +281,11 @@ export const FinanceCarousel = () => {
   }, [activeIndex, nextSection, prevSection]);
 
   return (
-    <Section id="finance-carousel" title="Финансовая карусель">
-      <CarrotSpan>Глава 3: Финансовые взаимодействия</CarrotSpan>
+    <Section id="finance-carousel" title={t('sections.financeCarousel.title')}>
+      <CarrotSpan>{t('sections.chapters.finance')}</CarrotSpan>
       <SectionText>
-        <CarrotSpan>Наша вариативность</CarrotSpan>
-        <br />
-        финансовых
-        <br />
-        взаимодействий
+        <CarrotSpan>{t('sections.common.ourVariability')}</CarrotSpan>
+        {t('sections.financeCarousel.content')}
       </SectionText>
 
       <div ref={carouselRef} className="relative mt-8 h-[20vw] w-[40vw]">
@@ -308,10 +332,12 @@ export const FinanceCarousel = () => {
 export const Section7 = FinanceCarousel;
 // Удаляем Section8 и Section9, оставляем только Section10
 export const Section10 = () => {
+  const { t } = useTranslation();
+
   return (
     <Section
       id="section10"
-      title="Секция 10"
+      title={t('sections.section10.title')}
       className="flex w-full flex-col items-center">
       <img
         src="/socials.png"
@@ -320,10 +346,11 @@ export const Section10 = () => {
         className="absolute top-40 left-1/2 aspect-[2506-1024] w-full -translate-x-[40%] lg:top-20"
       />
       <ChapterText className="mt-50 w-full text-center lg:mt-20">
-        Глава 4: Типы трафика
+        {t('sections.chapters.trafficTypes')}
       </ChapterText>
       <SectionText className="w-full text-center text-[2.8645833333vw]">
-        <CarrotSpan>Монетизируем</CarrotSpan> следующие <br /> типы трафика
+        <CarrotSpan>{t('sections.common.monetize')}</CarrotSpan>{' '}
+        {t('sections.section10.content').split('Монетизируем')[1]}
       </SectionText>
     </Section>
   );
@@ -353,7 +380,7 @@ export const SectionText = ({
 }) => {
   return (
     <p
-      className={`daysone text-[6.4vw] text-white uppercase drop-shadow-[0px_5.72px_48.66px_#FECF4D66] lg:text-[1.9vw] ${className}`}>
+      className={`daysone text-[6.4vw] tracking-tight whitespace-pre-wrap text-white uppercase drop-shadow-[0px_5.72px_48.66px_#FECF4D66] lg:text-[1.9vw] ${className}`}>
       {children}
     </p>
   );
@@ -369,7 +396,7 @@ export const CarrotSpan = ({ children }: { children: ReactNode }) => {
 
 export const SectionDescription = ({ children }: { children: ReactNode }) => {
   return (
-    <p className="gilroy max-w-[60vw] text-[3vw] text-white uppercase drop-shadow-[0px_5.72px_48.66px_#FECF4D66] lg:max-w-screen lg:text-[1.0741666667vw]">
+    <p className="gilroy max-w-[60vw] text-[3vw] whitespace-pre-wrap text-white uppercase drop-shadow-[0px_5.72px_48.66px_#FECF4D66] lg:max-w-screen lg:text-[1.0741666667vw]">
       {children}
     </p>
   );
