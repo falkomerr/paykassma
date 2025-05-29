@@ -145,18 +145,54 @@ export const Section6 = () => {
       </SectionText>
       <ScrollArea className="mt-8 h-fit w-full">
         <div className="flex h-fit w-fit gap-x-5 px-4">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <motion.img
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.75 }}
-              key={index}
-              src="/meet-card.png"
-              alt="meet-card"
-              draggable={false}
-              className="aspect-[435/389] max-h-[300px] w-[17.5vw] shrink-0 max-lg:min-w-[20.8125rem]"
-            />
-          ))}
+          {Array.from({ length: 5 }).map((_, index) => {
+            let delay = 0;
+            let initialX = 0;
+            let initialY = 0;
+
+            switch (index) {
+              case 0:
+                delay = 0.8;
+                initialX = -50;
+                initialY = 0;
+                break;
+              case 1:
+                delay = 1.1;
+                initialX = -50;
+                initialY = 0;
+                break;
+              case 2:
+                delay = 1.3;
+                initialX = 0;
+                initialY = 50;
+                break;
+              case 3:
+                delay = 1.1;
+                initialX = 50;
+                initialY = 0;
+                break;
+              case 4:
+                delay = 0.8;
+                initialX = 50;
+                initialY = 0;
+                break;
+            }
+
+            console.log('data', delay, initialX, initialY);
+
+            return (
+              <motion.img
+                initial={{ opacity: 0, x: initialX, y: initialY }}
+                animate={{ opacity: 1, x: 0, y: 0 }}
+                transition={{ duration: 0.4, delay: delay, repeat: 0 }}
+                key={index}
+                src="/meet-card.png"
+                alt="meet-card"
+                draggable={false}
+                className="aspect-[435/389] max-h-[300px] w-[17.5vw] shrink-0 max-lg:min-w-[20.8125rem]"
+              />
+            );
+          })}
         </div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
@@ -168,7 +204,7 @@ export const Section6 = () => {
 interface CardProps {
   imgSrc: string;
   imgAlt: string;
-  position: 'left' | 'center' | 'right' | 'hidden';
+  position: 'left-2' | 'left-1' | 'left' | 'center' | 'right' | 'hidden';
 }
 
 const FinanceCard = ({
@@ -181,13 +217,19 @@ const FinanceCard = ({
 
   // Применяем стили в зависимости от позиции
   if (position === 'left') {
-    cardClasses += ' z-30 opacity-100 translate-x-0 scale-100';
+    cardClasses += ' z-30 backdrop-blur-xl opacity-100 translate-x-0 scale-100';
   } else if (position === 'center') {
     cardClasses +=
-      ' z-20 opacity-0 translate-x-[15%] translate-y-[3%] rotate-6';
+      ' z-20 opacity-[0.2] backdrop-blur-xl translate-x-[15%] translate-y-[3%] rotate-6';
   } else if (position === 'right') {
     cardClasses +=
-      ' z-10 opacity-0 translate-x-[30%] translate-y-[6%] rotate-12';
+      ' z-10 opacity-[0.2] backdrop-blur-xl translate-x-[30%] translate-y-[6%] rotate-12';
+  } else if (position === 'left-1') {
+    cardClasses +=
+      ' z-20 opacity-[0.3] backdrop-blur-xl translate-x-[-15%] translate-y-[3%] rotate-[-6deg]';
+  } else if (position === 'left-2') {
+    cardClasses +=
+      ' z-10 opacity-[0.2] backdrop-blur-xl translate-x-[-30%] translate-y-[6%] rotate-[-12deg]';
   } else if (position === 'hidden') {
     cardClasses += ' z-10 opacity-0 scale-50';
   }
@@ -291,27 +333,39 @@ export const FinanceCarousel = () => {
       <div ref={carouselRef} className="relative mt-8 h-[20vw] w-[40vw]">
         {cards.map((card, index) => {
           // Определяем позицию карточки в зависимости от активного индекса
-          let position: 'left' | 'center' | 'right' | 'hidden' = 'hidden';
+          let position:
+            | 'left-2'
+            | 'left-1'
+            | 'left'
+            | 'center'
+            | 'right'
+            | 'hidden' = 'hidden';
 
-          // Активная карточка всегда слева
+          // Активная карточка всегда по центру
           if (index === activeIndex) {
             position = 'left';
           }
-          // Карточка после активной - в центре
+          // Карточка после активной - справа-1
           else if (
-            // Если активная карточка не последняя, то следующая будет в центре
             activeIndex < cards.length - 1 &&
             index === activeIndex + 1
           ) {
             position = 'center';
           }
-          // Карточка через одну после активной - справа
+          // Карточка через одну после активной - справа-2
           else if (
-            // Если активная не предпоследняя и не последняя, то через одну будет справа
             activeIndex < cards.length - 2 &&
             index === activeIndex + 2
           ) {
             position = 'right';
+          }
+          // Карточка до активной - слева-1
+          else if (activeIndex > 0 && index === activeIndex - 1) {
+            position = 'left-1';
+          }
+          // Карточка за две до активной - слева-2
+          else if (activeIndex > 1 && index === activeIndex - 2) {
+            position = 'left-2';
           }
 
           return (
@@ -380,7 +434,7 @@ export const SectionText = ({
 }) => {
   return (
     <p
-      className={`daysone text-[6.4vw] tracking-tight whitespace-pre-wrap text-white uppercase drop-shadow-[0px_5.72px_48.66px_#FECF4D66] lg:text-[1.9vw] ${className}`}>
+      className={`daysone text-[6.4vw] leading-[1.15] tracking-tighter whitespace-pre-wrap text-white uppercase drop-shadow-[0px_5.72px_48.66px_#FECF4D66] lg:text-[1.9vw] ${className}`}>
       {children}
     </p>
   );

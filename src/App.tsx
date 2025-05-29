@@ -190,8 +190,8 @@ const AudioContainer = () => {
         height={3}
       />
       <div className="absolute top-1/2 right-0 z-50 mr-5 flex -translate-y-[40%] items-start justify-center gap-x-4 object-cover lg:mr-[3.75rem] lg:-translate-y-[17.5%]">
-        <p className="hidden text-[1rem] font-medium lg:flex">
-          SOUND{' '}
+        <p className="hidden translate-y-[25%] gap-x-1 text-[1rem] font-medium lg:flex">
+          SOUND
           <span className={gradientText}>{volume === 0 ? 'OFF' : 'ON'}</span>
         </p>
         <Button
