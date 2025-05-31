@@ -170,7 +170,7 @@ export const RegisterForm = () => {
           Зарегистрироваться
         </span>
       </button>
-      <p className="font-inter max-w-[28.0208333333] text-[0.7291666667vw] text-[#CCC] [&_span]:cursor-pointer [&_span]:underline">
+      <p className="font-inter max-w-[28.0208333333vw] text-[0.7291666667vw] text-[#CCC] [&_span]:cursor-pointer [&_span]:underline">
         Нажимая на кнопку, вы даете согласие на{' '}
         <span>Обработку персональных данных</span> и{' '}
         <span>Условиями публичной офертой</span>{' '}

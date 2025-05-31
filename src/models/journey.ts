@@ -37,7 +37,6 @@ export const ANIMATED_SECTIONS = [
   'section2',
   'section3',
   'section4',
-  'section5',
 ];
 
 // Константа для всех задержек, чтобы они были согласованы
@@ -74,7 +73,6 @@ export const $sections = createStore<string[]>([
   'section5',
   'section6',
   'section7',
-  'section8',
 ]);
 export const $gateAudioElement = createStore<HTMLAudioElement | null>(null);
 
@@ -197,6 +195,7 @@ export const initJourneyFx = createEffect(() => {
   // Обработчик колесика мыши
   const handleWheel = (e: WheelEvent) => {
     if (e.deltaX !== 0) return;
+    console.log('handleWheel');
     e.preventDefault();
 
     const now = Date.now();

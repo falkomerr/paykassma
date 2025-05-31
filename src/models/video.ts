@@ -14,16 +14,14 @@ import { createEffect, createEvent, createStore, sample } from 'effector';
 const SECTION_TIMECODES: Record<string, { start: number; end: number }> = {
   section1: { start: 0, end: 4.9 }, // 0 - 4.9 секунд
   section2: { start: 5, end: 11 }, // 5 - 11 секунд
-  section3: { start: 11.1, end: 16.6 }, // 11.1 - 16.8 секунд
-  section4: { start: 16.9, end: 23.1 }, // 16.8 - 22.4 секунд
-  section5: { start: 23.2, end: 28 }, // 22.4 - 28 секунд (конец видео)
+  section3: { start: 11.1, end: 23.1 }, // 11.1 - 16.8 секунд
+  section4: { start: 23.2, end: 28 }, // 22.4 - 28 секунд (конец видео)
 };
 
 const REVERSED_TIMECODES: Record<string, { start: number; end: number }> = {
+  section4: { start: 0, end: 5.1 }, // 22.4 - 28 секунд (конец видео)
+  section3: { start: 5.2, end: 17.2 }, // 16.8 - 22.4 секунд
   section2: { start: 17.3, end: 23.3 }, // 5 - 11 секунд
-  section3: { start: 11.8, end: 17.2 }, // 11.1 - 16.8 секунд
-  section4: { start: 5.2, end: 11.6 }, // 16.8 - 22.4 секунд
-  section5: { start: 0, end: 5.1 }, // 22.4 - 28 секунд (конец видео)
 };
 
 export const timeUpdated = createEvent<number>();
@@ -137,8 +135,10 @@ sample({
     sections: $sections,
     previousActiveSection: $previousActiveSection,
   },
-  filter: ({ isAnimationPlaying, previousActiveSection }) =>
-    !isAnimationPlaying && previousActiveSection !== 'section6',
+  filter: ({ isAnimationPlaying, previousActiveSection, videoMode }) =>
+    !isAnimationPlaying &&
+    previousActiveSection !== 'section4' &&
+    videoMode === 'forward',
   fn: ({ videoElements, activeSection, videoMode }) => ({
     videoElements,
     videoMode,
@@ -157,8 +157,10 @@ sample({
     sections: $sections,
     previousActiveSection: $previousActiveSection,
   },
-  filter: ({ isAnimationPlaying, previousActiveSection }) =>
-    !isAnimationPlaying && previousActiveSection !== 'section6',
+  filter: ({ isAnimationPlaying, previousActiveSection, videoMode }) =>
+    !isAnimationPlaying &&
+    previousActiveSection !== 'section5' &&
+    videoMode === 'backward',
   fn: ({ videoElements, activeSection, videoMode }) => ({
     videoElements,
     videoMode,
@@ -172,7 +174,7 @@ sample({
 
 sample({
   clock: $previousActiveSection,
-  filter: (prev) => parseInt(prev?.split('section')[1] ?? '100') > 5,
+  filter: (prev) => parseInt(prev?.split('section')[1] ?? '100') > 4,
   fn: () => false,
   target: $animationPlaying,
 });

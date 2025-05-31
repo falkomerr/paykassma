@@ -1,4 +1,5 @@
-import { ScrollArea, ScrollBar } from '@/components/components/ui/scrollarea';
+import { ScrollArea } from '@/components/components/ui/scrollarea';
+import { cn } from '@/lib/utils';
 import { goToNextSection, goToPrevSection } from '@/models/journey';
 import { useUnit } from 'effector-react';
 import { motion } from 'framer-motion';
@@ -15,7 +16,10 @@ interface SectionProps {
 export const Section = ({ children, className = '' }: SectionProps) => {
   return (
     <section
-      className={`relative z-40 flex h-fit h-screen w-full flex-col items-start justify-start bg-gradient-to-b from-black from-30% to-transparent to-50% px-5 max-lg:py-[8rem] lg:w-fit lg:justify-center lg:from-transparent lg:px-[3.75rem] ${className}`}>
+      className={cn(
+        'relative z-40 flex h-fit h-screen w-full flex-col items-start justify-start bg-gradient-to-b from-black from-30% to-transparent to-50% px-5 max-lg:py-[8rem] lg:w-fit lg:justify-center lg:from-transparent lg:px-[3.75rem]',
+        className,
+      )}>
       {children}
     </section>
   );
@@ -35,47 +39,238 @@ export const Section1 = () => {
   );
 };
 
-export const Section2 = () => {
-  const { t } = useTranslation();
+// Универсальный компонент карточки для карусели
+interface UniversalCardProps {
+  imgSrc: string;
+  imgAlt: string;
+  position: 'left-2' | 'left-1' | 'left' | 'center' | 'right' | 'hidden';
+  isSquare?: boolean;
+  width?: string;
+  lgWidth?: string;
+}
+
+const UniversalCard = ({
+  imgSrc,
+  imgAlt,
+  position,
+  isSquare = false,
+  width = 'w-[70vw]',
+  lgWidth = 'lg:w-[19vw]',
+}: UniversalCardProps) => {
+  let cardClasses = `absolute transition-all duration-300 ease-in-out ${width} ${lgWidth}`;
+
+  // Применяем стили в зависимости от позиции
+  if (position === 'left') {
+    cardClasses += ' z-30 backdrop-blur-xl opacity-100 translate-x-0 scale-100';
+  } else if (position === 'center') {
+    cardClasses +=
+      ' z-20 opacity-[0.2] backdrop-blur-xl translate-x-[15%] translate-y-[3%] rotate-6';
+  } else if (position === 'right') {
+    cardClasses +=
+      ' z-10 opacity-[0.2] backdrop-blur-xl translate-x-[30%] translate-y-[6%] rotate-12';
+  } else if (position === 'left-1') {
+    cardClasses +=
+      ' z-20 opacity-[0.3] backdrop-blur-xl translate-x-[-15%] translate-y-[3%] rotate-[-6deg]';
+  } else if (position === 'left-2') {
+    cardClasses +=
+      ' z-10 opacity-[0.2] backdrop-blur-xl translate-x-[-30%] translate-y-[6%] rotate-[-12deg]';
+  } else if (position === 'hidden') {
+    cardClasses += ' z-10 opacity-0 scale-50';
+  }
 
   return (
-    <Section id="section2" title={t('sections.section2.title')}>
-      <SectionText>
-        <CarrotSpan>{t('sections.common.knowGeo')}</CarrotSpan>
-        {t('sections.section2.content')}
-      </SectionText>
-      <motion.img
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.75 }}
-        src="/our-anwser.svg"
-        alt="our-anwser"
+    <motion.div
+      className={cardClasses}
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: position === 'hidden' ? 0 : 1, y: 0 }}
+      transition={{ duration: 0.5 }}>
+      <img
+        src={imgSrc}
+        alt={imgAlt}
         draggable={false}
-        className="mt-4 aspect-[302/320] w-[70vw] cursor-pointer overflow-hidden rounded-[30px] object-cover backdrop-blur-xl lg:w-[19vw]"
+        className={`w-full cursor-pointer overflow-hidden rounded-[30px] object-cover backdrop-blur-xl ${
+          isSquare ? 'aspect-square' : 'aspect-[302/320]'
+        }`}
       />
+    </motion.div>
+  );
+};
+
+// Универсальная карусель
+interface UniversalCarouselProps {
+  id: string;
+  title: string;
+  cards: Array<{ imgSrc: string; imgAlt: string }>;
+  chapterText?: string;
+  textProvider: (activeIndex: number) => ReactNode;
+  isSquareCards?: boolean;
+  cardWidth?: string;
+  cardLgWidth?: string;
+  className?: string;
+}
+
+const UniversalCarousel = ({
+  id,
+  title,
+  cards,
+  chapterText,
+  textProvider,
+  isSquareCards = false,
+  cardWidth = 'w-[70vw]',
+  cardLgWidth = 'lg:w-[19vw]',
+  className = '',
+}: UniversalCarouselProps) => {
+  const { prevSection, nextSection } = useUnit({
+    prevSection: goToPrevSection,
+    nextSection: goToNextSection,
+  });
+  const [activeIndex, setActiveIndex] = useState(0);
+  const skippedFirstScroll = useRef(false);
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleDirection = debounce((direction: 'up' | 'down') => {
+      if (!skippedFirstScroll.current) {
+        skippedFirstScroll.current = true;
+        return;
+      }
+
+      if (direction === 'down' && activeIndex < cards.length - 1) {
+        setActiveIndex((prev) => prev + 1);
+      } else if (direction === 'up' && activeIndex > 0) {
+        setActiveIndex((prev) => prev - 1);
+      } else if (direction === 'down' && activeIndex === cards.length - 1) {
+        nextSection();
+      } else if (direction === 'up' && activeIndex === 0) {
+        prevSection();
+      }
+    }, 80);
+
+    const handleScroll = (e: WheelEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const scrollDirection = e.deltaY > 0 ? 'down' : 'up';
+      handleDirection(scrollDirection);
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.key === 'ArrowDown') {
+        handleDirection('down');
+      } else if (e.key === 'ArrowUp') {
+        handleDirection('up');
+      }
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function debounce<T extends (...args: any[]) => any>(
+      func: T,
+      wait: number,
+    ): (...args: Parameters<T>) => void {
+      let timeout: ReturnType<typeof setTimeout> | null = null;
+
+      return function (...args: Parameters<T>) {
+        if (timeout) clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+      };
+    }
+
+    document.addEventListener('wheel', handleScroll, { passive: false });
+    document.addEventListener('keydown', handleKeyDown, { passive: false });
+
+    return () => {
+      document.removeEventListener('wheel', handleScroll);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [activeIndex, nextSection, prevSection, cards.length]);
+
+  return (
+    <Section id={id} title={title} className={className}>
+      {chapterText && <ChapterText>{chapterText}</ChapterText>}
+      <SectionText>{textProvider(activeIndex)}</SectionText>
+
+      <div ref={carouselRef} className="relative mt-8 h-[20vw] w-[40vw]">
+        {cards.map((card, index) => {
+          // Определяем позицию карточки в зависимости от активного индекса
+          let position:
+            | 'left-2'
+            | 'left-1'
+            | 'left'
+            | 'center'
+            | 'right'
+            | 'hidden' = 'hidden';
+
+          // Активная карточка всегда по центру
+          if (index === activeIndex) {
+            position = 'left';
+          }
+          // Карточка после активной - справа-1
+          else if (
+            activeIndex < cards.length - 1 &&
+            index === activeIndex + 1
+          ) {
+            position = 'center';
+          }
+          // Карточка через одну после активной - справа-2
+          else if (
+            activeIndex < cards.length - 2 &&
+            index === activeIndex + 2
+          ) {
+            position = 'right';
+          }
+          // Карточка до активной - слева-1
+          else if (activeIndex > 0 && index === activeIndex - 1) {
+            position = 'left-1';
+          }
+          // Карточка за две до активной - слева-2
+          else if (activeIndex > 1 && index === activeIndex - 2) {
+            position = 'left-2';
+          }
+
+          return (
+            <UniversalCard
+              key={card.imgAlt}
+              imgSrc={card.imgSrc}
+              imgAlt={card.imgAlt}
+              position={position}
+              isSquare={isSquareCards}
+              width={cardWidth}
+              lgWidth={cardLgWidth}
+            />
+          );
+        })}
+      </div>
     </Section>
   );
 };
 
-export const Section3 = () => {
+// Объединенная секция 2 и 3 с географической каруселью
+export const Section2 = () => {
   const { t } = useTranslation();
 
+  const geoCards = [
+    { imgSrc: '/our-anwser.svg', imgAlt: 'our-anwser' },
+    { imgSrc: '/our-reklams.svg', imgAlt: 'our-reklams' },
+  ];
+
+  const geoTextProvider = (activeIndex: number) => (
+    <>
+      <CarrotSpan>{t('sections.common.knowGeo')}</CarrotSpan>
+      {activeIndex === 0
+        ? t('sections.section2.content')
+        : t('sections.section3.content')}
+    </>
+  );
+
   return (
-    <Section id="section3" title={t('sections.section3.title')}>
-      <SectionText>
-        <CarrotSpan>{t('sections.common.knowGeo')}</CarrotSpan>
-        {t('sections.section3.content')}
-      </SectionText>
-      <motion.img
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.75 }}
-        src="/our-reklams.svg"
-        alt="our-reklams"
-        draggable={false}
-        className="mt-4 aspect-[302/320] w-[70vw] cursor-pointer overflow-hidden rounded-[30px] object-cover backdrop-blur-xl lg:w-[19vw]"
-      />
-    </Section>
+    <UniversalCarousel
+      id="geo-carousel"
+      title={t('sections.section2.title')}
+      cards={geoCards}
+      chapterText={t('sections.chapters.advantages')}
+      textProvider={geoTextProvider}
+    />
   );
 };
 
@@ -134,7 +329,7 @@ export const Section6 = () => {
     <Section
       id="section6"
       title={t('sections.section6.title')}
-      className="flex w-full flex-col items-center">
+      className="mx-auto flex w-fit flex-col items-center !px-0">
       <ChapterText className="w-full text-center">
         {t('sections.chapters.conferences')}
       </ChapterText>
@@ -143,7 +338,7 @@ export const Section6 = () => {
         <CarrotSpan>{t('sections.common.meet')} </CarrotSpan>
         {t('sections.section6.content').split('увидимся')[1]}
       </SectionText>
-      <ScrollArea className="mt-8 h-fit w-full">
+      <ScrollArea className="mx-auto mt-8 flex h-[22vw] w-fit">
         <div className="flex h-fit w-fit gap-x-5 px-4">
           {Array.from({ length: 5 }).map((_, index) => {
             let delay = 0;
@@ -164,7 +359,7 @@ export const Section6 = () => {
               case 2:
                 delay = 1.3;
                 initialX = 0;
-                initialY = 50;
+                initialY = 75;
                 break;
               case 3:
                 delay = 1.1;
@@ -178,13 +373,11 @@ export const Section6 = () => {
                 break;
             }
 
-            console.log('data', delay, initialX, initialY);
-
             return (
               <motion.img
                 initial={{ opacity: 0, x: initialX, y: initialY }}
                 animate={{ opacity: 1, x: 0, y: 0 }}
-                transition={{ duration: 0.4, delay: delay, repeat: 0 }}
+                transition={{ duration: 0.35, delay: delay, repeat: 0 }}
                 key={index}
                 src="/meet-card.png"
                 alt="meet-card"
@@ -194,196 +387,42 @@ export const Section6 = () => {
             );
           })}
         </div>
-        <ScrollBar orientation="horizontal" />
       </ScrollArea>
     </Section>
   );
 };
 
-// Новый компонент карточки для карусели
-interface CardProps {
-  imgSrc: string;
-  imgAlt: string;
-  position: 'left-2' | 'left-1' | 'left' | 'center' | 'right' | 'hidden';
-}
-
-const FinanceCard = ({
-  imgSrc,
-  imgAlt,
-  position,
-}: Omit<CardProps, 'isActive'>) => {
-  let cardClasses =
-    'absolute transition-all duration-300 ease-in-out w-[50vw] lg:w-[19vw]';
-
-  // Применяем стили в зависимости от позиции
-  if (position === 'left') {
-    cardClasses += ' z-30 backdrop-blur-xl opacity-100 translate-x-0 scale-100';
-  } else if (position === 'center') {
-    cardClasses +=
-      ' z-20 opacity-[0.2] backdrop-blur-xl translate-x-[15%] translate-y-[3%] rotate-6';
-  } else if (position === 'right') {
-    cardClasses +=
-      ' z-10 opacity-[0.2] backdrop-blur-xl translate-x-[30%] translate-y-[6%] rotate-12';
-  } else if (position === 'left-1') {
-    cardClasses +=
-      ' z-20 opacity-[0.3] backdrop-blur-xl translate-x-[-15%] translate-y-[3%] rotate-[-6deg]';
-  } else if (position === 'left-2') {
-    cardClasses +=
-      ' z-10 opacity-[0.2] backdrop-blur-xl translate-x-[-30%] translate-y-[6%] rotate-[-12deg]';
-  } else if (position === 'hidden') {
-    cardClasses += ' z-10 opacity-0 scale-50';
-  }
-
-  return (
-    <div className={cardClasses}>
-      <img
-        src={imgSrc}
-        alt={imgAlt}
-        draggable={false}
-        className="aspect-square w-full"
-      />
-    </div>
-  );
-};
-
-// Объединенные секции 7, 8 и 9 в виде карусели
-export const FinanceCarousel = () => {
+// Используем универсальный компонент для создания финансовой карусели
+export const Section7 = () => {
   const { t } = useTranslation();
-  const { prevSection, nextSection } = useUnit({
-    prevSection: goToPrevSection,
-    nextSection: goToNextSection,
-  });
-  const [activeIndex, setActiveIndex] = useState(0);
-  const skippedFirstScroll = useRef(false);
 
-  // Используем простые и понятные флаги состояния скролла
-  const carouselRef = useRef<HTMLDivElement>(null);
-
-  const cards = [
+  const financeCards = [
     { imgSrc: '/pay-models.svg', imgAlt: 'pay-models' },
     { imgSrc: '/comfortable-payments.png', imgAlt: 'comfortable-payments' },
     { imgSrc: '/fast-payments.svg', imgAlt: 'fast-payments' },
   ];
 
-  useEffect(() => {
-    const handleDirection = debounce((direction: 'up' | 'down') => {
-      if (!skippedFirstScroll.current) {
-        skippedFirstScroll.current = true;
-        return;
-      }
-
-      if (direction === 'down' && activeIndex < 2) {
-        setActiveIndex((prev) => prev + 1);
-      } else if (direction === 'up' && activeIndex > 0) {
-        setActiveIndex((prev) => prev - 1);
-      } else if (direction === 'down' && activeIndex === 2) {
-        nextSection();
-      } else if (direction === 'up' && activeIndex === 0) {
-        prevSection();
-      }
-    }, 80);
-
-    const handleScroll = (e: WheelEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const scrollDirection = e.deltaY > 0 ? 'down' : 'up';
-      handleDirection(scrollDirection);
-    };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (e.key === 'ArrowDown') {
-        handleDirection('down');
-      } else if (e.key === 'ArrowUp') {
-        handleDirection('up');
-      }
-    };
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function debounce<T extends (...args: any[]) => any>(
-      func: T,
-      wait: number,
-    ): (...args: Parameters<T>) => void {
-      let timeout: ReturnType<typeof setTimeout> | null = null;
-
-      return function (...args: Parameters<T>) {
-        if (timeout) clearTimeout(timeout);
-        timeout = setTimeout(() => func(...args), wait);
-      };
-    }
-
-    document.addEventListener('wheel', handleScroll, { passive: false });
-    document.addEventListener('keydown', handleKeyDown, { passive: false });
-
-    return () => {
-      document.removeEventListener('wheel', handleScroll);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [activeIndex, nextSection, prevSection]);
+  const financeTextProvider = () => (
+    <>
+      <CarrotSpan>{t('sections.common.ourVariability')}</CarrotSpan>
+      {t('sections.financeCarousel.content')}
+    </>
+  );
 
   return (
-    <Section id="finance-carousel" title={t('sections.financeCarousel.title')}>
-      <CarrotSpan>{t('sections.chapters.finance')}</CarrotSpan>
-      <SectionText>
-        <CarrotSpan>{t('sections.common.ourVariability')}</CarrotSpan>
-        {t('sections.financeCarousel.content')}
-      </SectionText>
-
-      <div ref={carouselRef} className="relative mt-8 h-[20vw] w-[40vw]">
-        {cards.map((card, index) => {
-          // Определяем позицию карточки в зависимости от активного индекса
-          let position:
-            | 'left-2'
-            | 'left-1'
-            | 'left'
-            | 'center'
-            | 'right'
-            | 'hidden' = 'hidden';
-
-          // Активная карточка всегда по центру
-          if (index === activeIndex) {
-            position = 'left';
-          }
-          // Карточка после активной - справа-1
-          else if (
-            activeIndex < cards.length - 1 &&
-            index === activeIndex + 1
-          ) {
-            position = 'center';
-          }
-          // Карточка через одну после активной - справа-2
-          else if (
-            activeIndex < cards.length - 2 &&
-            index === activeIndex + 2
-          ) {
-            position = 'right';
-          }
-          // Карточка до активной - слева-1
-          else if (activeIndex > 0 && index === activeIndex - 1) {
-            position = 'left-1';
-          }
-          // Карточка за две до активной - слева-2
-          else if (activeIndex > 1 && index === activeIndex - 2) {
-            position = 'left-2';
-          }
-
-          return (
-            <FinanceCard
-              key={card.imgAlt}
-              imgSrc={card.imgSrc}
-              imgAlt={card.imgAlt}
-              position={position}
-            />
-          );
-        })}
-      </div>
-    </Section>
+    <UniversalCarousel
+      id="finance-carousel"
+      title={t('sections.financeCarousel.title')}
+      cards={financeCards}
+      chapterText={t('sections.chapters.finance')}
+      textProvider={financeTextProvider}
+      isSquareCards={true}
+      cardWidth="w-[50vw]"
+      cardLgWidth="lg:w-[19vw]"
+    />
   );
 };
 
-// Заменяем старые секции 7, 8 и 9 на карусель - удаляем Section8 и Section9
-export const Section7 = FinanceCarousel;
 // Удаляем Section8 и Section9, оставляем только Section10
 export const Section10 = () => {
   const { t } = useTranslation();

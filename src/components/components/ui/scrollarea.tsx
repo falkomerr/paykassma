@@ -16,7 +16,7 @@ const ScrollArea = ({
     <ScrollAreaPrimitive.Viewport className="h-full w-full rounded-[inherit]">
       {children}
     </ScrollAreaPrimitive.Viewport>
-    <ScrollBar />
+    <ScrollBar orientation="horizontal" className="opacity-0" />
     <ScrollAreaPrimitive.Corner />
   </ScrollAreaPrimitive.Root>
 );
