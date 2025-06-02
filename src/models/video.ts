@@ -19,9 +19,9 @@ const SECTION_TIMECODES: Record<string, { start: number; end: number }> = {
 };
 
 const REVERSED_TIMECODES: Record<string, { start: number; end: number }> = {
-  section4: { start: 0, end: 5.1 }, // 22.4 - 28 секунд (конец видео)
-  section3: { start: 5.2, end: 17.2 }, // 16.8 - 22.4 секунд
-  section2: { start: 17.3, end: 23.3 }, // 5 - 11 секунд
+  section4: { start: 14.36, end: 19.5 }, // 22.4 - 28 секунд (конец видео)
+  section3: { start: 19.5, end: 31.7 }, // 16.8 - 22.4 секунд
+  section2: { start: 31.8, end: 37.9 }, // 5 - 11 секунд
 };
 
 export const timeUpdated = createEvent<number>();

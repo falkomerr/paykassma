@@ -1,4 +1,5 @@
 import { ScrollArea } from '@/components/components/ui/scrollarea';
+import { CardBody, CardContainer, CardItem } from '@/components/ui/3d-card';
 import { cn } from '@/lib/utils';
 import { goToNextSection, goToPrevSection } from '@/models/journey';
 import { useUnit } from 'effector-react';
@@ -61,19 +62,20 @@ const UniversalCard = ({
 
   // Применяем стили в зависимости от позиции
   if (position === 'left') {
-    cardClasses += ' z-30 backdrop-blur-xl opacity-100 translate-x-0 scale-100';
+    cardClasses +=
+      ' z-30 backdrop-blur-xl rounded-[40px] md:rounded-[30px] opacity-100 translate-x-0 scale-100';
   } else if (position === 'center') {
     cardClasses +=
-      ' z-20 opacity-[0.2] backdrop-blur-xl translate-x-[15%] translate-y-[3%] rotate-6';
+      ' z-20 opacity-[0.2] backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[15%] translate-y-[3%] rotate-6';
   } else if (position === 'right') {
     cardClasses +=
-      ' z-10 opacity-[0.2] backdrop-blur-xl translate-x-[30%] translate-y-[6%] rotate-12';
+      ' z-10 opacity-[0.2] backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[30%] translate-y-[6%] rotate-12';
   } else if (position === 'left-1') {
     cardClasses +=
-      ' z-20 opacity-[0.3] backdrop-blur-xl translate-x-[-15%] translate-y-[3%] rotate-[-6deg]';
+      ' z-20 opacity-[0.3] backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[-15%] translate-y-[3%] rotate-[-6deg]';
   } else if (position === 'left-2') {
     cardClasses +=
-      ' z-10 opacity-[0.2] backdrop-blur-xl translate-x-[-30%] translate-y-[6%] rotate-[-12deg]';
+      ' z-10 opacity-[0.2] backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[-30%] translate-y-[6%] rotate-[-12deg]';
   } else if (position === 'hidden') {
     cardClasses += ' z-10 opacity-0 scale-50';
   }
@@ -88,7 +90,7 @@ const UniversalCard = ({
         src={imgSrc}
         alt={imgAlt}
         draggable={false}
-        className={`w-full cursor-pointer overflow-hidden rounded-[30px] object-cover backdrop-blur-xl ${
+        className={`w-full cursor-pointer overflow-hidden object-cover backdrop-blur-xl ${
           isSquare ? 'aspect-square' : 'aspect-[302/320]'
         }`}
       />
@@ -374,16 +376,21 @@ export const Section6 = () => {
             }
 
             return (
-              <motion.img
-                initial={{ opacity: 0, x: initialX, y: initialY }}
-                animate={{ opacity: 1, x: 0, y: 0 }}
-                transition={{ duration: 0.35, delay: delay, repeat: 0 }}
-                key={index}
-                src="/meet-card.png"
-                alt="meet-card"
-                draggable={false}
-                className="aspect-[435/389] max-h-[300px] w-[17.5vw] shrink-0 max-lg:min-w-[20.8125rem]"
-              />
+              <CardContainer key={index}>
+                <CardBody>
+                  <CardItem translateZ={50}>
+                    <motion.img
+                      initial={{ opacity: 0, x: initialX, y: initialY }}
+                      animate={{ opacity: 1, x: 0, y: 0 }}
+                      transition={{ duration: 0.35, delay: delay, repeat: 0 }}
+                      src="/meet-card.png"
+                      alt="meet-card"
+                      draggable={false}
+                      className="aspect-[435/389] max-h-[300px] w-[17.5vw] shrink-0 max-lg:min-w-[20.8125rem]"
+                    />
+                  </CardItem>
+                </CardBody>
+              </CardContainer>
             );
           })}
         </div>
@@ -436,7 +443,7 @@ export const Section10 = () => {
         src="/socials.png"
         alt="socials"
         draggable={false}
-        className="absolute top-40 left-1/2 aspect-[2506-1024] w-full -translate-x-[40%] lg:top-20"
+        className="absolute top-40 left-1/2 aspect-[2506/1024] w-full -translate-x-[40%] lg:top-20"
       />
       <ChapterText className="mt-50 w-full text-center lg:mt-20">
         {t('sections.chapters.trafficTypes')}
