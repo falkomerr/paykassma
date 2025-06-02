@@ -378,7 +378,7 @@ export const Section6 = () => {
             return (
               <CardContainer key={index}>
                 <CardBody>
-                  <CardItem>
+                  <CardItem translateZ={40}>
                     <motion.img
                       initial={{ opacity: 0, x: initialX, y: initialY }}
                       animate={{ opacity: 1, x: 0, y: 0 }}
