@@ -340,7 +340,7 @@ export const Section6 = () => {
         <CarrotSpan>{t('sections.common.meet')} </CarrotSpan>
         {t('sections.section6.content').split('увидимся')[1]}
       </SectionText>
-      <ScrollArea className="mx-auto mt-8 flex h-[22vw] w-fit">
+      <ScrollArea className="mx-auto -mt-12 flex h-[22vw] w-fit">
         <div className="flex h-fit w-fit gap-x-5 px-4">
           {Array.from({ length: 5 }).map((_, index) => {
             let delay = 0;
@@ -378,7 +378,7 @@ export const Section6 = () => {
             return (
               <CardContainer key={index}>
                 <CardBody>
-                  <CardItem translateZ={50}>
+                  <CardItem>
                     <motion.img
                       initial={{ opacity: 0, x: initialX, y: initialY }}
                       animate={{ opacity: 1, x: 0, y: 0 }}
