@@ -14,14 +14,16 @@ import { createEffect, createEvent, createStore, sample } from 'effector';
 const SECTION_TIMECODES: Record<string, { start: number; end: number }> = {
   section1: { start: 0, end: 4.9 }, // 0 - 4.9 секунд
   section2: { start: 5, end: 11 }, // 5 - 11 секунд
-  section3: { start: 11.1, end: 23.1 }, // 11.1 - 16.8 секунд
-  section4: { start: 23.2, end: 28 }, // 22.4 - 28 секунд (конец видео)
+  section3: { start: 11.1, end: 16.4 }, // 11.1 - 16.8 секунд
+  section4: { start: 16.4, end: 23.1 }, // 22.4 - 28 секунд (конец видео)
+  section5: { start: 23.1, end: 28 }, // 28 - 34 секунд (конец видео)
 };
 
 const REVERSED_TIMECODES: Record<string, { start: number; end: number }> = {
-  section4: { start: 14.36, end: 19.5 }, // 22.4 - 28 секунд (конец видео)
-  section3: { start: 19.5, end: 31.7 }, // 16.8 - 22.4 секунд
   section2: { start: 31.8, end: 37.9 }, // 5 - 11 секунд
+  section3: { start: 26.12, end: 31.6 }, // 11.1 - 16.8 секунд
+  section4: { start: 19.5, end: 26.12 }, // 16.8 - 22.4 секунд
+  section5: { start: 14.36, end: 19.5 }, // 22.4 - 28 секунд (конец видео)
 };
 
 export const timeUpdated = createEvent<number>();
@@ -137,7 +139,7 @@ sample({
   },
   filter: ({ isAnimationPlaying, previousActiveSection, videoMode }) =>
     !isAnimationPlaying &&
-    previousActiveSection !== 'section4' &&
+    previousActiveSection !== 'section6' &&
     videoMode === 'forward',
   fn: ({ videoElements, activeSection, videoMode }) => ({
     videoElements,
@@ -159,7 +161,7 @@ sample({
   },
   filter: ({ isAnimationPlaying, previousActiveSection, videoMode }) =>
     !isAnimationPlaying &&
-    previousActiveSection !== 'section5' &&
+    previousActiveSection !== 'section6' &&
     videoMode === 'backward',
   fn: ({ videoElements, activeSection, videoMode }) => ({
     videoElements,
@@ -174,7 +176,7 @@ sample({
 
 sample({
   clock: $previousActiveSection,
-  filter: (prev) => parseInt(prev?.split('section')[1] ?? '100') > 4,
+  filter: (prev) => parseInt(prev?.split('section')[1] ?? '100') > 5,
   fn: () => false,
   target: $animationPlaying,
 });

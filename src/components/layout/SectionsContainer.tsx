@@ -5,6 +5,7 @@ import {
   Section1,
   Section10,
   Section2,
+  Section3,
   Section4,
   Section5,
   Section6,
@@ -67,21 +68,24 @@ export const SectionsContainer = () => {
 
         {activeSection === 'section3' &&
           !isAnimationPlaying &&
-          renderSection('section3', <Section4 />)}
+          renderSection('section3', <Section3 />)}
 
         {activeSection === 'section4' &&
           !isAnimationPlaying &&
-          renderSection('section4', <Section5 />)}
+          renderSection('section4', <Section4 />)}
 
         {activeSection === 'section5' &&
           !isAnimationPlaying &&
-          renderSection('section5', <Section6 />)}
+          renderSection('section5', <Section5 />)}
 
         {activeSection === 'section6' &&
-          renderSection('section6', <Section7 />)}
+          renderSection('section6', <Section6 />)}
 
         {activeSection === 'section7' &&
-          renderSection('section7', <Section10 />)}
+          renderSection('section7', <Section7 />)}
+
+        {activeSection === 'section8' &&
+          renderSection('section8', <Section10 />)}
       </AnimatePresence>
     </div>
   );

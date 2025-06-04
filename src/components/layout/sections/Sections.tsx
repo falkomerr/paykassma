@@ -48,6 +48,8 @@ interface UniversalCardProps {
   isSquare?: boolean;
   width?: string;
   lgWidth?: string;
+  opacity?: number;
+  className?: string;
 }
 
 const UniversalCard = ({
@@ -55,44 +57,67 @@ const UniversalCard = ({
   imgAlt,
   position,
   isSquare = false,
-  width = 'w-[70vw]',
-  lgWidth = 'lg:w-[19vw]',
+  opacity = 1,
+  className,
 }: UniversalCardProps) => {
-  let cardClasses = `absolute transition-all duration-300 ease-in-out ${width} ${lgWidth}`;
+  const [cardClasses, setCardClasses] = useState(
+    `absolute transition-all duration-300 ease-in-out`,
+  );
+  const [cardOpacity, setCardOpacity] = useState(opacity);
 
-  // Применяем стили в зависимости от позиции
-  if (position === 'left') {
-    cardClasses +=
-      ' z-30 backdrop-blur-xl rounded-[40px] md:rounded-[30px] opacity-100 translate-x-0 scale-100';
-  } else if (position === 'center') {
-    cardClasses +=
-      ' z-20 opacity-[0.2] backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[15%] translate-y-[3%] rotate-6';
-  } else if (position === 'right') {
-    cardClasses +=
-      ' z-10 opacity-[0.2] backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[30%] translate-y-[6%] rotate-12';
-  } else if (position === 'left-1') {
-    cardClasses +=
-      ' z-20 opacity-[0.3] backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[-15%] translate-y-[3%] rotate-[-6deg]';
-  } else if (position === 'left-2') {
-    cardClasses +=
-      ' z-10 opacity-[0.2] backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[-30%] translate-y-[6%] rotate-[-12deg]';
-  } else if (position === 'hidden') {
-    cardClasses += ' z-10 opacity-0 scale-50';
-  }
+  useEffect(() => {
+    const baseClasses = 'absolute transition-all duration-300 ease-in-out';
+
+    if (position === 'left') {
+      setCardOpacity(1);
+      setCardClasses(
+        `${baseClasses} z-30 backdrop-blur-xl rounded-[40px] md:rounded-[30px] opacity-100 translate-x-0 scale-100`,
+      );
+    } else if (position === 'center') {
+      setCardOpacity(0.2);
+      setCardClasses(
+        `${baseClasses} z-20 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[15%] translate-y-[3%] rotate-6`,
+      );
+    } else if (position === 'right') {
+      setCardOpacity(0.2);
+      setCardClasses(
+        `${baseClasses} z-10 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[30%] translate-y-[6%] rotate-12`,
+      );
+    } else if (position === 'left-1') {
+      setCardOpacity(0.2);
+      setCardClasses(
+        `${baseClasses} z-20 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[-15%] translate-y-[3%] rotate-[-6deg]`,
+      );
+    } else if (position === 'left-2') {
+      setCardOpacity(0.2);
+      setCardClasses(
+        `${baseClasses} z-10 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[-30%] translate-y-[6%] rotate-[-12deg]`,
+      );
+    } else if (position === 'hidden') {
+      setCardOpacity(0);
+      setCardClasses(`${baseClasses} z-10 scale-50`);
+    }
+  }, [position]);
+
+  useEffect(() => {
+    if (opacity === 0) {
+      setCardOpacity(opacity);
+    }
+  }, [opacity]);
 
   return (
     <motion.div
       className={cardClasses}
       initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: position === 'hidden' ? 0 : 1, y: 0 }}
-      transition={{ duration: 0.5 }}>
+      animate={{ opacity: cardOpacity, y: 0 }}
+      transition={{ duration: 0.3 }}>
       <img
         src={imgSrc}
         alt={imgAlt}
         draggable={false}
         className={`w-full cursor-pointer overflow-hidden object-cover backdrop-blur-xl ${
           isSquare ? 'aspect-square' : 'aspect-[302/320]'
-        }`}
+        } ${className}`}
       />
     </motion.div>
   );
@@ -104,7 +129,7 @@ interface UniversalCarouselProps {
   title: string;
   cards: Array<{ imgSrc: string; imgAlt: string }>;
   chapterText?: string;
-  textProvider: (activeIndex: number) => ReactNode;
+  textProvider?: (activeIndex: number) => ReactNode;
   isSquareCards?: boolean;
   cardWidth?: string;
   cardLgWidth?: string;
@@ -129,22 +154,28 @@ const UniversalCarousel = ({
   const [activeIndex, setActiveIndex] = useState(0);
   const skippedFirstScroll = useRef(false);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const [animateHiding, setAnimateHiding] = useState(false);
 
   useEffect(() => {
     const handleDirection = debounce((direction: 'up' | 'down') => {
       if (!skippedFirstScroll.current) {
         skippedFirstScroll.current = true;
+        setAnimateHiding(false);
         return;
       }
 
       if (direction === 'down' && activeIndex < cards.length - 1) {
         setActiveIndex((prev) => prev + 1);
+        setAnimateHiding(false);
       } else if (direction === 'up' && activeIndex > 0) {
         setActiveIndex((prev) => prev - 1);
+        setAnimateHiding(false);
       } else if (direction === 'down' && activeIndex === cards.length - 1) {
         nextSection();
+        setAnimateHiding(true);
       } else if (direction === 'up' && activeIndex === 0) {
         prevSection();
+        setAnimateHiding(true);
       }
     }, 80);
 
@@ -190,7 +221,7 @@ const UniversalCarousel = ({
   return (
     <Section id={id} title={title} className={className}>
       {chapterText && <ChapterText>{chapterText}</ChapterText>}
-      <SectionText>{textProvider(activeIndex)}</SectionText>
+      {textProvider && <SectionText>{textProvider(activeIndex)}</SectionText>}
 
       <div ref={carouselRef} className="relative mt-8 h-[20vw] w-[40vw]">
         {cards.map((card, index) => {
@@ -232,6 +263,8 @@ const UniversalCarousel = ({
 
           return (
             <UniversalCard
+              className={className}
+              opacity={animateHiding ? 0 : 1}
               key={card.imgAlt}
               imgSrc={card.imgSrc}
               imgAlt={card.imgAlt}
@@ -276,18 +309,38 @@ export const Section2 = () => {
   );
 };
 
-export const Section4 = () => {
+export const Section3 = () => {
   const { t } = useTranslation();
 
   return (
-    <Section id="section4" title={t('sections.section4.title')}>
+    <Section id="section3" title={t('sections.section4.title')}>
       <SectionText>
         {t('sections.section4.content').split('300 офферов')[0]}
         <CarrotSpan>{t('sections.common.offers300')}</CarrotSpan>
         {t('sections.section4.content').split('300 офферов')[1]}
       </SectionText>
+    </Section>
+  );
+};
+export const Section4 = () => {
+  const { t } = useTranslation();
 
-      <div className="mt-6 flex max-w-[35.5rem] flex-wrap gap-6">
+  const geoCards = [
+    { imgSrc: '/diversify.svg', imgAlt: 'our-anwser' },
+    { imgSrc: '/change-flow.svg', imgAlt: 'our-anwser' },
+    { imgSrc: '/test-new-offers.svg', imgAlt: 'our-anwser' },
+    { imgSrc: '/take-payments.svg', imgAlt: 'our-anwser' },
+  ];
+
+  return (
+    <Section id="section4" title={t('sections.section4.title')}>
+      <UniversalCarousel
+        id="geo-carousel"
+        title={t('sections.section2.title')}
+        cards={geoCards}
+        className="aspect-[344/341]"
+      />
+      {/* <div className="mt-6 flex max-w-[35.5rem] flex-wrap gap-6">
         {[
           t('sections.section4.features.diversify'),
           t('sections.section4.features.switchTraffic'),
@@ -303,7 +356,7 @@ export const Section4 = () => {
             {feature}
           </motion.div>
         ))}
-      </div>
+      </div> */}
     </Section>
   );
 };
@@ -317,9 +370,14 @@ export const Section5 = () => {
         <CarrotSpan>{t('sections.common.strengthen')}</CarrotSpan>
         {t('sections.section5.content').split('Усиливаем')[1]}
       </SectionText>
-      <SectionDescription>
-        {t('sections.section5.description')}
-      </SectionDescription>
+
+      <div className="relative mt-8 flex aspect-[617/179] w-[32.2395833333vw] flex-col items-center justify-center gap-y-1.5 px-10 py-4">
+        <img src="/scale-your.svg" className="absolute inset-0" />
+        <RadialText>{t('sections.section5.radialText')}</RadialText>
+        <p className="font-gilroy text-[1.0416666667vw] text-white opacity-60">
+          {t('sections.section5.radialTextDescription')}
+        </p>
+      </div>
     </Section>
   );
 };
@@ -343,46 +401,17 @@ export const Section6 = () => {
       <ScrollArea className="mx-auto -mt-12 flex h-[22vw] w-fit">
         <div className="flex h-fit w-fit gap-x-5 px-4">
           {Array.from({ length: 5 }).map((_, index) => {
-            let delay = 0;
-            let initialX = 0;
-            let initialY = 0;
-
-            switch (index) {
-              case 0:
-                delay = 0.8;
-                initialX = -50;
-                initialY = 0;
-                break;
-              case 1:
-                delay = 1.1;
-                initialX = -50;
-                initialY = 0;
-                break;
-              case 2:
-                delay = 1.3;
-                initialX = 0;
-                initialY = 75;
-                break;
-              case 3:
-                delay = 1.1;
-                initialX = 50;
-                initialY = 0;
-                break;
-              case 4:
-                delay = 0.8;
-                initialX = 50;
-                initialY = 0;
-                break;
-            }
-
             return (
               <CardContainer key={index}>
                 <CardBody>
                   <CardItem translateZ={40}>
                     <motion.img
-                      initial={{ opacity: 0, x: initialX, y: initialY }}
-                      animate={{ opacity: 1, x: 0, y: 0 }}
-                      transition={{ duration: 0.35, delay: delay, repeat: 0 }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{
+                        duration: 0.7,
+                        delay: index * 0.6,
+                      }}
                       src="/meet-card.png"
                       alt="meet-card"
                       draggable={false}
@@ -480,7 +509,7 @@ export const SectionText = ({
 }) => {
   return (
     <p
-      className={`daysone text-[6.4vw] leading-[1.15] tracking-tighter whitespace-pre-wrap text-white uppercase drop-shadow-[0px_5.72px_48.66px_#FECF4D66] lg:text-[1.9vw] ${className}`}>
+      className={`daysone text-[6.4vw] leading-[1.15] tracking-tighter whitespace-pre-wrap text-white uppercase drop-shadow-[0px_5.72px_48.66px_#FECF4D66] lg:text-[2.4vw] ${className}`}>
       {children}
     </p>
   );
@@ -488,7 +517,7 @@ export const SectionText = ({
 
 export const CarrotSpan = ({ children }: { children: ReactNode }) => {
   return (
-    <span className="bg-[linear-gradient(179.15deg,_#FBD804_-14.57%,_rgba(242,_101,_2,_0.98)_118.53%)] bg-clip-text text-transparent">
+    <span className="bg-[linear-gradient(127.11deg,_#FFFD64_-1.14%,_rgba(242,_101,_2,_0.98)_26.75%)] bg-clip-text text-transparent">
       {children}
     </span>
   );
@@ -499,5 +528,13 @@ export const SectionDescription = ({ children }: { children: ReactNode }) => {
     <p className="gilroy max-w-[60vw] text-[3vw] whitespace-pre-wrap text-white uppercase drop-shadow-[0px_5.72px_48.66px_#FECF4D66] lg:max-w-screen lg:text-[1.0741666667vw]">
       {children}
     </p>
+  );
+};
+
+export const RadialText = ({ children }: { children: ReactNode }) => {
+  return (
+    <div className="font-gilroy w-full bg-[radial-gradient(54.59%_124.19%_at_50%_50%,_#FFFFFF_49%,_#7C610A_100%)] bg-clip-text text-start text-[1.7708333333vw] leading-[1.1] text-transparent">
+      {children}
+    </div>
   );
 };

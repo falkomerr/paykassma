@@ -276,6 +276,14 @@ export const dictionary: NestedDictionary = {
         ru: 'Масштабируем ваши успешные связки предоставляя бюджеты \nдля получения  максимального профита с рекламной кампании',
         en: 'We scale your successful bundles  by providing budgets \nto get maximum profit from your advertising campaign',
       },
+      radialText: {
+        ru: 'Масштабируем ваши',
+        en: 'Scale your',
+      },
+      radialTextDescription: {
+        ru: 'успешные связки предоставляя бюджеты для получения\n  максимального профита с рекламной кампании',
+        en: 'successful bundles by providing budgets to get \n maximum profit from your advertising campaign',
+      },
     },
 
     // Секция 6

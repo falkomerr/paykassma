@@ -38,14 +38,14 @@ export const AnimatedButton = ({
           <img
             src="/golden-button-bg.svg"
             alt="login"
-            className="absolute inset-0 h-full w-full rounded-xl object-contain backdrop-blur-sm"
+            className="absolute inset-0 h-full w-full rounded-xl object-contain"
           />
         )
       ) : (
         <img
           src="/white-button-bg.svg"
           alt="default"
-          className="absolute inset-0 h-full w-full rounded-xl object-contain backdrop-blur-sm"
+          className="absolute inset-0 h-full w-full rounded-xl object-contain"
         />
       )}
       {hasOwnAnimation ? (
