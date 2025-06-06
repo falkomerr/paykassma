@@ -230,7 +230,7 @@ const UniversalCarousel = ({
   }, [activeIndex, nextSection, prevSection, cards.length]);
 
   return (
-    <Section id={id} title={title} className={className}>
+    <Section id={id} title={title}>
       {chapterText && <ChapterText>{chapterText}</ChapterText>}
       {textProvider && <SectionText>{textProvider(activeIndex)}</SectionText>}
 
@@ -296,8 +296,8 @@ export const Section2 = () => {
   const { t } = useTranslation();
 
   const geoCards = [
-    { imgSrc: '/our-anwser.svg', imgAlt: 'our-anwser' },
-    { imgSrc: '/our-reklams.svg', imgAlt: 'our-reklams' },
+    { imgSrc: '/our-anwser.png', imgAlt: 'our-anwser' },
+    { imgSrc: '/our-reklams.png', imgAlt: 'our-reklams' },
   ];
 
   const geoTextProvider = (activeIndex: number) => (
@@ -316,6 +316,7 @@ export const Section2 = () => {
       cards={geoCards}
       chapterText={t('sections.chapters.advantages')}
       textProvider={geoTextProvider}
+      className="aspect-[344/341] max-w-[344px]"
     />
   );
 };
@@ -401,10 +402,10 @@ export const Section6 = () => {
       id="section6"
       title={t('sections.section6.title')}
       className="mx-auto flex w-fit flex-col items-center !px-0">
-      <ChapterText className="w-full text-center">
+      <ChapterText className="w-full text-center" animate>
         {t('sections.chapters.conferences')}
       </ChapterText>
-      <SectionText className="w-full text-center text-[2.8645833333vw]">
+      <SectionText className="w-full text-center text-[2.8645833333vw]" animate>
         {t('sections.section6.content').split('увидимся')[0]}
         <CarrotSpan>{t('sections.common.meet')} </CarrotSpan>
         {t('sections.section6.content').split('увидимся')[1]}
@@ -420,8 +421,8 @@ export const Section6 = () => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{
-                        duration: 0.7,
-                        delay: (index + 2) * 0.6,
+                        duration: 0.3,
+                        delay: (index + 5) * 0.25,
                       }}
                       src="/meet-card.png"
                       alt="meet-card"
@@ -444,9 +445,9 @@ export const Section7 = () => {
   const { t } = useTranslation();
 
   const financeCards = [
-    { imgSrc: '/pay-models.svg', imgAlt: 'pay-models' },
+    { imgSrc: '/pay-models.png', imgAlt: 'pay-models' },
     { imgSrc: '/comfortable-payments.png', imgAlt: 'comfortable-payments' },
-    { imgSrc: '/fast-payments.svg', imgAlt: 'fast-payments' },
+    { imgSrc: '/fast-payments.png', imgAlt: 'fast-payments' },
   ];
 
   const financeTextProvider = () => (
@@ -499,30 +500,44 @@ export const Section10 = () => {
 export const ChapterText = ({
   children,
   className,
+  animate,
 }: {
   children: ReactNode;
   className?: string;
+  animate?: boolean;
 }) => {
   return (
-    <p
+    <motion.p
+      initial={animate ? 'hidden' : 'visible'}
+      animate="visible"
+      exit="exit"
+      variants={sectionVariants}
+      transition={transition}
       className={`bg-gradient-to-r from-[#FFD01F] via-[#FFFD64] via-30% to-[#FFC61D] bg-clip-text text-[5vw] text-transparent lg:text-[1.3541666667vw] ${className}`}>
       {children}
-    </p>
+    </motion.p>
   );
 };
 
 export const SectionText = ({
   children,
   className,
+  animate,
 }: {
   children: ReactNode;
   className?: string;
+  animate?: boolean;
 }) => {
   return (
-    <p
+    <motion.p
+      initial={animate ? 'hidden' : 'visible'}
+      animate="visible"
+      exit="exit"
+      variants={sectionVariants}
+      transition={transition}
       className={`daysone text-[6.4vw] leading-[1.15] tracking-tighter whitespace-pre-wrap text-white uppercase drop-shadow-[0px_5.72px_48.66px_#FECF4D66] lg:text-[2.4vw] ${className}`}>
       {children}
-    </p>
+    </motion.p>
   );
 };
 
