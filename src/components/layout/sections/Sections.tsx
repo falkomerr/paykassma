@@ -337,10 +337,10 @@ export const Section4 = () => {
   const { t } = useTranslation();
 
   const geoCards = [
-    { imgSrc: '/diversify.svg', imgAlt: 'our-anwser' },
-    { imgSrc: '/change-flow.svg', imgAlt: 'our-anwser' },
-    { imgSrc: '/test-new-offers.svg', imgAlt: 'our-anwser' },
-    { imgSrc: '/take-payments.svg', imgAlt: 'our-anwser' },
+    { imgSrc: '/diversify.png', imgAlt: 'our-anwser' },
+    { imgSrc: '/change-flow.png', imgAlt: 'our-anwser' },
+    { imgSrc: '/test-new-offers.png', imgAlt: 'our-anwser' },
+    { imgSrc: '/take-payments.png', imgAlt: 'our-anwser' },
   ];
 
   return (
@@ -349,7 +349,7 @@ export const Section4 = () => {
         id="geo-carousel"
         title={t('sections.section2.title')}
         cards={geoCards}
-        className="aspect-[344/341]"
+        className="aspect-[344/341] max-w-[344px]"
       />
       {/* <div className="mt-6 flex max-w-[35.5rem] flex-wrap gap-6">
         {[
