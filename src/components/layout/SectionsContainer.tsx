@@ -14,16 +14,16 @@ import {
 
 // Анимационные варианты для секций
 
-const transition = {
-  duration: 0.3,
-  delay: 0.4,
+export const transition = {
+  duration: 0.6,
+  delay: 0.6,
   ease: 'easeInOut',
 } as Transition;
 
-const sectionVariants = {
+export const sectionVariants = {
   hidden: {
     opacity: 0,
-    y: 50,
+    y: -50,
   },
   visible: {
     opacity: 1,
@@ -31,7 +31,7 @@ const sectionVariants = {
   },
   exit: {
     opacity: 0,
-    y: -50,
+    y: 50,
   },
 };
 
@@ -39,17 +39,12 @@ export const SectionsContainer = () => {
   const activeSection = useUnit($activeSection);
   const isAnimationPlaying = useUnit($animationPlaying);
 
-  const sectionMotion = {
-    initial: 'hidden',
-    animate: 'visible',
-    exit: 'exit',
-    transition: transition,
-    variants: sectionVariants,
-  };
-
-  const renderSection = (sectionId: string, children: React.ReactNode) => {
+  const renderSection = (
+    sectionId: string,
+    children: React.ReactNode,
+  ): React.ReactNode => {
     return (
-      <motion.div key={sectionId} id={sectionId} {...sectionMotion}>
+      <motion.div key={sectionId} id={sectionId}>
         {children}
       </motion.div>
     );
@@ -79,12 +74,15 @@ export const SectionsContainer = () => {
           renderSection('section5', <Section5 />)}
 
         {activeSection === 'section6' &&
+          !isAnimationPlaying &&
           renderSection('section6', <Section6 />)}
 
         {activeSection === 'section7' &&
+          !isAnimationPlaying &&
           renderSection('section7', <Section7 />)}
 
         {activeSection === 'section8' &&
+          !isAnimationPlaying &&
           renderSection('section8', <Section10 />)}
       </AnimatePresence>
     </div>

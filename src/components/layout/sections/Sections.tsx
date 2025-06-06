@@ -6,6 +6,7 @@ import { useUnit } from 'effector-react';
 import { motion } from 'framer-motion';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { useTranslation } from '../../../hooks/useTranslation';
+import { sectionVariants, transition } from '../SectionsContainer';
 
 interface SectionProps {
   id: string;
@@ -16,13 +17,18 @@ interface SectionProps {
 
 export const Section = ({ children, className = '' }: SectionProps) => {
   return (
-    <section
+    <motion.section
+      variants={sectionVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      transition={transition}
       className={cn(
         'relative z-40 flex h-fit h-screen w-full flex-col items-start justify-start bg-gradient-to-b from-black from-30% to-transparent to-50% px-5 max-lg:py-[8rem] lg:w-fit lg:justify-center lg:from-transparent lg:px-[3.75rem]',
         className,
       )}>
       {children}
-    </section>
+    </motion.section>
   );
 };
 
@@ -155,12 +161,20 @@ const UniversalCarousel = ({
   const skippedFirstScroll = useRef(false);
   const carouselRef = useRef<HTMLDivElement>(null);
   const [animateHiding, setAnimateHiding] = useState(false);
+  const isScrollLocked = useRef(false);
 
   useEffect(() => {
-    const handleDirection = debounce((direction: 'up' | 'down') => {
+    const handleDirection = (direction: 'up' | 'down') => {
+      if (isScrollLocked.current) return;
+
+      isScrollLocked.current = true;
+
       if (!skippedFirstScroll.current) {
         skippedFirstScroll.current = true;
         setAnimateHiding(false);
+        setTimeout(() => {
+          isScrollLocked.current = false;
+        }, 1000);
         return;
       }
 
@@ -177,11 +191,18 @@ const UniversalCarousel = ({
         prevSection();
         setAnimateHiding(true);
       }
-    }, 80);
+
+      setTimeout(() => {
+        isScrollLocked.current = false;
+      }, 1000);
+    };
 
     const handleScroll = (e: WheelEvent) => {
       e.preventDefault();
       e.stopPropagation();
+
+      if (isScrollLocked.current) return;
+
       const scrollDirection = e.deltaY > 0 ? 'down' : 'up';
       handleDirection(scrollDirection);
     };
@@ -189,25 +210,15 @@ const UniversalCarousel = ({
     const handleKeyDown = (e: KeyboardEvent) => {
       e.preventDefault();
       e.stopPropagation();
+
+      if (isScrollLocked.current) return;
+
       if (e.key === 'ArrowDown') {
         handleDirection('down');
       } else if (e.key === 'ArrowUp') {
         handleDirection('up');
       }
     };
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function debounce<T extends (...args: any[]) => any>(
-      func: T,
-      wait: number,
-    ): (...args: Parameters<T>) => void {
-      let timeout: ReturnType<typeof setTimeout> | null = null;
-
-      return function (...args: Parameters<T>) {
-        if (timeout) clearTimeout(timeout);
-        timeout = setTimeout(() => func(...args), wait);
-      };
-    }
 
     document.addEventListener('wheel', handleScroll, { passive: false });
     document.addEventListener('keydown', handleKeyDown, { passive: false });
@@ -410,7 +421,7 @@ export const Section6 = () => {
                       animate={{ opacity: 1 }}
                       transition={{
                         duration: 0.7,
-                        delay: index * 0.6,
+                        delay: (index + 2) * 0.6,
                       }}
                       src="/meet-card.png"
                       alt="meet-card"
@@ -517,7 +528,7 @@ export const SectionText = ({
 
 export const CarrotSpan = ({ children }: { children: ReactNode }) => {
   return (
-    <span className="bg-[linear-gradient(127.11deg,_#FFFD64_-1.14%,_rgba(242,_101,_2,_0.98)_26.75%)] bg-clip-text text-transparent">
+    <span className="bg-[linear-gradient(127.11deg,_#FFFD64_-1.14%,_rgba(242,_101,_2,_0.98)_45.75%)] bg-clip-text text-transparent">
       {children}
     </span>
   );

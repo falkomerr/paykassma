@@ -12,18 +12,22 @@ import {
 import { createEffect, createEvent, createStore, sample } from 'effector';
 
 const SECTION_TIMECODES: Record<string, { start: number; end: number }> = {
-  section1: { start: 0, end: 4.9 }, // 0 - 4.9 секунд
-  section2: { start: 5, end: 11 }, // 5 - 11 секунд
-  section3: { start: 11.1, end: 16.4 }, // 11.1 - 16.8 секунд
-  section4: { start: 16.4, end: 23.1 }, // 22.4 - 28 секунд (конец видео)
-  section5: { start: 23.1, end: 28 }, // 28 - 34 секунд (конец видео)
+  section1: { start: 0, end: 5 },
+  section2: { start: 5, end: 11 },
+  section3: { start: 11, end: 16.7 },
+  section4: { start: 16.7, end: 23.067 },
+  section5: { start: 23.067, end: 27.733 },
+  section6: { start: 27.767, end: 31.1 },
+  section7: { start: 31.1, end: 37.767 },
 };
 
 const REVERSED_TIMECODES: Record<string, { start: number; end: number }> = {
-  section2: { start: 31.8, end: 37.9 }, // 5 - 11 секунд
-  section3: { start: 26.12, end: 31.6 }, // 11.1 - 16.8 секунд
-  section4: { start: 19.5, end: 26.12 }, // 16.8 - 22.4 секунд
-  section5: { start: 14.36, end: 19.5 }, // 22.4 - 28 секунд (конец видео)
+  section2: { start: 27.767, end: 31.1 },
+  section3: { start: 23.1, end: 27.767 },
+  section4: { start: 16.733, end: 23.1 },
+  section5: { start: 11.033, end: 16.733 },
+  section6: { start: 5.033, end: 11.033 },
+  section7: { start: 0, end: 5.033 },
 };
 
 export const timeUpdated = createEvent<number>();
@@ -175,10 +179,10 @@ sample({
 });
 
 sample({
-  clock: $previousActiveSection,
+  clock: [$activeSection],
   filter: (prev) => parseInt(prev?.split('section')[1] ?? '100') > 5,
   fn: () => false,
-  target: $animationPlaying,
+  target: animationEnded,
 });
 
 sample({
