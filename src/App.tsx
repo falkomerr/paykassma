@@ -5,11 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import { ChipIcon } from './assets/chip-icon';
 import { Header } from './components/layout/Header';
-import {
-  $loaderFinished,
-  appMounted,
-  loaderFinished,
-} from './models/app-model';
+import { $loaderFinished, appMounted, loaderToggled } from './models/app-model';
 import {
   $activeSection,
   $animationPlaying,
@@ -111,7 +107,6 @@ export const App = () => {
           path="/test"
           element={
             <>
-              <Loader />
               <AppLayout />
               <AnimatePresence>
                 {isGateOpened && (
@@ -170,7 +165,7 @@ const AudioContainer = () => {
     'bg-gradient-to-t from-[#FFD01F] via-[#FFFD64] via-30% to-[#FFC61D] bg-clip-text text-transparent';
 
   return (
-    <div className="fixed bottom-0 z-40 flex h-[5.625rem] w-full items-center justify-between bg-gradient-to-t from-black to-transparent px-5 pb-[1.5625rem] lg:bottom-[1.6875rem] lg:from-transparent lg:px-[3.75rem] lg:pb-0">
+    <div className="fixed bottom-0 z-50 flex h-[5.625rem] w-full items-center justify-between bg-gradient-to-t from-black to-transparent px-5 pb-[1.5625rem] lg:bottom-[1.6875rem] lg:from-transparent lg:px-[3.75rem] lg:pb-0">
       <div className="relative z-50 ml-[2.75rem] flex items-center justify-center">
         <ChipIcon
           className={cn(
@@ -207,19 +202,12 @@ const AudioContainer = () => {
 
 const Loader = () => {
   const isLoaderFinished = useUnit($loaderFinished);
-  const finishLoader = useUnit(loaderFinished);
+  const toggleLoader = useUnit(loaderToggled);
   const [progress, setProgress] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    if (window.location.pathname.includes('test')) {
-      finishLoader();
-      setProgress(100);
-      return;
-    }
-
     const timeout = setTimeout(() => {
-      finishLoader();
+      toggleLoader(true);
     }, 5000);
 
     const interval = setInterval(() => {
@@ -233,30 +221,20 @@ const Loader = () => {
       clearTimeout(timeout);
       clearInterval(interval);
     };
-  }, [finishLoader]);
+  }, [toggleLoader]);
 
   useEffect(() => {
-    if (isLoaderFinished) {
-      const timer = setTimeout(() => {
-        setIsVisible(false);
-      }, 300);
-      return () => clearTimeout(timer);
+    if (!isLoaderFinished) {
+      setProgress(0);
     }
   }, [isLoaderFinished]);
 
   return (
-    <motion.div
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-between bg-black py-15"
-      initial={{
-        opacity: 1,
-      }}
-      animate={{
-        opacity: isLoaderFinished ? 0 : 1,
-      }}
-      style={{
-        zIndex: isVisible ? 9999 : -1,
-      }}
-      transition={{ duration: 0.3 }}>
+    <div
+      className={cn(
+        'fixed inset-0 z-[9999] flex flex-col items-center justify-between bg-black py-15 transition-all duration-300',
+        isLoaderFinished && '-z-50 opacity-0',
+      )}>
       <div className="absolute relative top-1/2 -translate-y-1/2">
         <svg
           width="215"
@@ -517,6 +495,6 @@ const Loader = () => {
           {Math.round(progress)}%
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };

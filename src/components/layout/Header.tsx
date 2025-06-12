@@ -74,7 +74,7 @@ export const Header = () => {
                 style={{ color: '#fff', fontSize: 16 }}
               />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-[9999]">
               <SelectItem value="ru">RU</SelectItem>
               <SelectItem value="en">EN</SelectItem>
             </SelectContent>

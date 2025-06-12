@@ -1,7 +1,21 @@
 import { ScrollArea } from '@/components/components/ui/scrollarea';
 import { CardBody, CardContainer, CardItem } from '@/components/ui/3d-card';
+import {
+  MONEY_BACKWARD_ID,
+  MONEY_BACKWARD_SOURCE,
+  MONEY_FORWARD_ID,
+  MONEY_FORWARD_SOURCE,
+} from '@/constants';
 import { cn } from '@/lib/utils';
 import { goToNextSection, goToPrevSection } from '@/models/journey';
+import {
+  exitSectionChanged,
+  moneyTimeUpdated,
+  moneyVideoElementMounted,
+  nextSectionChanged,
+  prevSectionChanged,
+  sectionChanged,
+} from '@/models/money-video';
 import { useUnit } from 'effector-react';
 import { motion } from 'framer-motion';
 import { ReactNode, useEffect, useRef, useState } from 'react';
@@ -140,6 +154,8 @@ interface UniversalCarouselProps {
   cardWidth?: string;
   cardLgWidth?: string;
   className?: string;
+  sectionChanged?: (section: number) => void;
+  children?: ReactNode;
 }
 
 const UniversalCarousel = ({
@@ -152,10 +168,21 @@ const UniversalCarousel = ({
   cardWidth = 'w-[70vw]',
   cardLgWidth = 'lg:w-[19vw]',
   className = '',
+  sectionChanged,
+  children,
 }: UniversalCarouselProps) => {
-  const { prevSection, nextSection } = useUnit({
+  const {
+    prevSection,
+    nextSection,
+    prevSectionChange,
+    nextSectionChange,
+    exitSection,
+  } = useUnit({
     prevSection: goToPrevSection,
     nextSection: goToNextSection,
+    prevSectionChange: prevSectionChanged,
+    nextSectionChange: nextSectionChanged,
+    exitSection: exitSectionChanged,
   });
   const [activeIndex, setActiveIndex] = useState(0);
   const skippedFirstScroll = useRef(false);
@@ -179,17 +206,26 @@ const UniversalCarousel = ({
       }
 
       if (direction === 'down' && activeIndex < cards.length - 1) {
+        nextSectionChange();
+
         setActiveIndex((prev) => prev + 1);
         setAnimateHiding(false);
+        sectionChanged?.(activeIndex + 1);
       } else if (direction === 'up' && activeIndex > 0) {
+        prevSectionChange();
+
         setActiveIndex((prev) => prev - 1);
         setAnimateHiding(false);
+        sectionChanged?.(activeIndex - 1);
       } else if (direction === 'down' && activeIndex === cards.length - 1) {
         nextSection();
         setAnimateHiding(true);
+        sectionChanged?.(activeIndex + 1);
       } else if (direction === 'up' && activeIndex === 0) {
         prevSection();
         setAnimateHiding(true);
+        sectionChanged?.(activeIndex - 1);
+        exitSection();
       }
 
       setTimeout(() => {
@@ -233,8 +269,11 @@ const UniversalCarousel = ({
     <Section id={id} title={title}>
       {chapterText && <ChapterText>{chapterText}</ChapterText>}
       {textProvider && <SectionText>{textProvider(activeIndex)}</SectionText>}
+      {children}
 
-      <div ref={carouselRef} className="relative mt-8 h-[20vw] w-[40vw]">
+      <div
+        ref={carouselRef}
+        className="relative mt-8 h-[25.7604166667vw] w-[17.9166666667vw]">
         {cards.map((card, index) => {
           // Определяем позицию карточки в зависимости от активного индекса
           let position:
@@ -443,6 +482,12 @@ export const Section6 = () => {
 // Используем универсальный компонент для создания финансовой карусели
 export const Section7 = () => {
   const { t } = useTranslation();
+  const [hideVideo, setHideVideo] = useState(false);
+  const { handleTimeUpdate, setActiveSection, moneyVideoMounted } = useUnit({
+    handleTimeUpdate: moneyTimeUpdated,
+    setActiveSection: sectionChanged,
+    moneyVideoMounted: moneyVideoElementMounted,
+  });
 
   const financeCards = [
     { imgSrc: '/pay-models.png', imgAlt: 'pay-models' },
@@ -457,6 +502,14 @@ export const Section7 = () => {
     </>
   );
 
+  useEffect(() => {
+    moneyVideoMounted();
+  }, [moneyVideoMounted]);
+
+  exitSectionChanged.watch(() => {
+    setHideVideo(true);
+  });
+
   return (
     <UniversalCarousel
       id="finance-carousel"
@@ -467,7 +520,34 @@ export const Section7 = () => {
       isSquareCards={true}
       cardWidth="w-[50vw]"
       cardLgWidth="lg:w-[19vw]"
-    />
+      sectionChanged={setActiveSection}>
+      <video
+        id={MONEY_FORWARD_ID}
+        onTimeUpdate={(e) => {
+          handleTimeUpdate((e.target as HTMLVideoElement).currentTime);
+        }}
+        className="fixed z-30 h-screen w-screen object-cover transition-all duration-300"
+        playsInline
+        muted
+        style={{ opacity: hideVideo ? 0 : 1 }}
+        preload="auto">
+        <source src={MONEY_FORWARD_SOURCE} type="video/mp4" />
+        Ваш браузер не поддерживает видео-тег.
+      </video>
+      <video
+        id={MONEY_BACKWARD_ID}
+        onTimeUpdate={(e) => {
+          handleTimeUpdate((e.target as HTMLVideoElement).currentTime);
+        }}
+        className="fixed z-30 h-screen w-screen object-cover transition-all duration-300"
+        playsInline
+        muted
+        preload="auto"
+        style={{ opacity: hideVideo ? 0 : 1 }}>
+        <source src={MONEY_BACKWARD_SOURCE} type="video/mp4" />
+        Ваш браузер не поддерживает видео-тег.
+      </video>
+    </UniversalCarousel>
   );
 };
 
@@ -513,7 +593,7 @@ export const ChapterText = ({
       exit="exit"
       variants={sectionVariants}
       transition={transition}
-      className={`bg-gradient-to-r from-[#FFD01F] via-[#FFFD64] via-30% to-[#FFC61D] bg-clip-text text-[5vw] text-transparent lg:text-[1.3541666667vw] ${className}`}>
+      className={`z-[40] bg-gradient-to-r from-[#FFD01F] via-[#FFFD64] via-30% to-[#FFC61D] bg-clip-text text-[5vw] text-transparent lg:text-[1.3541666667vw] ${className}`}>
       {children}
     </motion.p>
   );
@@ -535,7 +615,7 @@ export const SectionText = ({
       exit="exit"
       variants={sectionVariants}
       transition={transition}
-      className={`daysone text-[6.4vw] leading-[1.15] tracking-tighter whitespace-pre-wrap text-white uppercase drop-shadow-[0px_5.72px_48.66px_#FECF4D66] lg:text-[2.4vw] ${className}`}>
+      className={`daysone z-[40] text-[6.4vw] leading-[1.15] tracking-tighter whitespace-pre-wrap text-white uppercase drop-shadow-[0px_5.72px_48.66px_#FECF4D66] lg:text-[2.4vw] ${className}`}>
       {children}
     </motion.p>
   );

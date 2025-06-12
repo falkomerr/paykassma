@@ -6,3 +6,12 @@ export const VIDEO_BACKWARD_SOURCE = 'videos/background-backward.mp4';
 
 export const MOBILE_FORWARDS_SOURCE = 'videos/mobile-forward.mp4';
 export const MOBILE_BACKWARDS_SOURCE = 'videos/mobile-backward.mp4';
+
+export const MONEY_FORWARD_SOURCE = 'videos/money.mp4';
+export const MONEY_BACKWARD_SOURCE = 'videos/money-reverse.mp4';
+
+export const MONEY_FORWARD_ID = 'money-forward';
+export const MONEY_BACKWARD_ID = 'money-backward';
+
+export const MONEY_FORWARD_SOURCE_ID = 'money-forward-source';
+export const MONEY_BACKWARD_SOURCE_ID = 'money-backward-source';

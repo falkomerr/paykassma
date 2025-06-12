@@ -14,8 +14,8 @@ import { createEffect, createEvent, createStore, sample } from 'effector';
 const SECTION_TIMECODES: Record<string, { start: number; end: number }> = {
   section1: { start: 0, end: 5 },
   section2: { start: 5, end: 10.8 },
-  section3: { start: 11.4, end: 16.7 },
-  section4: { start: 16.7, end: 23.067 },
+  section3: { start: 10.8, end: 16.5 },
+  section4: { start: 16.5, end: 23.067 },
   section5: { start: 23.067, end: 27.5 },
   section6: { start: 27.767, end: 31.1 },
   section7: { start: 31.1, end: 37.767 },
