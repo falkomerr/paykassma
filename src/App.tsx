@@ -206,16 +206,17 @@ const Loader = () => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      toggleLoader(true);
-    }, 5000);
-
     const interval = setInterval(() => {
       setProgress((prev) => {
         const newProgress = prev + 1;
         return newProgress > 100 ? 100 : newProgress;
       });
     }, 35);
+
+    const timeout = setTimeout(() => {
+      toggleLoader(true);
+      clearTimeout(timeout);
+    }, 5000);
 
     return () => {
       clearTimeout(timeout);
@@ -226,8 +227,12 @@ const Loader = () => {
   useEffect(() => {
     if (!isLoaderFinished) {
       setProgress(0);
+      const timeout = setTimeout(() => {
+        toggleLoader(true);
+        clearTimeout(timeout);
+      }, 5000);
     }
-  }, [isLoaderFinished]);
+  }, [isLoaderFinished, toggleLoader]);
 
   return (
     <div

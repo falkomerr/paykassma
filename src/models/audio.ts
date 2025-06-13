@@ -22,9 +22,14 @@ export const $clickButtonAudioElement = createStore<HTMLAudioElement | null>(
   null,
 );
 
-export const playFx = createEffect((audio: HTMLAudioElement) => {
-  audio.play();
-});
+export const playFx = createEffect(
+  ({ audio, loop = false }: { audio: HTMLAudioElement; loop?: boolean }) => {
+    audio.play();
+    if (loop) {
+      audio.loop = true;
+    }
+  },
+);
 
 export const syncVolumeFx = createEffect(
   (audios: (HTMLAudioElement | null)[]) => {
@@ -69,6 +74,7 @@ sample({
   clock: playHoverButtonAudio,
   source: $hoverButtonAudioElement,
   filter: Boolean,
+  fn: (audio) => ({ audio }),
   target: playFx,
 });
 
@@ -76,12 +82,14 @@ sample({
   clock: playClickAudio,
   source: $clickButtonAudioElement,
   filter: Boolean,
+  fn: (audio) => ({ audio }),
   target: playFx,
 });
 
 sample({
   clock: $bgAudio,
   filter: Boolean,
+  fn: (audio) => ({ audio }),
   target: playFx,
 });
 
@@ -89,6 +97,7 @@ sample({
   clock: playBgAudio,
   source: $bgAudio,
   filter: Boolean,
+  fn: (audio) => ({ audio, loop: true }),
   target: playFx,
 });
 
@@ -96,6 +105,7 @@ sample({
   clock: playGateAudio,
   source: $gateAudioElement,
   filter: Boolean,
+  fn: (audio) => ({ audio }),
   target: playFx,
 });
 
