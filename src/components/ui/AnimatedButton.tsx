@@ -1,4 +1,6 @@
 import { cn } from '@/lib/utils';
+import { playClickAudio, playHoverButtonAudio } from '@/models/audio';
+import { useUnit } from 'effector-react';
 import { ReactNode } from 'react';
 
 type AnimatedButtonProps = {
@@ -15,6 +17,11 @@ export const AnimatedButton = ({
   hasOwnAnimation = false,
   ...props
 }: AnimatedButtonProps) => {
+  const { handleHover, handleClick } = useUnit({
+    handleHover: playHoverButtonAudio,
+    handleClick: playClickAudio,
+  });
+
   return (
     <button
       className={cn(
@@ -26,7 +33,15 @@ export const AnimatedButton = ({
               variant === 'default' ? 'w-[9.7020833333vw]' : 'w-[6.58125vw]',
             ),
       )}
-      {...props}>
+      {...props}
+      onClick={(event) => {
+        handleClick();
+        props.onClick?.(event);
+      }}
+      onMouseEnter={(event) => {
+        handleHover();
+        props.onMouseEnter?.(event);
+      }}>
       {variant === 'login' ? (
         size === 'big' ? (
           <img
