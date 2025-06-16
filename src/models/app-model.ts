@@ -5,6 +5,7 @@ import {
   initButtonAudio,
   initClickAudio,
   initGateAudio,
+  initSwipeCardAudio,
 } from './audio';
 import { initSections } from './journey';
 import { changeLang } from './language';
@@ -20,6 +21,7 @@ sample({
     initBgAudio,
     initButtonAudio,
     initClickAudio,
+    initSwipeCardAudio,
   ],
 });
 

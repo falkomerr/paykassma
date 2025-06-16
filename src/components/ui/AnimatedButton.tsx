@@ -8,6 +8,7 @@ type AnimatedButtonProps = {
   variant?: 'default' | 'login';
   size?: 'default' | 'big';
   hasOwnAnimation?: boolean;
+  className?: string;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const AnimatedButton = ({
@@ -15,6 +16,7 @@ export const AnimatedButton = ({
   variant = 'default',
   size = 'default',
   hasOwnAnimation = false,
+  className,
   ...props
 }: AnimatedButtonProps) => {
   const { handleHover, handleClick } = useUnit({
@@ -32,6 +34,7 @@ export const AnimatedButton = ({
               'flex h-[3vw] items-center justify-center',
               variant === 'default' ? 'w-[9.7020833333vw]' : 'w-[6.58125vw]',
             ),
+        className,
       )}
       {...props}
       onClick={(event) => {

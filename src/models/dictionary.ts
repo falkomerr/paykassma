@@ -322,6 +322,42 @@ export const dictionary: NestedDictionary = {
       },
     },
 
+    section9: {
+      chapter: {
+        ru: 'Глава 5: Типы трафика',
+        en: 'Chapter 5: Traffic types',
+      },
+      titleBonus: {
+        ru: 'Бонусы ',
+        en: 'Bonuses ',
+      },
+      title: {
+        ru: 'доступные \nкаждому',
+        en: 'available \nfor everyone',
+      },
+      weHide: {
+        ru: 'Каждую неделю мы прячем 50$ ',
+        en: 'We hide 50$ every week ',
+      },
+
+      content: {
+        ru: 'в нашем телеграмм \nканале, просто следи за нашими новостями, \nполучай экспертизу и находи бонус первым!\n',
+        en: 'in our telegram channel, simply follow our news, \nreceive expertise and find the bonus first!\n',
+      },
+      ifYouFind: {
+        ru: 'Если ты нашел бонус первым напиши \nоб этом в комментариях к посту и бонус твой!',
+        en: 'If you find the bonus first, write \nabout it in the comments to the post and the bonus is yours!',
+      },
+      participate: {
+        ru: 'Участвовать',
+        en: 'Participate',
+      },
+      detailedConditions: {
+        ru: 'Подробные условия',
+        en: 'Detailed conditions',
+      },
+    },
+
     // Общие компоненты секций
     common: {
       igaming: {

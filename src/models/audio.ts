@@ -4,11 +4,13 @@ export const initBgAudio = createEvent();
 export const initGateAudio = createEvent();
 export const initButtonAudio = createEvent();
 export const initClickAudio = createEvent();
+export const initSwipeCardAudio = createEvent();
 
 export const playBgAudio = createEvent();
 export const playGateAudio = createEvent();
 export const playClickAudio = createEvent();
 export const playHoverButtonAudio = createEvent();
+export const playSwipeCardAudio = createEvent();
 
 export const volumeChanged = createEvent<number>();
 
@@ -21,9 +23,13 @@ export const $hoverButtonAudioElement = createStore<HTMLAudioElement | null>(
 export const $clickButtonAudioElement = createStore<HTMLAudioElement | null>(
   null,
 );
+export const $swipeCardAudioElement = createStore<HTMLAudioElement | null>(
+  null,
+);
 
 export const playFx = createEffect(
   ({ audio, loop = false }: { audio: HTMLAudioElement; loop?: boolean }) => {
+    audio.currentTime = 0;
     audio.play();
     if (loop) {
       audio.loop = true;
@@ -71,6 +77,12 @@ sample({
 });
 
 sample({
+  clock: initSwipeCardAudio,
+  fn: () => new Audio('/zvuk_swipe.mp3'),
+  target: $swipeCardAudioElement,
+});
+
+sample({
   clock: playHoverButtonAudio,
   source: $hoverButtonAudioElement,
   filter: Boolean,
@@ -81,6 +93,14 @@ sample({
 sample({
   clock: playClickAudio,
   source: $clickButtonAudioElement,
+  filter: Boolean,
+  fn: (audio) => ({ audio }),
+  target: playFx,
+});
+
+sample({
+  clock: playSwipeCardAudio,
+  source: $swipeCardAudioElement,
   filter: Boolean,
   fn: (audio) => ({ audio }),
   target: playFx,

@@ -165,7 +165,11 @@ const AudioContainer = () => {
     'bg-gradient-to-t from-[#FFD01F] via-[#FFFD64] via-30% to-[#FFC61D] bg-clip-text text-transparent';
 
   return (
-    <div className="fixed bottom-0 z-50 flex h-[5.625rem] w-full items-center justify-between bg-gradient-to-t from-black to-transparent px-5 pb-[1.5625rem] lg:bottom-[1.6875rem] lg:from-transparent lg:px-[3.75rem] lg:pb-0">
+    <div
+      className={cn(
+        'fixed bottom-0 z-50 flex h-[5.625rem] w-full items-center justify-between bg-gradient-to-t from-black to-transparent px-5 pb-[1.5625rem] transition-all duration-500 ease-in-out lg:bottom-[1.6875rem] lg:from-transparent lg:px-[3.75rem] lg:pb-0',
+        currentSection === 'section9' && '!bottom-22',
+      )}>
       <div className="relative z-50 ml-[2.75rem] flex items-center justify-center">
         <ChipIcon
           className={cn(

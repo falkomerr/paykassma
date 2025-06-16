@@ -75,6 +75,7 @@ export const $sections = createStore<string[]>([
   'section6',
   'section7',
   'section8',
+  'section9',
 ]);
 
 // Текущая активная секция

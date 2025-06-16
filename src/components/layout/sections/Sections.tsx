@@ -7,7 +7,12 @@ import {
   MONEY_FORWARD_SOURCE,
 } from '@/constants';
 import { cn } from '@/lib/utils';
-import { goToNextSection, goToPrevSection } from '@/models/journey';
+import { playSwipeCardAudio } from '@/models/audio';
+import {
+  $activeSection,
+  goToNextSection,
+  goToPrevSection,
+} from '@/models/journey';
 import {
   exitSectionChanged,
   moneyTimeUpdated,
@@ -16,6 +21,7 @@ import {
   prevSectionChanged,
   sectionChanged,
 } from '@/models/money-video';
+import Spline from '@splinetool/react-spline';
 import { useUnit } from 'effector-react';
 import { motion } from 'framer-motion';
 import { ReactNode, useEffect, useRef, useState } from 'react';
@@ -91,27 +97,27 @@ const UniversalCard = ({
     if (position === 'left') {
       setCardOpacity(1);
       setCardClasses(
-        `${baseClasses} z-30 backdrop-blur-xl rounded-[40px] md:rounded-[30px] opacity-100 translate-x-0 scale-100`,
+        `${baseClasses} z-40 backdrop-blur-xl rounded-[40px] md:rounded-[30px] opacity-100 translate-x-0 scale-100`,
       );
     } else if (position === 'center') {
       setCardOpacity(0.2);
       setCardClasses(
-        `${baseClasses} z-20 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[15%] translate-y-[3%] rotate-6`,
+        `${baseClasses} z-30 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[15%] translate-y-[3%] rotate-6`,
       );
     } else if (position === 'right') {
       setCardOpacity(0.2);
       setCardClasses(
-        `${baseClasses} z-10 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[30%] translate-y-[6%] rotate-12`,
+        `${baseClasses} z-20 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[30%] translate-y-[6%] rotate-12`,
       );
     } else if (position === 'left-1') {
       setCardOpacity(0.2);
       setCardClasses(
-        `${baseClasses} z-20 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[-15%] translate-y-[3%] rotate-[-6deg]`,
+        `${baseClasses} z-30 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[-15%] translate-y-[3%] rotate-[-6deg]`,
       );
     } else if (position === 'left-2') {
       setCardOpacity(0.2);
       setCardClasses(
-        `${baseClasses} z-10 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[-30%] translate-y-[6%] rotate-[-12deg]`,
+        `${baseClasses} z-20 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[-30%] translate-y-[6%] rotate-[-12deg]`,
       );
     } else if (position === 'hidden') {
       setCardOpacity(0);
@@ -177,12 +183,14 @@ const UniversalCarousel = ({
     prevSectionChange,
     nextSectionChange,
     exitSection,
+    playAudio,
   } = useUnit({
     prevSection: goToPrevSection,
     nextSection: goToNextSection,
     prevSectionChange: prevSectionChanged,
     nextSectionChange: nextSectionChanged,
     exitSection: exitSectionChanged,
+    playAudio: playSwipeCardAudio,
   });
   const [activeIndex, setActiveIndex] = useState(0);
   const skippedFirstScroll = useRef(false);
@@ -205,6 +213,8 @@ const UniversalCarousel = ({
         return;
       }
 
+      playAudio();
+
       if (direction === 'down' && activeIndex < cards.length - 1) {
         nextSectionChange();
 
@@ -221,6 +231,7 @@ const UniversalCarousel = ({
         nextSection();
         setAnimateHiding(true);
         sectionChanged?.(activeIndex + 1);
+        exitSection();
       } else if (direction === 'up' && activeIndex === 0) {
         prevSection();
         setAnimateHiding(true);
@@ -263,7 +274,17 @@ const UniversalCarousel = ({
       document.removeEventListener('wheel', handleScroll);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [activeIndex, nextSection, prevSection, cards.length]);
+  }, [
+    activeIndex,
+    nextSection,
+    prevSection,
+    cards.length,
+    playAudio,
+    nextSectionChange,
+    prevSectionChange,
+    sectionChanged,
+    exitSection,
+  ]);
 
   return (
     <Section id={id} title={title}>
@@ -440,7 +461,11 @@ export const Section6 = () => {
     <Section
       id="section6"
       title={t('sections.section6.title')}
-      className="mx-auto flex w-fit flex-col items-center !px-0">
+      className="mx-auto flex !w-full w-fit flex-col items-center !px-0">
+      <Spline
+        className="absolute -left-0 z-0 !w-screen"
+        scene="https://prod.spline.design/qdVHy93-5StPiPyX/scene.splinecode"
+      />
       <ChapterText className="w-full text-center" animate>
         {t('sections.chapters.conferences')}
       </ChapterText>
@@ -552,7 +577,7 @@ export const Section7 = () => {
 };
 
 // Удаляем Section8 и Section9, оставляем только Section10
-export const Section10 = () => {
+export const Section8 = () => {
   const { t } = useTranslation();
 
   return (
@@ -573,6 +598,111 @@ export const Section10 = () => {
         <CarrotSpan>{t('sections.common.monetize')}</CarrotSpan>{' '}
         {t('sections.section10.content').split('Монетизируем')[1]}
       </SectionText>
+    </Section>
+  );
+};
+export const Section9 = () => {
+  const { t } = useTranslation();
+  const currentSection = useUnit($activeSection);
+
+  return (
+    <Section
+      id="section10"
+      title={t('sections.section10.title')}
+      className="flex h-screen max-h-screen !w-full flex-col">
+      <div className="flex h-full items-center">
+        <div className="z-50 flex flex-col gap-y-6">
+          <ChapterText className="-mb-6">
+            {t('sections.section9.chapter')}
+          </ChapterText>
+          <SectionText>
+            <CarrotSpan>{t('sections.section9.titleBonus')}</CarrotSpan>
+            {t('sections.section9.title')}
+          </SectionText>
+          <div className="gilroy flex flex-col gap-y-2 text-[3vw] whitespace-pre-wrap text-white drop-shadow-[0px_5.72px_48.66px_#FECF4D66] lg:max-w-screen lg:text-[1.0741666667vw]">
+            <p>
+              <span className="text-[#FBD74C]">
+                {t('sections.section9.weHide')}
+              </span>
+              {t('sections.section9.content')}
+            </p>
+            <span className="text-[#FBD74C]">
+              {t('sections.section9.ifYouFind')}
+            </span>
+          </div>
+
+          <div className="flex gap-2.5">
+            <button
+              type="submit"
+              className="relative aspect-[208/74] w-[10vw] cursor-pointer overflow-hidden rounded-[0.78125vw]"
+              style={{
+                background:
+                  'linear-gradient(103.94deg, #515150 5.7%, #FFB901 47.34%, #515150 95.09%)',
+                padding: '2px',
+              }}>
+              <div className="flex h-full w-full items-center justify-center rounded-[0.68125vw] bg-black">
+                <span className="font-inter relative z-10 text-[0.9416666667vw] font-medium tracking-[0.09rem] text-white">
+                  {t('sections.section9.participate')}
+                </span>
+              </div>
+            </button>
+            <button
+              type="submit"
+              className="relative aspect-[298/74] w-[15vw] cursor-pointer overflow-hidden rounded-[0.78125vw]"
+              style={{
+                background:
+                  'linear-gradient(103.94deg, #515150 5.7%, #FFFFFF 47.34%, #515150 95.09%)',
+                padding: '2px',
+              }}>
+              <div className="flex h-full w-full items-center justify-center rounded-[0.68125vw] bg-black">
+                <span className="font-inter relative z-10 text-[0.9416666667vw] font-medium tracking-[0.09rem] text-white">
+                  {t('sections.section9.detailedConditions')}
+                </span>
+              </div>
+            </button>
+          </div>
+        </div>
+        <Spline
+          className="absolute top-0 bottom-0 -left-0 z-0 !w-screen"
+          scene="https://prod.spline.design/qdVHy93-5StPiPyX/scene.splinecode"
+        />
+      </div>
+      <div
+        className={cn(
+          'absolute right-0 bottom-0 left-0 z-50 flex h-fit w-full items-center justify-between px-[3.75rem] py-8 text-[#CCC] drop-shadow-[0px_5.72px_48.66px_#FECF4D66] transition-all duration-500',
+          currentSection !== 'section9' && 'opacity-0',
+        )}>
+        © PayKassma.partners, 2025 All rights reserved
+        <div className="flex w-[9.8958333333vw] items-center justify-center gap-x-2">
+          {[
+            '/tg.svg',
+            '/insta.svg',
+            '/youtube.svg',
+            '/linkedin.svg',
+            '/facebook.svg',
+          ].map((item) => (
+            <img
+              key={item}
+              src={item}
+              alt="tg"
+              className={cn(
+                'relative z-[999] size-[10vw] shrink-0 object-cover object-center xl:size-[1.5625vw]',
+                ['/tg.svg', '/insta.svg'].includes(item)
+                  ? '-mt-2.5'
+                  : 'scale-[1.6]',
+                item === '/youtube.svg' && '-mb-0.5 ml-1.5',
+              )}
+            />
+          ))}
+        </div>
+        <div className="flex gap-x-5">
+          <p>Получить PWA-приложение</p>
+          <p>Веб-мастерам</p>
+          <p>Маркетинг и PR</p>
+          <p>Для рекламодателей</p>
+          <p>Условия и положения</p>
+        </div>
+      </div>
     </Section>
   );
 };
