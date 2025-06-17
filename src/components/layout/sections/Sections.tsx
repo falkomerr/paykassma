@@ -10,6 +10,9 @@ import { cn } from '@/lib/utils';
 import { playSwipeCardAudio } from '@/models/audio';
 import {
   $activeSection,
+  $blockChangeSection,
+  blockChangeSectionDisabled,
+  blockChangeSectionEnabled,
   goToNextSection,
   goToPrevSection,
 } from '@/models/journey';
@@ -387,9 +390,9 @@ export const Section3 = () => {
   return (
     <Section id="section3" title={t('sections.section4.title')}>
       <SectionText>
-        {t('sections.section4.content').split('300 офферов')[0]}
-        <CarrotSpan>{t('sections.common.offers300')}</CarrotSpan>
-        {t('sections.section4.content').split('300 офферов')[1]}
+        {t('sections.section4.more')}
+        <CarrotSpan>{t('sections.section4.offers')}</CarrotSpan>
+        {t('sections.section4.content')}
       </SectionText>
     </Section>
   );
@@ -443,13 +446,10 @@ export const Section5 = () => {
         {t('sections.section5.content').split('Усиливаем')[1]}
       </SectionText>
 
-      <div className="relative mt-8 flex aspect-[617/179] w-[32.2395833333vw] flex-col items-center justify-center gap-y-1.5 px-10 py-4">
-        <img src="/scale-your.svg" className="absolute inset-0" />
-        <RadialText>{t('sections.section5.radialText')}</RadialText>
-        <p className="font-gilroy text-[1.0416666667vw] text-white opacity-60">
-          {t('sections.section5.radialTextDescription')}
-        </p>
-      </div>
+      <img
+        src="/scale-your.png"
+        className="mt-4 aspect-[410/341] w-[21.3541666667vw]"
+      />
     </Section>
   );
 };
@@ -463,7 +463,7 @@ export const Section6 = () => {
       title={t('sections.section6.title')}
       className="mx-auto flex !w-full w-fit flex-col items-center !px-0">
       <Spline
-        className="absolute -left-0 z-0 !w-screen"
+        className="absolute -left-0 z-0 !w-screen opacity-40"
         scene="https://prod.spline.design/qdVHy93-5StPiPyX/scene.splinecode"
       />
       <ChapterText className="w-full text-center" animate>
@@ -582,9 +582,9 @@ export const Section8 = () => {
 
   return (
     <Section
-      id="section10"
+      id="section8"
       title={t('sections.section10.title')}
-      className="flex w-full flex-col items-center">
+      className="flex !w-full flex-col items-center">
       <img
         src="/socials.png"
         alt="socials"
@@ -601,13 +601,64 @@ export const Section8 = () => {
     </Section>
   );
 };
+
 export const Section9 = () => {
   const { t } = useTranslation();
-  const currentSection = useUnit($activeSection);
+  const [scrolled, setScrolled] = useState(0);
+  const enableBlockChangeSection = useUnit(blockChangeSectionEnabled);
+  const disableBlockChangeSection = useUnit(blockChangeSectionDisabled);
+  const blockChangeSection = useUnit($blockChangeSection);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const spline = useRef<any>(null);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function onLoad(splineApp: any) {
+    spline.current = splineApp;
+  }
+
+  function triggerAnimation() {
+    if (!spline.current) return;
+    spline.current.emitEvent('Scroll', 'Screen');
+  }
+
+  useEffect(() => {
+    const debouncedScroll = debounce((delta: number) => {
+      if (delta > 0) {
+        setScrolled((prev) => prev + 1);
+      } else {
+        setScrolled((prev) => prev - 1);
+      }
+      triggerAnimation();
+    }, 500);
+
+    const handleScroll = (event: WheelEvent) => {
+      const delta = event.deltaY;
+      if ((scrolled >= 6 && delta > 0) || (scrolled <= 0 && delta < 0)) {
+        disableBlockChangeSection();
+        return;
+      }
+      enableBlockChangeSection();
+
+      console.log('dwwdw', scrolled, blockChangeSection);
+
+      debouncedScroll(delta);
+    };
+
+    document.addEventListener('wheel', handleScroll);
+
+    return () => {
+      document.removeEventListener('wheel', handleScroll);
+    };
+  }, [
+    scrolled,
+    blockChangeSection,
+    disableBlockChangeSection,
+    enableBlockChangeSection,
+  ]);
 
   return (
     <Section
-      id="section10"
+      id="section9"
       title={t('sections.section10.title')}
       className="flex h-screen max-h-screen !w-full flex-col">
       <div className="flex h-full items-center">
@@ -634,43 +685,198 @@ export const Section9 = () => {
           <div className="flex gap-2.5">
             <button
               type="submit"
-              className="relative aspect-[208/74] w-[10vw] cursor-pointer overflow-hidden rounded-[0.78125vw]"
+              className="relative aspect-[208/64] w-[8vw] cursor-pointer overflow-hidden rounded-[0.78125vw]"
               style={{
                 background:
                   'linear-gradient(103.94deg, #515150 5.7%, #FFB901 47.34%, #515150 95.09%)',
                 padding: '2px',
               }}>
-              <div className="flex h-full w-full items-center justify-center rounded-[0.68125vw] bg-black">
-                <span className="font-inter relative z-10 text-[0.9416666667vw] font-medium tracking-[0.09rem] text-white">
-                  {t('sections.section9.participate')}
-                </span>
+              <div className="group/button flex h-full items-center justify-center rounded-[0.78125vw] bg-black">
+                <div className="relative z-[999] h-[14px] w-full overflow-hidden text-center text-white 2xl:h-[16px]">
+                  <div className="absolute w-full text-center text-[14px] leading-[1] whitespace-nowrap opacity-100 transition-all duration-300 group-hover/button:-translate-y-full group-hover/button:opacity-0 2xl:text-[16px]">
+                    {t('sections.section9.participate')}
+                  </div>
+                  <div className="absolute w-full translate-y-full text-center text-[14px] leading-[1] whitespace-nowrap transition-transform duration-300 group-hover/button:translate-y-0 2xl:text-[16px]">
+                    {t('sections.section9.participate')}
+                  </div>
+                </div>
               </div>
             </button>
             <button
               type="submit"
-              className="relative aspect-[298/74] w-[15vw] cursor-pointer overflow-hidden rounded-[0.78125vw]"
+              className="relative aspect-[298/64] w-[12vw] cursor-pointer overflow-hidden rounded-[0.78125vw]"
               style={{
                 background:
                   'linear-gradient(103.94deg, #515150 5.7%, #FFFFFF 47.34%, #515150 95.09%)',
                 padding: '2px',
               }}>
-              <div className="flex h-full w-full items-center justify-center rounded-[0.68125vw] bg-black">
-                <span className="font-inter relative z-10 text-[0.9416666667vw] font-medium tracking-[0.09rem] text-white">
-                  {t('sections.section9.detailedConditions')}
-                </span>
+              <div className="group/button flex h-full items-center justify-center rounded-[0.78125vw] bg-black">
+                <div className="relative z-[999] h-[14px] w-full overflow-hidden text-center text-white 2xl:h-[16px]">
+                  <div className="absolute w-full text-center text-[14px] leading-[1] whitespace-nowrap opacity-100 transition-all duration-300 group-hover/button:-translate-y-full group-hover/button:opacity-0 2xl:text-[16px]">
+                    {t('sections.section9.detailedConditions')}
+                  </div>
+                  <div className="absolute w-full translate-y-full text-center text-[14px] leading-[1] whitespace-nowrap transition-transform duration-300 group-hover/button:translate-y-0 2xl:text-[16px]">
+                    {t('sections.section9.detailedConditions')}
+                  </div>
+                </div>
               </div>
             </button>
           </div>
         </div>
         <Spline
-          className="absolute top-0 bottom-0 -left-0 z-0 !w-screen"
+          className="absolute top-0 bottom-0 -left-0 z-0 !w-screen opacity-40"
           scene="https://prod.spline.design/qdVHy93-5StPiPyX/scene.splinecode"
         />
+        <Spline
+          onLoad={onLoad}
+          className="absolute top-0 bottom-0 -left-0 z-0 !w-screen"
+          scene="https://prod.spline.design/rhYvlsc024cVNUPz/scene.splinecode"
+        />
       </div>
+    </Section>
+  );
+};
+
+export const Section10 = () => {
+  const { t } = useTranslation();
+  const currentSection = useUnit($activeSection);
+
+  return (
+    <Section
+      id="section10"
+      title={t('sections.section10.title')}
+      className="flex !w-full flex-row items-center !justify-between">
+      <div className="flex h-full w-fit items-center">
+        <div className="z-50 flex flex-col gap-y-6">
+          <SectionText>
+            {t('sections.section11.title')}{' '}
+            <CarrotSpan>{t('sections.section11.paykassma')}</CarrotSpan>
+          </SectionText>
+          <div className="gilroy flex flex-col gap-y-2 text-[3vw] whitespace-pre-wrap text-white drop-shadow-[0px_5.72px_48.66px_#FECF4D66] lg:max-w-screen lg:text-[1.0741666667vw]">
+            <p>{t('sections.section11.content')}</p>
+          </div>
+
+          <div className="flex gap-2.5">
+            <button
+              type="submit"
+              className="relative aspect-[208/64] w-[9.58125vw] cursor-pointer overflow-hidden rounded-[0.78125vw]"
+              style={{
+                background:
+                  'linear-gradient(103.94deg, #515150 5.7%, #FFB901 47.34%, #515150 95.09%)',
+                padding: '2px',
+              }}>
+              <div className="group/button flex h-full items-center justify-center rounded-[0.78125vw] bg-black">
+                <div className="relative z-[999] h-[14px] w-full overflow-hidden text-center text-white 2xl:h-[16px]">
+                  <div className="absolute w-full text-center text-[14px] leading-[1] whitespace-nowrap opacity-100 transition-all duration-300 group-hover/button:-translate-y-full group-hover/button:opacity-0 2xl:text-[16px]">
+                    {t('sections.section11.join')}
+                  </div>
+                  <div className="absolute w-full translate-y-full text-center text-[14px] leading-[1] whitespace-nowrap transition-transform duration-300 group-hover/button:translate-y-0 2xl:text-[16px]">
+                    {t('sections.section11.join')}
+                  </div>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+      <svg
+        className="mr-[13.8541666667vw]"
+        width="587"
+        height="665"
+        viewBox="0 0 587 665"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg">
+        <g filter="url(#filter0_d_184_60269)">
+          <path
+            d="M97.2568 120.061C98.9737 95.9594 99.8322 83.9086 104.776 74.5735C110.082 64.5541 118.639 56.6273 129.034 52.1019C138.72 47.8855 150.87 47.9501 175.171 48.0794L224.072 48.3396C232.074 48.3822 238.539 54.8813 238.539 62.8838L218.164 402.966C217.049 421.568 216.492 430.868 218.93 438.301C222.729 449.885 231.484 459.18 242.82 463.665C250.094 466.543 259.411 466.543 278.046 466.543C296.956 466.543 306.411 466.543 313.748 469.478C325.185 474.054 333.961 483.525 337.652 495.277C340.02 502.816 339.301 512.244 337.861 531.099L337.625 534.198C335.846 557.498 334.956 569.149 330.303 578.169C324.869 588.704 315.872 596.968 304.915 601.491C295.534 605.364 283.85 605.264 260.483 605.065L63.8994 603.384C65.7873 563.425 87.1955 261.301 97.2568 120.061Z"
+            fill="url(#paint0_linear_184_60269)"
+            fill-opacity="0.5"
+          />
+          <path
+            d="M247.948 142.221C251.161 98.2757 252.767 76.3031 267.177 62.9084C281.587 49.5138 303.654 49.5138 347.787 49.5137L523.789 49.5137L501.064 361.137C497.853 405.167 496.248 427.182 481.837 440.58C467.427 453.978 445.353 453.978 401.207 453.978H225.337C227.051 428.374 239.812 253.487 247.948 142.221Z"
+            fill="url(#paint1_linear_184_60269)"
+            fill-opacity="0.5"
+          />
+          <path
+            d="M400.901 43.0127H157.495C119.503 43.0127 87.6644 72.3231 85.0163 109.745L49.5518 610.457H292.959C330.951 610.457 362.789 581.147 365.437 543.727L370.252 475.642H439.044C477.037 475.642 508.875 446.331 511.523 408.91L537.448 43.0127H400.901ZM360.008 81.7535L334.862 438.146H236.368L259.435 112.359C259.87 100.459 271.122 81.7535 293.55 81.7535H360.008ZM327.565 541.113C326.301 558.984 311.105 572.974 292.959 572.974H90.2675L123.556 112.579C124.829 97.4863 135.078 81.7535 157.288 81.7535H230.117C225.242 90.5478 222.315 99.1823 221.563 109.745L195.653 475.642H332.2L327.565 541.113ZM473.666 406.295C472.403 424.166 457.206 438.161 439.06 438.161H372.915L398.254 80.4937H496.748L473.666 406.295Z"
+            fill="url(#paint2_linear_184_60269)"
+          />
+        </g>
+        <defs>
+          <filter
+            id="filter0_d_184_60269"
+            x="0.896584"
+            y="0.0816588"
+            width="585.207"
+            height="664.755"
+            filterUnits="userSpaceOnUse"
+            color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feColorMatrix
+              in="SourceAlpha"
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+              result="hardAlpha"
+            />
+            <feOffset dy="5.72414" />
+            <feGaussianBlur stdDeviation="24.3276" />
+            <feComposite in2="hardAlpha" operator="out" />
+            <feColorMatrix
+              type="matrix"
+              values="0 0 0 0 0.996078 0 0 0 0 0.81098 0 0 0 0 0.301961 0 0 0 0.4 0"
+            />
+            <feBlend
+              mode="normal"
+              in2="BackgroundImageFix"
+              result="effect1_dropShadow_184_60269"
+            />
+            <feBlend
+              mode="normal"
+              in="SourceGraphic"
+              in2="effect1_dropShadow_184_60269"
+              result="shape"
+            />
+          </filter>
+          <linearGradient
+            id="paint0_linear_184_60269"
+            x1="75.1955"
+            y1="603.841"
+            x2="389.387"
+            y2="49.4637"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#4B4B4B" />
+            <stop offset="0.337101" stop-color="#2A282B" />
+            <stop offset="1" stop-color="#060606" />
+          </linearGradient>
+          <linearGradient
+            id="paint1_linear_184_60269"
+            x1="237.425"
+            y1="452.646"
+            x2="415.062"
+            y2="-10.0841"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#4B4B4B" />
+            <stop offset="0.337101" stop-color="#2A282B" />
+            <stop offset="1" stop-color="#060606" />
+          </linearGradient>
+          <linearGradient
+            id="paint2_linear_184_60269"
+            x1="49.5518"
+            y1="326.735"
+            x2="537.448"
+            y2="326.735"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#FFD01F" />
+            <stop offset="0.302885" stop-color="#FFFD64" />
+            <stop offset="1" stop-color="#FFC61D" />
+          </linearGradient>
+        </defs>
+      </svg>
+
       <div
         className={cn(
           'absolute right-0 bottom-0 left-0 z-50 flex h-fit w-full items-center justify-between px-[3.75rem] py-8 text-[#CCC] drop-shadow-[0px_5.72px_48.66px_#FECF4D66] transition-all duration-500',
-          currentSection !== 'section9' && 'opacity-0',
+          currentSection !== 'section10' && 'opacity-0',
         )}>
         © PayKassma.partners, 2025 All rights reserved
         <div className="flex w-[9.8958333333vw] items-center justify-center gap-x-2">
@@ -705,6 +911,18 @@ export const Section9 = () => {
       </div>
     </Section>
   );
+};
+
+// Исправленная функция debounce
+const debounce = <T extends unknown[]>(
+  func: (...args: T) => void,
+  delay: number,
+) => {
+  let timeoutId: NodeJS.Timeout;
+  return (...args: T) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
 };
 
 export const ChapterText = ({

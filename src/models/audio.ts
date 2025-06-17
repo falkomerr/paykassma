@@ -1,4 +1,10 @@
-import { createEffect, createEvent, createStore, sample } from 'effector';
+import {
+  attach,
+  createEffect,
+  createEvent,
+  createStore,
+  sample,
+} from 'effector';
 
 export const initBgAudio = createEvent();
 export const initGateAudio = createEvent();
@@ -27,15 +33,27 @@ export const $swipeCardAudioElement = createStore<HTMLAudioElement | null>(
   null,
 );
 
-export const playFx = createEffect(
-  ({ audio, loop = false }: { audio: HTMLAudioElement; loop?: boolean }) => {
+export const playFx = attach({
+  source: $volume,
+  effect: (
+    volume,
+    {
+      audio,
+      loop = false,
+    }: {
+      audio: HTMLAudioElement;
+      loop?: boolean;
+    },
+  ) => {
     audio.currentTime = 0;
+    audio.volume = volume;
     audio.play();
     if (loop) {
+      audio.volume = volume !== 0 ? volume - 0.3 : 0;
       audio.loop = true;
     }
   },
-);
+});
 
 export const syncVolumeFx = createEffect(
   (audios: (HTMLAudioElement | null)[]) => {

@@ -2,6 +2,7 @@ import { VIDEO_BACKWARD_ID, VIDEO_FORWARD_ID } from '@/constants';
 import {
   $activeSection,
   $animationPlaying,
+  $blockChangeSection,
   $previousActiveSection,
   $sections,
   animationEnded,
@@ -139,12 +140,19 @@ sample({
     activeSection: $activeSection,
     videoMode: $videoMode,
     sections: $sections,
+    blockChangeSection: $blockChangeSection,
     previousActiveSection: $previousActiveSection,
   },
-  filter: ({ isAnimationPlaying, previousActiveSection, videoMode }) =>
+  filter: ({
+    isAnimationPlaying,
+    previousActiveSection,
+    videoMode,
+    blockChangeSection,
+  }) =>
     !isAnimationPlaying &&
     previousActiveSection !== 'section6' &&
-    videoMode === 'forward',
+    videoMode === 'forward' &&
+    !blockChangeSection,
   fn: ({ videoElements, activeSection, videoMode }) => ({
     videoElements,
     videoMode,
@@ -159,14 +167,21 @@ sample({
     videoElements: $videoElements,
     activeSection: $activeSection,
     isAnimationPlaying: $animationPlaying,
+    blockChangeSection: $blockChangeSection,
     videoMode: $videoMode,
     sections: $sections,
     previousActiveSection: $previousActiveSection,
   },
-  filter: ({ isAnimationPlaying, previousActiveSection, videoMode }) =>
+  filter: ({
+    isAnimationPlaying,
+    previousActiveSection,
+    videoMode,
+    blockChangeSection,
+  }) =>
     !isAnimationPlaying &&
     previousActiveSection !== 'section6' &&
-    videoMode === 'backward',
+    videoMode === 'backward' &&
+    !blockChangeSection,
   fn: ({ videoElements, activeSection, videoMode }) => ({
     videoElements,
     videoMode,

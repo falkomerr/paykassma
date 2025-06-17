@@ -32,6 +32,14 @@ export const gateOpened = createEvent();
 export const $animationPlaying = createStore(false);
 export const $gateOpened = createStore(false);
 
+export const blockChangeSectionEnabled = createEvent();
+export const blockChangeSectionDisabled = createEvent();
+
+export const $blockChangeSection = createStore(false);
+
+$blockChangeSection.on(blockChangeSectionEnabled, () => true);
+$blockChangeSection.on(blockChangeSectionDisabled, () => false);
+
 export const ANIMATED_SECTIONS = [
   'section1',
   'section2',
@@ -76,6 +84,7 @@ export const $sections = createStore<string[]>([
   'section7',
   'section8',
   'section9',
+  'section10',
 ]);
 
 // Текущая активная секция
@@ -92,16 +101,22 @@ sample({
   target: [$gateOpened, playGateAudio],
 });
 
-// Обработка перехода к следующей секции
 sample({
   clock: goToNextSection,
   source: {
+    block: $blockChangeSection,
     sections: $sections,
     activeSection: $activeSection,
     isChanging: $isChangingSection,
     animationPlaying: $animationPlaying,
   },
-  filter: ({ isChanging, animationPlaying, sections, activeSection }) => {
+  filter: ({
+    block,
+    isChanging,
+    animationPlaying,
+    sections,
+    activeSection,
+  }) => {
     const currentIndex = sections.indexOf(activeSection);
     const isLastSection = currentIndex === sections.length - 1;
     const isAnimatedSection = ANIMATED_SECTIONS.includes(activeSection);
@@ -109,7 +124,10 @@ sample({
     // Не выполняем действие, если секция меняется или мы на последней секции
     // Проверяем animationPlaying только если текущая секция анимированная
     return (
-      !isChanging && !(isAnimatedSection && animationPlaying) && !isLastSection
+      !isChanging &&
+      !(isAnimatedSection && animationPlaying) &&
+      !isLastSection &&
+      !block
     );
   },
   fn: ({ sections, activeSection }) => {
@@ -119,16 +137,22 @@ sample({
   target: scrollToSection,
 });
 
-// Обработка перехода к предыдущей секции
 sample({
   clock: goToPrevSection,
   source: {
+    block: $blockChangeSection,
     sections: $sections,
     activeSection: $activeSection,
     isChanging: $isChangingSection,
     animationPlaying: $animationPlaying,
   },
-  filter: ({ isChanging, animationPlaying, sections, activeSection }) => {
+  filter: ({
+    block,
+    isChanging,
+    animationPlaying,
+    sections,
+    activeSection,
+  }) => {
     const currentIndex = sections.indexOf(activeSection);
     const isFirstSection = currentIndex === 0;
     const isAnimatedSection = ANIMATED_SECTIONS.includes(activeSection);
@@ -136,7 +160,10 @@ sample({
     // Не выполняем действие, если секция меняется или мы на первой секции
     // Проверяем animationPlaying только если текущая секция анимированная
     return (
-      !isChanging && !(isAnimatedSection && animationPlaying) && !isFirstSection
+      !isChanging &&
+      !(isAnimatedSection && animationPlaying) &&
+      !isFirstSection &&
+      !block
     );
   },
   fn: ({ sections, activeSection }) => {
@@ -164,6 +191,8 @@ sample({
 
 // Инициализация обработчиков событий
 export const initJourneyFx = createEffect(() => {
+  if ($blockChangeSection.getState()) return;
+
   // Переменная для дебаунса событий прокрутки
   let wheelDelayTimer: ReturnType<typeof setTimeout> | null = null;
   let isWheelHandled = false;

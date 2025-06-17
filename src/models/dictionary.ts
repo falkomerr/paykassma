@@ -234,13 +234,21 @@ export const dictionary: NestedDictionary = {
 
     // Секция 4
     section4: {
+      more: {
+        ru: 'Более ',
+        en: 'More than ',
+      },
+      offers: {
+        ru: '300 офферов\n',
+        en: '300 offers\n',
+      },
       title: {
         ru: 'Секция 4',
         en: 'Section 4',
       },
       content: {
-        ru: 'Более 300 офферов \nот топовых \nрекламодателей \nв одном месте',
-        en: 'More than 300 offers \nfrom top advertisers \nin one place',
+        ru: 'от топовых \nрекламодателей \nв одном месте',
+        en: 'from top advertisers \nin one place',
       },
       features: {
         diversify: {
@@ -339,7 +347,6 @@ export const dictionary: NestedDictionary = {
         ru: 'Каждую неделю мы прячем 50$ ',
         en: 'We hide 50$ every week ',
       },
-
       content: {
         ru: 'в нашем телеграмм \nканале, просто следи за нашими новостями, \nполучай экспертизу и находи бонус первым!\n',
         en: 'in our telegram channel, simply follow our news, \nreceive expertise and find the bonus first!\n',
@@ -391,6 +398,24 @@ export const dictionary: NestedDictionary = {
       monetize: {
         ru: 'Монетизируем',
         en: 'Monetize',
+      },
+    },
+    section11: {
+      paykassma: {
+        ru: 'Paykassma',
+        en: 'Paykassma',
+      },
+      title: {
+        ru: 'присоединяйся\nк команде',
+        en: 'join the \nteam',
+      },
+      content: {
+        ru: 'У нас одна индустрия, общая цель, присоединяйся\nк нам и масштабируй свой профит в Igaming',
+        en: 'We have one industry, a common goal, join us \nand scale your profit in iGaming',
+      },
+      join: {
+        ru: 'Стать партнером',
+        en: 'Become a partner',
       },
     },
   },

@@ -24,7 +24,12 @@ import { Button } from './components/ui/Button';
 import { LoginForm } from './features/login-form';
 import { RegisterForm } from './features/register-form';
 import { cn } from './lib/utils';
-import { $volume, volumeChanged } from './models/audio';
+import {
+  $volume,
+  playClickAudio,
+  playHoverButtonAudio,
+  volumeChanged,
+} from './models/audio';
 import './styles/sections.css';
 
 attachLogger();
@@ -34,6 +39,25 @@ const AppLayout = () => {
     isGateOpened: $gateOpened,
     currentSection: $activeSection,
   });
+  const { handleHover, handleClick } = useUnit({
+    handleHover: playHoverButtonAudio,
+    handleClick: playClickAudio,
+  });
+
+  useEffect(() => {
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach((button) => {
+      button.addEventListener('mouseenter', handleHover);
+      button.addEventListener('click', handleClick);
+    });
+
+    return () => {
+      buttons.forEach((button) => {
+        button.removeEventListener('mouseenter', handleHover);
+        button.removeEventListener('click', handleClick);
+      });
+    };
+  }, [handleClick, handleHover]);
 
   return (
     <div className="min-h-screen overflow-hidden bg-black text-white">
@@ -168,7 +192,7 @@ const AudioContainer = () => {
     <div
       className={cn(
         'fixed bottom-0 z-50 flex h-[5.625rem] w-full items-center justify-between bg-gradient-to-t from-black to-transparent px-5 pb-[1.5625rem] transition-all duration-500 ease-in-out lg:bottom-[1.6875rem] lg:from-transparent lg:px-[3.75rem] lg:pb-0',
-        currentSection === 'section9' && '!bottom-22',
+        currentSection === 'section10' && '!bottom-22',
       )}>
       <div className="relative z-50 ml-[2.75rem] flex items-center justify-center">
         <ChipIcon

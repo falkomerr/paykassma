@@ -3,6 +3,7 @@ import { AnimatePresence, motion, Transition } from 'framer-motion';
 import { $activeSection, $animationPlaying } from '../../models/journey';
 import {
   Section1,
+  Section10,
   Section2,
   Section3,
   Section4,
@@ -89,6 +90,10 @@ export const SectionsContainer = () => {
         {activeSection === 'section9' &&
           !isAnimationPlaying &&
           renderSection('section9', <Section9 />)}
+
+        {activeSection === 'section10' &&
+          !isAnimationPlaying &&
+          renderSection('section10', <Section10 />)}
       </AnimatePresence>
     </div>
   );
