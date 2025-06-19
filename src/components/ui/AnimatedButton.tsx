@@ -20,9 +20,9 @@ export const AnimatedButton = ({
   return (
     <button
       className={cn(
-        'group/button relative z-[999] inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-2xl text-base font-medium text-white backdrop-blur-sm focus:outline-none',
+        'group/button relative z-[999] inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-2xl text-base font-medium text-white backdrop-blur-xs focus:outline-none',
         size === 'big'
-          ? 'h-[4.0104166667vw] w-[16.3541666667vw] px-10'
+          ? 'h-[4.0104166667vw] w-[17.3541666667vw] px-10'
           : cn(
               'flex h-[3vw] items-center justify-center',
               variant === 'default' ? 'w-[9.7020833333vw]' : 'w-[6.58125vw]',

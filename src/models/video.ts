@@ -13,22 +13,18 @@ import {
 import { createEffect, createEvent, createStore, sample } from 'effector';
 
 const SECTION_TIMECODES: Record<string, { start: number; end: number }> = {
-  section1: { start: 0, end: 5 },
+  section1: { start: 0, end: 4.8 },
   section2: { start: 5, end: 10.8 },
   section3: { start: 10.8, end: 16.5 },
-  section4: { start: 16.5, end: 23.067 },
+  section4: { start: 16.7, end: 22.9 },
   section5: { start: 23.067, end: 27.5 },
-  section6: { start: 27.767, end: 31.1 },
-  section7: { start: 31.1, end: 37.767 },
 };
 
 const REVERSED_TIMECODES: Record<string, { start: number; end: number }> = {
-  section2: { start: 27.767, end: 31.1 },
-  section3: { start: 23.1, end: 27.767 },
-  section4: { start: 16.733, end: 23.1 },
-  section5: { start: 11.033, end: 16.733 },
-  section6: { start: 5.033, end: 11.033 },
-  section7: { start: 0, end: 5.033 },
+  section2: { start: 16.79, end: 22.81 },
+  section3: { start: 11, end: 16.79 },
+  section4: { start: 4.67, end: 11 },
+  section5: { start: 0, end: 4.67 },
 };
 
 export const timeUpdated = createEvent<number>();

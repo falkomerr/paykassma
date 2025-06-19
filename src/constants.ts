@@ -15,3 +15,9 @@ export const MONEY_BACKWARD_ID = 'money-backward';
 
 export const MONEY_FORWARD_SOURCE_ID = 'money-forward-source';
 export const MONEY_BACKWARD_SOURCE_ID = 'money-backward-source';
+
+export const TRAFFICS_FORWARD_ID = 'traffics-forward';
+export const TRAFFICS_BACKWARD_ID = 'traffics-backward';
+
+export const TRAFFICS_FORWARD_SOURCE = 'videos/traffics.mp4';
+export const TRAFFICS_BACKWARD_SOURCE = 'videos/traffics-reversed.mp4';

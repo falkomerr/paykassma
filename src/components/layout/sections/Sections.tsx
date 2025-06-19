@@ -5,6 +5,10 @@ import {
   MONEY_BACKWARD_SOURCE,
   MONEY_FORWARD_ID,
   MONEY_FORWARD_SOURCE,
+  TRAFFICS_BACKWARD_ID,
+  TRAFFICS_BACKWARD_SOURCE,
+  TRAFFICS_FORWARD_ID,
+  TRAFFICS_FORWARD_SOURCE,
 } from '@/constants';
 import { cn } from '@/lib/utils';
 import { playSwipeCardAudio } from '@/models/audio';
@@ -17,6 +21,8 @@ import {
   goToPrevSection,
 } from '@/models/journey';
 import {
+  $animationPlaying,
+  $currentSection,
   exitSectionChanged,
   moneyTimeUpdated,
   moneyVideoElementMounted,
@@ -24,10 +30,25 @@ import {
   prevSectionChanged,
   sectionChanged,
 } from '@/models/money-video';
+import {
+  nextraffictSectionChanged,
+  prevtrafficSectionChanged,
+  trafficsTimeUpdated,
+  trafficsVideoElementMounted,
+} from '@/models/traffics-video';
+import { $videoMode } from '@/models/video';
 import Spline from '@splinetool/react-spline';
 import { useUnit } from 'effector-react';
 import { motion } from 'framer-motion';
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import {
+  lazy,
+  ReactNode,
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { sectionVariants, transition } from '../SectionsContainer';
 
@@ -160,6 +181,7 @@ interface UniversalCarouselProps {
   chapterText?: string;
   textProvider?: (activeIndex: number) => ReactNode;
   isSquareCards?: boolean;
+  blockSwipe?: boolean;
   cardWidth?: string;
   cardLgWidth?: string;
   className?: string;
@@ -171,6 +193,7 @@ const UniversalCarousel = ({
   id,
   title,
   cards,
+  blockSwipe = false,
   chapterText,
   textProvider,
   isSquareCards = false,
@@ -203,6 +226,8 @@ const UniversalCarousel = ({
 
   useEffect(() => {
     const handleDirection = (direction: 'up' | 'down') => {
+      if (blockSwipe) return;
+
       if (isScrollLocked.current) return;
 
       isScrollLocked.current = true;
@@ -286,6 +311,7 @@ const UniversalCarousel = ({
     nextSectionChange,
     prevSectionChange,
     sectionChanged,
+    blockSwipe,
     exitSection,
   ]);
 
@@ -297,7 +323,7 @@ const UniversalCarousel = ({
 
       <div
         ref={carouselRef}
-        className="relative mt-8 h-[25.7604166667vw] w-[17.9166666667vw]">
+        className="relative mt-8 h-[22.7604166667vw] w-[17.9166666667vw]">
         {cards.map((card, index) => {
           // Определяем позицию карточки в зависимости от активного индекса
           let position:
@@ -454,6 +480,8 @@ export const Section5 = () => {
   );
 };
 
+const SplineBG = lazy(() => import('@splinetool/react-spline'));
+
 export const Section6 = () => {
   const { t } = useTranslation();
 
@@ -462,10 +490,18 @@ export const Section6 = () => {
       id="section6"
       title={t('sections.section6.title')}
       className="mx-auto flex !w-full w-fit flex-col items-center !px-0">
-      <Spline
-        className="absolute -left-0 z-0 !w-screen opacity-40"
-        scene="https://prod.spline.design/qdVHy93-5StPiPyX/scene.splinecode"
-      />
+      <Suspense>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}>
+          <SplineBG
+            className="absolute -left-0 z-0 !w-screen opacity-40"
+            scene="https://prod.spline.design/qdVHy93-5StPiPyX/scene.splinecode"
+          />
+        </motion.div>
+      </Suspense>
       <ChapterText className="w-full text-center" animate>
         {t('sections.chapters.conferences')}
       </ChapterText>
@@ -486,7 +522,7 @@ export const Section6 = () => {
                       animate={{ opacity: 1 }}
                       transition={{
                         duration: 0.3,
-                        delay: (index + 5) * 0.25,
+                        delay: (index + 7) * 0.25,
                       }}
                       src="/meet-card.png"
                       alt="meet-card"
@@ -508,6 +544,7 @@ export const Section6 = () => {
 export const Section7 = () => {
   const { t } = useTranslation();
   const [hideVideo, setHideVideo] = useState(false);
+  const { animationPlaying } = useUnit({ animationPlaying: $animationPlaying });
   const { handleTimeUpdate, setActiveSection, moneyVideoMounted } = useUnit({
     handleTimeUpdate: moneyTimeUpdated,
     setActiveSection: sectionChanged,
@@ -544,6 +581,7 @@ export const Section7 = () => {
       textProvider={financeTextProvider}
       isSquareCards={true}
       cardWidth="w-[50vw]"
+      blockSwipe={animationPlaying}
       cardLgWidth="lg:w-[19vw]"
       sectionChanged={setActiveSection}>
       <video
@@ -579,25 +617,125 @@ export const Section7 = () => {
 // Удаляем Section8 и Section9, оставляем только Section10
 export const Section8 = () => {
   const { t } = useTranslation();
+  const {
+    mountTrafficsVideo,
+    updateTrafficsTime,
+    nextSection,
+    prevSection,
+    nexttrafficSection,
+    prevtrafficSection,
+  } = useUnit({
+    mountTrafficsVideo: trafficsVideoElementMounted,
+    updateTrafficsTime: trafficsTimeUpdated,
+    nexttrafficSection: nextraffictSectionChanged,
+    prevtrafficSection: prevtrafficSectionChanged,
+    prevSection: prevSectionChanged,
+    nextSection: nextSectionChanged,
+  });
+
+  const { currentSection, videoMode } = useUnit({
+    currentSection: $currentSection,
+    videoMode: $videoMode,
+  });
+
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const debouncedScroll = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      if (currentSection === 0 && videoMode === 'forward') {
+        console.log('dkwkwdkw', currentSection, videoMode);
+        nexttrafficSection();
+      } else if (currentSection === 1 && videoMode === 'backward') {
+        prevtrafficSection();
+      } else if (currentSection === 1 && videoMode === 'forward') {
+        console.log('dkwdwjdw', currentSection, videoMode);
+        nextSection();
+      } else if (currentSection === 0 && videoMode === 'backward') {
+        prevSection();
+      }
+    }, 400);
+  }, [
+    currentSection,
+    videoMode,
+    nexttrafficSection,
+    prevtrafficSection,
+    nextSection,
+    prevSection,
+  ]);
+
+  useEffect(() => {
+    mountTrafficsVideo();
+
+    const handleScroll = (e: WheelEvent) => {
+      const direction = e.deltaY > 0 ? 'next' : 'prev';
+      const isMobile = window.innerWidth < 1024;
+
+      if (isMobile) {
+        if (direction === 'next') {
+          nextSection();
+        } else {
+          prevSection();
+        }
+      } else {
+        debouncedScroll();
+      }
+    };
+
+    document.addEventListener('wheel', handleScroll);
+
+    return () => {
+      document.removeEventListener('wheel', handleScroll);
+    };
+  }, [mountTrafficsVideo, debouncedScroll, nextSection, prevSection]);
 
   return (
     <Section
       id="section8"
       title={t('sections.section10.title')}
       className="flex !w-full flex-col items-center">
-      <img
-        src="/socials.png"
-        alt="socials"
-        draggable={false}
-        className="absolute top-40 left-1/2 aspect-[2506/1024] w-full -translate-x-[40%] lg:top-20"
-      />
-      <ChapterText className="mt-50 w-full text-center lg:mt-20">
-        {t('sections.chapters.trafficTypes')}
-      </ChapterText>
-      <SectionText className="w-full text-center text-[2.8645833333vw]">
-        <CarrotSpan>{t('sections.common.monetize')}</CarrotSpan>{' '}
-        {t('sections.section10.content').split('Монетизируем')[1]}
-      </SectionText>
+      <div className="">
+        <img
+          src="/socials.png"
+          alt="socials"
+          draggable={false}
+          className="absolute top-40 left-1/2 aspect-[2506/1024] w-full -translate-x-[40%] lg:top-20"
+        />
+        <ChapterText className="mt-50 w-full text-center lg:mt-20">
+          {t('sections.chapters.trafficTypes')}
+        </ChapterText>
+        <SectionText className="w-full text-center text-[2.8645833333vw]">
+          <CarrotSpan>{t('sections.common.monetize')}</CarrotSpan>{' '}
+          {t('sections.section10.content').split('Монетизируем')[1]}
+        </SectionText>
+      </div>
+      <div className="hidden">
+        <video
+          id={TRAFFICS_FORWARD_ID}
+          onTimeUpdate={(e) => {
+            updateTrafficsTime((e.target as HTMLVideoElement).currentTime);
+          }}
+          playsInline
+          muted
+          preload="auto"
+          className="absolute inset-0 w-full">
+          <source src={TRAFFICS_FORWARD_SOURCE} type="video/mp4" />
+        </video>
+        <video
+          id={TRAFFICS_BACKWARD_ID}
+          onTimeUpdate={(e) => {
+            updateTrafficsTime((e.target as HTMLVideoElement).currentTime);
+          }}
+          playsInline
+          muted
+          preload="auto"
+          className="absolute inset-0 w-full">
+          <source src={TRAFFICS_BACKWARD_SOURCE} type="video/mp4" />
+        </video>
+      </div>
     </Section>
   );
 };
@@ -729,7 +867,7 @@ export const Section9 = () => {
         />
         <Spline
           onLoad={onLoad}
-          className="absolute top-0 bottom-0 -left-0 z-0 !w-screen"
+          className="absolute top-0 -right-80 bottom-0 z-0 !w-screen"
           scene="https://prod.spline.design/rhYvlsc024cVNUPz/scene.splinecode"
         />
       </div>
