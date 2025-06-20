@@ -295,12 +295,62 @@ const UniversalCarousel = ({
       }
     };
 
+    // Переменные для отслеживания сенсорных событий
+    let touchStartY = 0;
+    let touchEndY = 0;
+    const TOUCH_THRESHOLD = 80; // Порог для определения свайпа (в пикселях)
+    let isTouchHandled = false;
+
+    // Обработчик начала касания (для мобильных устройств)
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+      isTouchHandled = false;
+    };
+
+    // Обработчик перемещения при касании
+    const handleTouchMove = (e: TouchEvent) => {
+      // Предотвращаем стандартный скролл страницы
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    // Обработчик завершения касания
+    const handleTouchEnd = (e: TouchEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (isScrollLocked.current || isTouchHandled) return;
+
+      touchEndY = e.changedTouches[0].clientY;
+
+      // Определяем направление свайпа и его силу
+      const touchDelta = touchStartY - touchEndY;
+
+      // Свайп вниз (для перехода к предыдущей секции)
+      if (touchDelta < -TOUCH_THRESHOLD) {
+        isTouchHandled = true;
+        handleDirection('up');
+      }
+      // Свайп вверх (для перехода к следующей секции)
+      else if (touchDelta > TOUCH_THRESHOLD) {
+        isTouchHandled = true;
+        handleDirection('down');
+      }
+    };
+
     document.addEventListener('wheel', handleScroll, { passive: false });
     document.addEventListener('keydown', handleKeyDown, { passive: false });
+    document.addEventListener('touchstart', handleTouchStart, {
+      passive: true,
+    });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     return () => {
       document.removeEventListener('wheel', handleScroll);
       document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
     };
   }, [
     activeIndex,
@@ -323,7 +373,7 @@ const UniversalCarousel = ({
 
       <div
         ref={carouselRef}
-        className="relative mt-8 h-[22.7604166667vw] w-[17.9166666667vw]">
+        className="relative mt-8 h-[22.7604166667vw] w-[17.9166666667vw] max-lg:w-[53.75vw]">
         {cards.map((card, index) => {
           // Определяем позицию карточки в зависимости от активного индекса
           let position:
@@ -474,7 +524,7 @@ export const Section5 = () => {
 
       <img
         src="/scale-your.png"
-        className="mt-4 aspect-[410/341] w-[21.3541666667vw]"
+        className="mt-4 aspect-[410/341] w-[21.3541666667vw] max-lg:w-[53.75vw]"
       />
     </Section>
   );
@@ -639,6 +689,8 @@ export const Section8 = () => {
   });
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isTouchHandledRef = useRef(false);
+  const touchStartYRef = useRef(0);
 
   const debouncedScroll = useCallback(() => {
     if (timeoutRef.current) {
@@ -647,12 +699,10 @@ export const Section8 = () => {
 
     timeoutRef.current = setTimeout(() => {
       if (currentSection === 0 && videoMode === 'forward') {
-        console.log('dkwkwdkw', currentSection, videoMode);
         nexttrafficSection();
       } else if (currentSection === 1 && videoMode === 'backward') {
         prevtrafficSection();
       } else if (currentSection === 1 && videoMode === 'forward') {
-        console.log('dkwdwjdw', currentSection, videoMode);
         nextSection();
       } else if (currentSection === 0 && videoMode === 'backward') {
         prevSection();
@@ -671,6 +721,9 @@ export const Section8 = () => {
     mountTrafficsVideo();
 
     const handleScroll = (e: WheelEvent) => {
+      e.preventDefault(); // Предотвращаем стандартный скролл
+      e.stopPropagation(); // Останавливаем всплытие события
+
       const direction = e.deltaY > 0 ? 'next' : 'prev';
       const isMobile = window.innerWidth < 1024;
 
@@ -685,10 +738,53 @@ export const Section8 = () => {
       }
     };
 
-    document.addEventListener('wheel', handleScroll);
+    // Обработчики сенсорных событий для мобильных устройств
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartYRef.current = e.touches[0].clientY;
+      isTouchHandledRef.current = false;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      // Предотвращаем стандартный скролл страницы
+      e.preventDefault();
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (isTouchHandledRef.current) return;
+
+      const touchEndY = e.changedTouches[0].clientY;
+      const touchDelta = touchStartYRef.current - touchEndY;
+      const TOUCH_THRESHOLD = 80; // Порог для определения свайпа (в пикселях)
+
+      isTouchHandledRef.current = true;
+
+      // Свайп вниз (для перехода к предыдущей секции)
+      if (touchDelta < -TOUCH_THRESHOLD) {
+        prevSection();
+      }
+      // Свайп вверх (для перехода к следующей секции)
+      else if (touchDelta > TOUCH_THRESHOLD) {
+        nextSection();
+      }
+
+      // Сбрасываем флаг через некоторое время
+      setTimeout(() => {
+        isTouchHandledRef.current = false;
+      }, 500);
+    };
+
+    document.addEventListener('wheel', handleScroll, { passive: false });
+    document.addEventListener('touchstart', handleTouchStart, {
+      passive: true,
+    });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     return () => {
       document.removeEventListener('wheel', handleScroll);
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
     };
   }, [mountTrafficsVideo, debouncedScroll, nextSection, prevSection]);
 

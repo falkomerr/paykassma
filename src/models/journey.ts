@@ -205,6 +205,12 @@ export const initJourneyFx = createEffect(() => {
   // Переменная для отслеживания, находимся ли мы в процессе прокрутки
   let isScrolling = false;
 
+  // Переменные для отслеживания сенсорных событий (для мобильных устройств)
+  let touchStartY = 0;
+  let touchEndY = 0;
+  const TOUCH_THRESHOLD = 80; // Порог для определения свайпа (в пикселях)
+  let isTouchHandled = false;
+
   // Обработчик колесика мыши
   const handleWheel = (e: WheelEvent) => {
     if (e.deltaX !== 0) return;
@@ -310,12 +316,75 @@ export const initJourneyFx = createEffect(() => {
     }
   };
 
+  // Обработчик начала касания (для мобильных устройств)
+  const handleTouchStart = (e: TouchEvent) => {
+    touchStartY = e.touches[0].clientY;
+    isTouchHandled = false;
+  };
+
+  // Обработчик перемещения при касании
+  const handleTouchMove = (e: TouchEvent) => {
+    // Предотвращаем стандартный скролл страницы
+    e.preventDefault();
+  };
+
+  // Обработчик завершения касания
+  const handleTouchEnd = (e: TouchEvent) => {
+    const now = Date.now();
+    const activeSection = $activeSection.getState();
+    const isAnimatedSection = ANIMATED_SECTIONS.includes(activeSection);
+
+    touchEndY = e.changedTouches[0].clientY;
+
+    // Проверяем, можно ли выполнить переход между секциями
+    if (
+      $isChangingSection.getState() ||
+      (isAnimatedSection && $animationPlaying.getState()) ||
+      isTouchHandled ||
+      now - lastActionTime < MIN_ACTION_INTERVAL ||
+      isScrolling
+    )
+      return;
+
+    const sections = $sections.getState();
+    const currentIndex = sections.indexOf(activeSection);
+    const isFirstSection = currentIndex === 0;
+    const isLastSection = currentIndex === sections.length - 1;
+
+    // Определяем направление свайпа и его силу
+    const touchDelta = touchStartY - touchEndY;
+
+    // Свайп вниз (для перехода к предыдущей секции)
+    if (touchDelta < -TOUCH_THRESHOLD && !isFirstSection && !isTouchHandled) {
+      isTouchHandled = true;
+      isScrolling = true;
+      lastActionTime = now;
+      goToPrevSection();
+    }
+    // Свайп вверх (для перехода к следующей секции)
+    else if (
+      touchDelta > TOUCH_THRESHOLD &&
+      !isLastSection &&
+      !isTouchHandled
+    ) {
+      isTouchHandled = true;
+      isScrolling = true;
+      lastActionTime = now;
+      goToNextSection();
+    }
+  };
+
   // Отключение стандартной прокрутки
   document.body.style.overflow = 'hidden';
 
   // Добавление обработчиков событий
   window.addEventListener('wheel', handleWheel, { passive: false });
   window.addEventListener('keydown', handleKeyDown);
+
+  // Добавление обработчиков сенсорных событий для мобильных устройств
+  window.addEventListener('touchstart', handleTouchStart, { passive: true });
+  window.addEventListener('touchmove', handleTouchMove, { passive: false });
+  window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
   // Всегда устанавливаем первую секцию как активную при инициализации
   setTimeout(() => {
@@ -328,6 +397,7 @@ export const initJourneyFx = createEffect(() => {
     setTimeout(() => {
       isScrolling = false;
       accumulatedDelta = 0; // Также сбрасываем накопленную дельту
+      isTouchHandled = false; // Сбрасываем флаг обработки сенсорных событий
     }, 100);
   });
 
@@ -336,6 +406,9 @@ export const initJourneyFx = createEffect(() => {
     document.body.style.overflow = '';
     window.removeEventListener('wheel', handleWheel);
     window.removeEventListener('keydown', handleKeyDown);
+    window.removeEventListener('touchstart', handleTouchStart);
+    window.removeEventListener('touchmove', handleTouchMove);
+    window.removeEventListener('touchend', handleTouchEnd);
     unsubscribe(); // Отписываемся от $activeSection
     if (wheelDelayTimer) {
       clearTimeout(wheelDelayTimer);
