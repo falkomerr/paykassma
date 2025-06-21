@@ -6,15 +6,10 @@ import {
   VIDEO_FORWARD_ID,
   VIDEO_FORWARD_SOURCE,
 } from '@/constants';
-import { appMounted } from '@/models/app-model';
 import { timeUpdated, videoElementMounted } from '@/models/video';
-import { trackMediaQuery } from '@withease/web-api';
 import { useUnit } from 'effector-react';
 import { useEffect } from 'react';
-
-const { $matches } = trackMediaQuery('(min-width: 1024px)', {
-  setup: appMounted,
-});
+import { $matches } from './matches';
 
 export const BackgroundVideo: React.FC = () => {
   const mountVideo = useUnit(videoElementMounted);

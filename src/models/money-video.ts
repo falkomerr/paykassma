@@ -9,8 +9,8 @@ const SECTION_TIMECODES: Record<string, { start: number; end: number }> = {
 };
 
 const REVERSED_TIMECODES: Record<string, { start: number; end: number }> = {
-  1: { start: 2.767, end: 4.5 },
-  2: { start: 0, end: 2.7 },
+  1: { start: 2.767, end: 4.4 },
+  2: { start: 0, end: 2.8 },
 };
 
 export const moneyTimeUpdated = createEvent<number>();

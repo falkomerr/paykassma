@@ -21,3 +21,6 @@ export const TRAFFICS_BACKWARD_ID = 'traffics-backward';
 
 export const TRAFFICS_FORWARD_SOURCE = 'videos/traffics.mp4';
 export const TRAFFICS_BACKWARD_SOURCE = 'videos/traffics-reversed.mp4';
+
+export const MOBILE_MONEY_FORWARD_SOURCE = 'videos/mobile-forward-money.mp4';
+export const MOBILE_MONEY_BACKWARD_SOURCE = 'videos/mobile-backward-money.mp4';

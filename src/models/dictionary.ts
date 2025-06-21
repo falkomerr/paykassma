@@ -363,6 +363,10 @@ export const dictionary: NestedDictionary = {
         ru: 'Подробные условия',
         en: 'Detailed conditions',
       },
+      spline: {
+        ru: 'https://prod.spline.design/rhYvlsc024cVNUPz/scene.splinecode',
+        en: 'https://prod.spline.design/kHDmRvwtfKOtSuFh/scene.splinecode',
+      },
     },
 
     // Общие компоненты секций

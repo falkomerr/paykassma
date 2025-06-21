@@ -1,6 +1,8 @@
 import { ScrollArea, ScrollBar } from '@/components/components/ui/scrollarea';
 import { CardBody, CardContainer, CardItem } from '@/components/ui/3d-card';
 import {
+  MOBILE_MONEY_BACKWARD_SOURCE,
+  MOBILE_MONEY_FORWARD_SOURCE,
   MONEY_BACKWARD_ID,
   MONEY_BACKWARD_SOURCE,
   MONEY_FORWARD_ID,
@@ -14,9 +16,6 @@ import { cn } from '@/lib/utils';
 import { playSwipeCardAudio } from '@/models/audio';
 import {
   $activeSection,
-  $blockChangeSection,
-  blockChangeSectionDisabled,
-  blockChangeSectionEnabled,
   goToNextSection,
   goToPrevSection,
 } from '@/models/journey';
@@ -43,18 +42,24 @@ import { motion } from 'framer-motion';
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { sectionVariants, transition } from '../SectionsContainer';
+import { $matches } from '../matches';
 
 interface SectionProps {
   id: string;
   title: string;
   children?: ReactNode;
   className?: string;
+  disableAnimation?: boolean;
 }
 
-export const Section = ({ children, className = '' }: SectionProps) => {
+export const Section = ({
+  children,
+  className = '',
+  disableAnimation,
+}: SectionProps) => {
   return (
     <motion.section
-      variants={sectionVariants}
+      variants={!disableAnimation ? sectionVariants : {}}
       initial="hidden"
       animate="visible"
       exit="exit"
@@ -99,13 +104,12 @@ const UniversalCard = ({
   imgAlt,
   position,
   isSquare = false,
-  opacity = 1,
   className,
 }: UniversalCardProps) => {
   const [cardClasses, setCardClasses] = useState(
     `absolute transition-all duration-300 ease-in-out`,
   );
-  const [cardOpacity, setCardOpacity] = useState(opacity);
+  const [cardOpacity, setCardOpacity] = useState(0);
 
   useEffect(() => {
     const baseClasses = 'absolute transition-all duration-300 ease-in-out';
@@ -137,21 +141,16 @@ const UniversalCard = ({
       );
     } else if (position === 'hidden') {
       setCardOpacity(0);
-      setCardClasses(`${baseClasses} z-10 scale-50`);
+      setCardClasses(`${baseClasses} z-10 scale-50 `);
     }
   }, [position]);
-
-  useEffect(() => {
-    if (opacity === 0) {
-      setCardOpacity(opacity);
-    }
-  }, [opacity]);
 
   return (
     <motion.div
       className={cardClasses}
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: cardOpacity, y: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: cardOpacity }}
+      exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}>
       <img
         src={imgSrc}
@@ -488,7 +487,10 @@ export const Section4 = () => {
   ];
 
   return (
-    <Section id="section4" title={t('sections.section4.title')}>
+    <Section
+      id="section4"
+      disableAnimation
+      title={t('sections.section4.title')}>
       <UniversalCarousel
         isAlreadySection
         id="geo-carousel"
@@ -565,7 +567,7 @@ export const Section6 = () => {
         <CarrotSpan>{t('sections.common.meet')} </CarrotSpan>
         {t('sections.section6.content').split('увидимся')[1]}
       </SectionText>
-      <ScrollArea className="z-[9999] mx-auto -mt-12 flex w-fit overflow-x-auto max-lg:pb-4 lg:h-[22vw]">
+      <ScrollArea className="z-[9999] mx-auto -mt-12 ml-20 flex w-full overflow-x-hidden max-lg:pb-4 lg:h-[22vw]">
         <div className="relative z-[999] flex h-fit gap-x-5 px-4 max-lg:mt-20">
           {Array.from({ length: 5 }).map((_, index) => {
             return (
@@ -613,6 +615,7 @@ export const Section6 = () => {
 
 // Используем универсальный компонент для создания финансовой карусели
 export const Section7 = () => {
+  const isDesktop = useUnit($matches);
   const { t } = useTranslation();
   const [hideVideo, setHideVideo] = useState(false);
   const { animationPlaying } = useUnit({ animationPlaying: $animationPlaying });
@@ -655,32 +658,65 @@ export const Section7 = () => {
       blockSwipe={animationPlaying}
       cardLgWidth="lg:w-[19vw]"
       sectionChanged={setActiveSection}>
-      <video
-        id={MONEY_FORWARD_ID}
-        onTimeUpdate={(e) => {
-          handleTimeUpdate((e.target as HTMLVideoElement).currentTime);
-        }}
-        className="fixed z-30 h-screen w-screen object-cover transition-all duration-300"
-        playsInline
-        muted
-        style={{ opacity: hideVideo ? 0 : 1 }}
-        preload="auto">
-        <source src={MONEY_FORWARD_SOURCE} type="video/mp4" />
-        Ваш браузер не поддерживает видео-тег.
-      </video>
-      <video
-        id={MONEY_BACKWARD_ID}
-        onTimeUpdate={(e) => {
-          handleTimeUpdate((e.target as HTMLVideoElement).currentTime);
-        }}
-        className="fixed z-30 h-screen w-screen object-cover transition-all duration-300"
-        playsInline
-        muted
-        preload="auto"
-        style={{ opacity: hideVideo ? 0 : 1 }}>
-        <source src={MONEY_BACKWARD_SOURCE} type="video/mp4" />
-        Ваш браузер не поддерживает видео-тег.
-      </video>
+      {isDesktop ? (
+        <>
+          <video
+            id={MONEY_FORWARD_ID}
+            onTimeUpdate={(e) => {
+              handleTimeUpdate((e.target as HTMLVideoElement).currentTime);
+            }}
+            className="fixed z-30 h-screen w-screen object-cover transition-all duration-300"
+            playsInline
+            muted
+            style={{ opacity: hideVideo ? 0 : 1 }}
+            preload="auto">
+            <source src={MONEY_FORWARD_SOURCE} type="video/mp4" />
+            Ваш браузер не поддерживает видео-тег.
+          </video>
+          <video
+            id={MONEY_BACKWARD_ID}
+            onTimeUpdate={(e) => {
+              handleTimeUpdate((e.target as HTMLVideoElement).currentTime);
+            }}
+            className="fixed z-30 h-screen w-screen object-cover transition-all duration-300"
+            playsInline
+            muted
+            preload="auto"
+            style={{ opacity: hideVideo ? 0 : 1 }}>
+            <source src={MONEY_BACKWARD_SOURCE} type="video/mp4" />
+            Ваш браузер не поддерживает видео-тег.
+          </video>
+        </>
+      ) : (
+        <>
+          <video
+            id={MONEY_FORWARD_ID}
+            onTimeUpdate={(e) => {
+              handleTimeUpdate((e.target as HTMLVideoElement).currentTime);
+            }}
+            className="fixed z-30 h-screen w-screen object-cover transition-all duration-300"
+            playsInline
+            muted
+            style={{ opacity: hideVideo ? 0 : 1 }}
+            preload="auto">
+            <source src={MOBILE_MONEY_FORWARD_SOURCE} type="video/mp4" />
+            Ваш браузер не поддерживает видео-тег.
+          </video>
+          <video
+            id={MONEY_BACKWARD_ID}
+            onTimeUpdate={(e) => {
+              handleTimeUpdate((e.target as HTMLVideoElement).currentTime);
+            }}
+            className="fixed z-30 h-screen w-screen object-cover transition-all duration-300"
+            playsInline
+            muted
+            preload="auto"
+            style={{ opacity: hideVideo ? 0 : 1 }}>
+            <source src={MOBILE_MONEY_BACKWARD_SOURCE} type="video/mp4" />
+            Ваш браузер не поддерживает видео-тег.
+          </video>
+        </>
+      )}
     </UniversalCarousel>
   );
 };
@@ -860,57 +896,6 @@ export const Section8 = () => {
 
 export const Section9 = () => {
   const { t } = useTranslation();
-  const [scrolled, setScrolled] = useState(0);
-  const enableBlockChangeSection = useUnit(blockChangeSectionEnabled);
-  const disableBlockChangeSection = useUnit(blockChangeSectionDisabled);
-  const blockChangeSection = useUnit($blockChangeSection);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const spline = useRef<any>(null);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function onLoad(splineApp: any) {
-    spline.current = splineApp;
-  }
-
-  function triggerAnimation() {
-    if (!spline.current) return;
-    spline.current.emitEvent('Scroll', 'Screen');
-  }
-
-  useEffect(() => {
-    const debouncedScroll = debounce((delta: number) => {
-      if (delta > 0) {
-        setScrolled((prev) => prev + 1);
-      } else {
-        setScrolled((prev) => prev - 1);
-      }
-      triggerAnimation();
-    }, 500);
-
-    const handleScroll = (event: WheelEvent) => {
-      const delta = event.deltaY;
-      if ((scrolled >= 6 && delta > 0) || (scrolled <= 0 && delta < 0)) {
-        disableBlockChangeSection();
-        return;
-      }
-      enableBlockChangeSection();
-
-      console.log('dwwdw', scrolled, blockChangeSection);
-
-      debouncedScroll(delta);
-    };
-
-    document.addEventListener('wheel', handleScroll);
-
-    return () => {
-      document.removeEventListener('wheel', handleScroll);
-    };
-  }, [
-    scrolled,
-    blockChangeSection,
-    disableBlockChangeSection,
-    enableBlockChangeSection,
-  ]);
 
   return (
     <Section
@@ -984,9 +969,8 @@ export const Section9 = () => {
           scene="https://prod.spline.design/qdVHy93-5StPiPyX/scene.splinecode"
         /> */}
         <Spline
-          onLoad={onLoad}
           className="absolute top-0 -right-80 bottom-0 z-0 !w-screen max-lg:hidden"
-          scene="https://prod.spline.design/rhYvlsc024cVNUPz/scene.splinecode"
+          scene={t('sections.section9.spline')}
         />
       </div>
     </Section>
@@ -1266,18 +1250,6 @@ export const Section10 = () => {
       </div>
     </Section>
   );
-};
-
-// Исправленная функция debounce
-const debounce = <T extends unknown[]>(
-  func: (...args: T) => void,
-  delay: number,
-) => {
-  let timeoutId: NodeJS.Timeout;
-  return (...args: T) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => func(...args), delay);
-  };
 };
 
 export const ChapterText = ({
