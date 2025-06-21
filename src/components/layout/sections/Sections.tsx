@@ -40,15 +40,7 @@ import { $videoMode } from '@/models/video';
 import Spline from '@splinetool/react-spline';
 import { useUnit } from 'effector-react';
 import { motion } from 'framer-motion';
-import {
-  lazy,
-  ReactNode,
-  Suspense,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { sectionVariants, transition } from '../SectionsContainer';
 
@@ -543,7 +535,7 @@ export const Section5 = () => {
   );
 };
 
-const SplineBG = lazy(() => import('@splinetool/react-spline'));
+// const SplineBG = lazy(() => import('@splinetool/react-spline'));
 
 export const Section6 = () => {
   const { t } = useTranslation();
@@ -553,7 +545,7 @@ export const Section6 = () => {
       id="section6"
       title={t('sections.section6.title')}
       className="mx-auto flex !w-full w-fit flex-col items-center !px-0">
-      <Suspense>
+      {/* <Suspense>
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -564,7 +556,7 @@ export const Section6 = () => {
             scene="https://prod.spline.design/qdVHy93-5StPiPyX/scene.splinecode"
           />
         </motion.div>
-      </Suspense>
+      </Suspense> */}
       <ChapterText className="w-full text-center" animate>
         {t('sections.chapters.conferences')}
       </ChapterText>
@@ -573,7 +565,7 @@ export const Section6 = () => {
         <CarrotSpan>{t('sections.common.meet')} </CarrotSpan>
         {t('sections.section6.content').split('увидимся')[1]}
       </SectionText>
-      <ScrollArea className="z-[9999] mx-auto -mt-12 flex w-full overflow-x-auto max-lg:pb-4 lg:h-[22vw]">
+      <ScrollArea className="z-[9999] mx-auto -mt-12 flex w-fit overflow-x-auto max-lg:pb-4 lg:h-[22vw]">
         <div className="relative z-[999] flex h-fit gap-x-5 px-4 max-lg:mt-20">
           {Array.from({ length: 5 }).map((_, index) => {
             return (
@@ -607,7 +599,7 @@ export const Section6 = () => {
                   src="/meet-card.png"
                   alt="meet-card"
                   draggable={false}
-                  className="relative z-[999] aspect-[435/389] w-[17.5vw] shrink-0 max-lg:w-[80vw] max-lg:min-w-[20.8125rem] lg:max-h-[300px]"
+                  className="relative z-[999] aspect-[435/389] w-[17.5vw] shrink-0 max-lg:w-[80vw] max-lg:min-w-[20.8125rem] lg:hidden lg:max-h-[300px]"
                 />
               </>
             );
@@ -750,8 +742,8 @@ export const Section8 = () => {
     mountTrafficsVideo();
 
     const handleScroll = (e: WheelEvent) => {
-      e.preventDefault(); // Предотвращаем стандартный скролл
-      e.stopPropagation(); // Останавливаем всплытие события
+      // e.preventDefault();
+      // e.stopPropagation();
 
       const direction = e.deltaY > 0 ? 'next' : 'prev';
       const isMobile = window.innerWidth < 1024;
@@ -774,8 +766,9 @@ export const Section8 = () => {
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      console.log(e);
       // Предотвращаем стандартный скролл страницы
-      e.preventDefault();
+      // e.preventDefault();
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
@@ -986,10 +979,10 @@ export const Section9 = () => {
             </button>
           </div>
         </div>
-        <Spline
+        {/* <Spline
           className="absolute top-0 bottom-0 -left-0 z-0 !w-screen opacity-40"
           scene="https://prod.spline.design/qdVHy93-5StPiPyX/scene.splinecode"
-        />
+        /> */}
         <Spline
           onLoad={onLoad}
           className="absolute top-0 -right-80 bottom-0 z-0 !w-screen max-lg:hidden"
