@@ -1,4 +1,4 @@
-import { ScrollArea } from '@/components/components/ui/scrollarea';
+import { ScrollArea, ScrollBar } from '@/components/components/ui/scrollarea';
 import { CardBody, CardContainer, CardItem } from '@/components/ui/3d-card';
 import {
   MONEY_BACKWARD_ID,
@@ -187,6 +187,7 @@ interface UniversalCarouselProps {
   className?: string;
   sectionChanged?: (section: number) => void;
   children?: ReactNode;
+  isAlreadySection?: boolean;
 }
 
 const UniversalCarousel = ({
@@ -202,6 +203,7 @@ const UniversalCarousel = ({
   className = '',
   sectionChanged,
   children,
+  isAlreadySection = false,
 }: UniversalCarouselProps) => {
   const {
     prevSection,
@@ -365,8 +367,8 @@ const UniversalCarousel = ({
     exitSection,
   ]);
 
-  return (
-    <Section id={id} title={title}>
+  const content = () => (
+    <>
       {chapterText && <ChapterText>{chapterText}</ChapterText>}
       {textProvider && <SectionText>{textProvider(activeIndex)}</SectionText>}
       {children}
@@ -426,6 +428,16 @@ const UniversalCarousel = ({
           );
         })}
       </div>
+    </>
+  );
+
+  if (isAlreadySection) {
+    return content();
+  }
+
+  return (
+    <Section id={id} title={title}>
+      {content()}
     </Section>
   );
 };
@@ -486,6 +498,7 @@ export const Section4 = () => {
   return (
     <Section id="section4" title={t('sections.section4.title')}>
       <UniversalCarousel
+        isAlreadySection
         id="geo-carousel"
         title={t('sections.section2.title')}
         cards={geoCards}
@@ -560,31 +573,47 @@ export const Section6 = () => {
         <CarrotSpan>{t('sections.common.meet')} </CarrotSpan>
         {t('sections.section6.content').split('увидимся')[1]}
       </SectionText>
-      <ScrollArea className="mx-auto -mt-12 flex h-[22vw] w-fit">
-        <div className="flex h-fit w-fit gap-x-5 px-4">
+      <ScrollArea className="z-[9999] mx-auto -mt-12 flex w-full overflow-x-auto max-lg:pb-4 lg:h-[22vw]">
+        <div className="relative z-[999] flex h-fit gap-x-5 px-4 max-lg:mt-20">
           {Array.from({ length: 5 }).map((_, index) => {
             return (
-              <CardContainer key={index}>
-                <CardBody>
-                  <CardItem translateZ={40}>
-                    <motion.img
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{
-                        duration: 0.3,
-                        delay: (index + 7) * 0.25,
-                      }}
-                      src="/meet-card.png"
-                      alt="meet-card"
-                      draggable={false}
-                      className="aspect-[435/389] max-h-[300px] w-[17.5vw] shrink-0 max-lg:min-w-[20.8125rem]"
-                    />
-                  </CardItem>
-                </CardBody>
-              </CardContainer>
+              <>
+                <CardContainer key={index} className="max-lg:hidden">
+                  <CardBody className="flex">
+                    <CardItem translateZ={40}>
+                      <motion.img
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{
+                          duration: 0.3,
+                          delay: (index + 7) * 0.25,
+                        }}
+                        src="/meet-card.png"
+                        alt="meet-card"
+                        draggable={false}
+                        className="relative z-[999] aspect-[435/389] w-[17.5vw] shrink-0 max-lg:w-[80vw] max-lg:min-w-[20.8125rem] lg:max-h-[300px]"
+                      />
+                    </CardItem>
+                  </CardBody>
+                </CardContainer>
+
+                <motion.img
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{
+                    duration: 0.3,
+                    delay: (index + 7) * 0.25,
+                  }}
+                  src="/meet-card.png"
+                  alt="meet-card"
+                  draggable={false}
+                  className="relative z-[999] aspect-[435/389] w-[17.5vw] shrink-0 max-lg:w-[80vw] max-lg:min-w-[20.8125rem] lg:max-h-[300px]"
+                />
+              </>
             );
           })}
         </div>
+        <ScrollBar orientation="horizontal" />
       </ScrollArea>
     </Section>
   );
@@ -916,16 +945,16 @@ export const Section9 = () => {
             </span>
           </div>
 
-          <div className="flex gap-2.5">
+          <div className="mt-2 flex gap-2.5 max-lg:flex-col">
             <button
               type="submit"
-              className="relative aspect-[208/64] w-[8vw] cursor-pointer overflow-hidden rounded-[0.78125vw]"
+              className="max-lg:!padding-[1px] relative aspect-[208/74] w-[8vw] cursor-pointer overflow-hidden rounded-[20px] max-lg:w-[29.21875vw] max-lg:rounded-[10px]"
               style={{
                 background:
                   'linear-gradient(103.94deg, #515150 5.7%, #FFB901 47.34%, #515150 95.09%)',
                 padding: '2px',
               }}>
-              <div className="group/button flex h-full items-center justify-center rounded-[0.78125vw] bg-black">
+              <div className="group/button flex h-full items-center justify-center rounded-[20px] bg-black max-lg:rounded-[10px]">
                 <div className="relative z-[999] h-[14px] w-full overflow-hidden text-center text-white 2xl:h-[16px]">
                   <div className="absolute w-full text-center text-[14px] leading-[1] whitespace-nowrap opacity-100 transition-all duration-300 group-hover/button:-translate-y-full group-hover/button:opacity-0 2xl:text-[16px]">
                     {t('sections.section9.participate')}
@@ -938,13 +967,13 @@ export const Section9 = () => {
             </button>
             <button
               type="submit"
-              className="relative aspect-[298/64] w-[12vw] cursor-pointer overflow-hidden rounded-[0.78125vw]"
+              className="relative aspect-[298/74] w-[12vw] cursor-pointer overflow-hidden rounded-[20px] max-lg:w-[38.5625vw] max-lg:rounded-[10px]"
               style={{
                 background:
                   'linear-gradient(103.94deg, #515150 5.7%, #FFFFFF 47.34%, #515150 95.09%)',
                 padding: '2px',
               }}>
-              <div className="group/button flex h-full items-center justify-center rounded-[0.78125vw] bg-black">
+              <div className="group/button flex h-full items-center justify-center rounded-[20px] bg-black max-lg:rounded-[10px]">
                 <div className="relative z-[999] h-[14px] w-full overflow-hidden text-center text-white 2xl:h-[16px]">
                   <div className="absolute w-full text-center text-[14px] leading-[1] whitespace-nowrap opacity-100 transition-all duration-300 group-hover/button:-translate-y-full group-hover/button:opacity-0 2xl:text-[16px]">
                     {t('sections.section9.detailedConditions')}
@@ -963,7 +992,7 @@ export const Section9 = () => {
         />
         <Spline
           onLoad={onLoad}
-          className="absolute top-0 -right-80 bottom-0 z-0 !w-screen"
+          className="absolute top-0 -right-80 bottom-0 z-0 !w-screen max-lg:hidden"
           scene="https://prod.spline.design/rhYvlsc024cVNUPz/scene.splinecode"
         />
       </div>
@@ -979,27 +1008,27 @@ export const Section10 = () => {
     <Section
       id="section10"
       title={t('sections.section10.title')}
-      className="flex !w-full flex-row items-center !justify-between">
-      <div className="flex h-full w-fit items-center">
+      className="flex !w-full flex-row items-center !justify-between max-lg:flex-col max-lg:!justify-center max-lg:!py-0">
+      <div className="flex h-full w-fit items-center max-lg:-mt-15 max-lg:h-fit">
         <div className="z-50 flex flex-col gap-y-6">
           <SectionText>
             {t('sections.section11.title')}{' '}
             <CarrotSpan>{t('sections.section11.paykassma')}</CarrotSpan>
           </SectionText>
-          <div className="gilroy flex flex-col gap-y-2 text-[3vw] whitespace-pre-wrap text-white drop-shadow-[0px_5.72px_48.66px_#FECF4D66] lg:max-w-screen lg:text-[1.0741666667vw]">
+          <div className="gilroy flex flex-col gap-y-2 text-[3vw] whitespace-pre-wrap text-white drop-shadow-[0px_5.72px_48.66px_#FECF4D66] max-lg:text-[4vw] lg:max-w-screen lg:text-[1.0741666667vw]">
             <p>{t('sections.section11.content')}</p>
           </div>
 
           <div className="flex gap-2.5">
             <button
               type="submit"
-              className="relative aspect-[208/64] w-[9.58125vw] cursor-pointer overflow-hidden rounded-[0.78125vw]"
+              className="relative aspect-[208/64] w-[9.58125vw] cursor-pointer overflow-hidden rounded-[0.78125vw] max-lg:w-[38.65625vw] max-lg:rounded-[10px]"
               style={{
                 background:
                   'linear-gradient(103.94deg, #515150 5.7%, #FFB901 47.34%, #515150 95.09%)',
                 padding: '2px',
               }}>
-              <div className="group/button flex h-full items-center justify-center rounded-[0.78125vw] bg-black">
+              <div className="group/button flex h-full items-center justify-center rounded-[0.78125vw] bg-black max-lg:rounded-[10px]">
                 <div className="relative z-[999] h-[14px] w-full overflow-hidden text-center text-white 2xl:h-[16px]">
                   <div className="absolute w-full text-center text-[14px] leading-[1] whitespace-nowrap opacity-100 transition-all duration-300 group-hover/button:-translate-y-full group-hover/button:opacity-0 2xl:text-[16px]">
                     {t('sections.section11.join')}
@@ -1014,7 +1043,101 @@ export const Section10 = () => {
         </div>
       </div>
       <svg
-        className="mr-[13.8541666667vw]"
+        className="aspect-[222/259] w-[55.5vw] lg:hidden"
+        width="276"
+        height="311"
+        viewBox="0 0 276 311"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg">
+        <g filter="url(#filter0_d_12_58097)">
+          <path
+            d="M48.4277 58.0962C48.9797 50.3484 49.2556 46.4745 50.3345 43.2689C53.2095 34.7268 60.2295 28.2239 68.9661 26.0096C72.2448 25.1786 76.1602 25.1995 83.9909 25.2411L106.311 25.3599C109.964 25.3793 112.914 28.3458 112.914 31.9984L103.614 187.225C103.284 192.737 103.119 195.493 103.466 197.771C104.828 206.706 111.573 213.867 120.41 215.761C122.663 216.244 125.424 216.244 130.947 216.244C136.55 216.244 139.352 216.244 141.627 216.736C150.554 218.669 157.323 225.974 158.571 235.023C158.888 237.329 158.675 240.122 158.249 245.71L158.141 247.124C157.576 254.516 157.294 258.212 156.299 261.254C153.422 270.048 146.171 276.709 137.165 278.831C134.05 279.565 130.343 279.534 122.93 279.47L33.2021 278.703C34.0639 260.464 43.8354 122.563 48.4277 58.0962Z"
+            fill="url(#paint0_linear_12_58097)"
+            fill-opacity="0.5"
+          />
+          <path
+            d="M116.708 75.059C118.411 51.753 119.263 40.1 126.902 32.9993C134.54 25.8985 146.238 25.8985 169.634 25.8985L243.113 25.8984L233.239 161.296C231.537 184.636 230.686 196.307 223.047 203.409C215.408 210.511 203.706 210.511 180.304 210.511H106.888C107.636 199.338 112.993 125.874 116.708 75.059Z"
+            fill="url(#paint1_linear_12_58097)"
+            fill-opacity="0.5"
+          />
+          <path
+            d="M187.022 22.9297H75.9218C58.5807 22.9297 44.0484 36.3081 42.8397 53.3887L26.6523 281.933H137.752C155.094 281.933 169.626 268.554 170.834 251.475L173.032 220.398H204.431C221.773 220.398 236.305 207.02 237.514 189.939L249.347 22.9297H187.022ZM168.356 40.6124L156.879 203.283H111.923L122.451 54.5821C122.65 49.1502 127.785 40.6124 138.023 40.6124H168.356ZM153.548 250.281C152.971 258.439 146.035 264.824 137.752 264.824H45.2365L60.4307 54.6826C61.0117 47.7935 65.6895 40.6124 75.8273 40.6124H109.069C106.844 44.6265 105.508 48.5676 105.165 53.3887L93.3384 220.398H155.664L153.548 250.281ZM220.234 188.746C219.657 196.903 212.721 203.29 204.439 203.29H174.248L185.813 40.0375H230.769L220.234 188.746Z"
+            fill="url(#paint2_linear_12_58097)"
+          />
+        </g>
+        <defs>
+          <filter
+            id="filter0_d_12_58097"
+            x="0.859997"
+            y="0.171734"
+            width="274.279"
+            height="310.589"
+            filterUnits="userSpaceOnUse"
+            color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feColorMatrix
+              in="SourceAlpha"
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+              result="hardAlpha"
+            />
+            <feOffset dy="3.03439" />
+            <feGaussianBlur stdDeviation="12.8962" />
+            <feComposite in2="hardAlpha" operator="out" />
+            <feColorMatrix
+              type="matrix"
+              values="0 0 0 0 0.996078 0 0 0 0 0.81098 0 0 0 0 0.301961 0 0 0 0.4 0"
+            />
+            <feBlend
+              mode="normal"
+              in2="BackgroundImageFix"
+              result="effect1_dropShadow_12_58097"
+            />
+            <feBlend
+              mode="normal"
+              in="SourceGraphic"
+              in2="effect1_dropShadow_12_58097"
+              result="shape"
+            />
+          </filter>
+          <linearGradient
+            id="paint0_linear_12_58097"
+            x1="38.3581"
+            y1="278.912"
+            x2="181.767"
+            y2="25.873"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#4B4B4B" />
+            <stop offset="0.337101" stop-color="#2A282B" />
+            <stop offset="1" stop-color="#060606" />
+          </linearGradient>
+          <linearGradient
+            id="paint1_linear_12_58097"
+            x1="112.405"
+            y1="209.903"
+            x2="193.485"
+            y2="-1.30424"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#4B4B4B" />
+            <stop offset="0.337101" stop-color="#2A282B" />
+            <stop offset="1" stop-color="#060606" />
+          </linearGradient>
+          <linearGradient
+            id="paint2_linear_12_58097"
+            x1="26.6523"
+            y1="152.431"
+            x2="249.347"
+            y2="152.431"
+            gradientUnits="userSpaceOnUse">
+            <stop stop-color="#FFD01F" />
+            <stop offset="0.302885" stop-color="#FFFD64" />
+            <stop offset="1" stop-color="#FFC61D" />
+          </linearGradient>
+        </defs>
+      </svg>
+
+      <svg
+        className="mr-[13.8541666667vw] max-lg:hidden"
         width="587"
         height="665"
         viewBox="0 0 587 665"
@@ -1109,11 +1232,13 @@ export const Section10 = () => {
 
       <div
         className={cn(
-          'absolute right-0 bottom-0 left-0 z-50 flex h-fit w-full items-center justify-between px-[3.75rem] py-8 text-[#CCC] drop-shadow-[0px_5.72px_48.66px_#FECF4D66] transition-all duration-500',
+          'absolute right-0 bottom-0 left-0 z-50 z-[999] flex h-fit w-full items-center justify-between px-4 py-8 text-[#CCC] drop-shadow-[0px_5.72px_48.66px_#FECF4D66] transition-all duration-500 max-lg:flex-col lg:px-[3.75rem]',
           currentSection !== 'section10' && 'opacity-0',
         )}>
-        © PayKassma.partners, 2025 All rights reserved
-        <div className="flex w-[9.8958333333vw] items-center justify-center gap-x-2">
+        <p className="max-lg:hidden">
+          © PayKassma.partners, 2025 All rights reserved
+        </p>
+        <div className="flex w-[9.8958333333vw] items-center justify-center gap-x-2 max-lg:w-[58.75vw]">
           {[
             '/tg.svg',
             '/insta.svg',
@@ -1126,7 +1251,7 @@ export const Section10 = () => {
               src={item}
               alt="tg"
               className={cn(
-                'relative z-[999] size-[10vw] shrink-0 object-cover object-center xl:size-[1.5625vw]',
+                'relative z-[999] size-[10vw] shrink-0 object-cover object-center max-lg:size-[8.75vw] xl:size-[1.5625vw]',
                 ['/tg.svg', '/insta.svg'].includes(item)
                   ? '-mt-2.5'
                   : 'scale-[1.6]',
@@ -1135,13 +1260,16 @@ export const Section10 = () => {
             />
           ))}
         </div>
-        <div className="flex gap-x-5">
+        <div className="flex gap-x-5 max-lg:my-5 max-lg:flex-wrap max-lg:justify-center max-lg:text-[12px]">
           <p>Получить PWA-приложение</p>
           <p>Веб-мастерам</p>
           <p>Маркетинг и PR</p>
           <p>Для рекламодателей</p>
           <p>Условия и положения</p>
         </div>
+        <p className="max-lg:text-[12px] lg:hidden">
+          © PayKassma.partners, 2025 All rights reserved
+        </p>
       </div>
     </Section>
   );
