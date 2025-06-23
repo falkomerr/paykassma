@@ -138,15 +138,20 @@ sample({
     sections: $sections,
     blockChangeSection: $blockChangeSection,
     previousActiveSection: $previousActiveSection,
+    activeSectionIndex: $activeSection.map((section) =>
+      parseInt(section?.split('section')[1] ?? '100'),
+    ),
   },
   filter: ({
     isAnimationPlaying,
     previousActiveSection,
     videoMode,
     blockChangeSection,
+    activeSectionIndex,
   }) =>
     !isAnimationPlaying &&
     previousActiveSection !== 'section6' &&
+    !(activeSectionIndex > 5) &&
     videoMode === 'forward' &&
     !blockChangeSection,
   fn: ({ videoElements, activeSection, videoMode }) => ({
@@ -167,15 +172,20 @@ sample({
     videoMode: $videoMode,
     sections: $sections,
     previousActiveSection: $previousActiveSection,
+    activeSectionIndex: $activeSection.map((section) =>
+      parseInt(section?.split('section')[1] ?? '100'),
+    ),
   },
   filter: ({
     isAnimationPlaying,
     previousActiveSection,
     videoMode,
     blockChangeSection,
+    activeSectionIndex,
   }) =>
     !isAnimationPlaying &&
     previousActiveSection !== 'section6' &&
+    !(activeSectionIndex > 6) &&
     videoMode === 'backward' &&
     !blockChangeSection,
   fn: ({ videoElements, activeSection, videoMode }) => ({
@@ -190,7 +200,7 @@ sample({
 });
 
 sample({
-  clock: [$activeSection],
+  clock: [$activeSection.updates],
   filter: (prev) => parseInt(prev?.split('section')[1] ?? '100') > 5,
   fn: () => false,
   target: animationEnded,

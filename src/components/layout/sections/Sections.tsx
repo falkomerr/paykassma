@@ -21,7 +21,6 @@ import {
 } from '@/models/journey';
 import {
   $animationPlaying,
-  $currentSection,
   exitSectionChanged,
   moneyTimeUpdated,
   moneyVideoElementMounted,
@@ -30,16 +29,13 @@ import {
   sectionChanged,
 } from '@/models/money-video';
 import {
-  nextraffictSectionChanged,
-  prevtrafficSectionChanged,
+  handleScroll,
   trafficsTimeUpdated,
   trafficsVideoElementMounted,
 } from '@/models/traffics-video';
-import { $videoMode } from '@/models/video';
-import Spline from '@splinetool/react-spline';
 import { useUnit } from 'effector-react';
 import { motion } from 'framer-motion';
-import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { lazy, ReactNode, Suspense, useEffect, useRef, useState } from 'react';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { sectionVariants, transition } from '../SectionsContainer';
 import { $matches } from '../matches';
@@ -724,111 +720,60 @@ export const Section7 = () => {
 // Удаляем Section8 и Section9, оставляем только Section10
 export const Section8 = () => {
   const { t } = useTranslation();
-  const {
-    mountTrafficsVideo,
-    updateTrafficsTime,
-    nextSection,
-    prevSection,
-    nexttrafficSection,
-    prevtrafficSection,
-  } = useUnit({
+  const { mountTrafficsVideo, updateTrafficsTime, scrollHandle } = useUnit({
     mountTrafficsVideo: trafficsVideoElementMounted,
     updateTrafficsTime: trafficsTimeUpdated,
-    nexttrafficSection: nextraffictSectionChanged,
-    prevtrafficSection: prevtrafficSectionChanged,
-    prevSection: prevSectionChanged,
-    nextSection: nextSectionChanged,
+    scrollHandle: handleScroll,
   });
 
-  const { currentSection, videoMode } = useUnit({
-    currentSection: $currentSection,
-    videoMode: $videoMode,
-  });
-
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isTouchHandledRef = useRef(false);
   const touchStartYRef = useRef(0);
 
-  const debouncedScroll = useCallback(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    timeoutRef.current = setTimeout(() => {
-      if (currentSection === 0 && videoMode === 'forward') {
-        nexttrafficSection();
-      } else if (currentSection === 1 && videoMode === 'backward') {
-        prevtrafficSection();
-      } else if (currentSection === 1 && videoMode === 'forward') {
-        nextSection();
-      } else if (currentSection === 0 && videoMode === 'backward') {
-        prevSection();
-      }
-    }, 400);
-  }, [
-    currentSection,
-    videoMode,
-    nexttrafficSection,
-    prevtrafficSection,
-    nextSection,
-    prevSection,
-  ]);
+  const touchEndYRef = useRef(0);
 
   useEffect(() => {
     mountTrafficsVideo();
 
+    // Базовая функция для обработки направления внутри useEffect
+    const handleDirection = (direction: 'next' | 'prev') => {
+      scrollHandle({
+        direction: direction === 'next' ? 'forward' : 'backward',
+      });
+    };
+
     const handleScroll = (e: WheelEvent) => {
-      // e.preventDefault();
-      // e.stopPropagation();
+      e.preventDefault();
+      e.stopPropagation();
 
       const direction = e.deltaY > 0 ? 'next' : 'prev';
-      const isMobile = window.innerWidth < 1024;
 
-      if (isMobile) {
-        if (direction === 'next') {
-          nextSection();
-        } else {
-          prevSection();
-        }
-      } else {
-        debouncedScroll();
-      }
+      handleDirection(direction);
     };
 
     // Обработчики сенсорных событий для мобильных устройств
     const handleTouchStart = (e: TouchEvent) => {
       touchStartYRef.current = e.touches[0].clientY;
-      isTouchHandledRef.current = false;
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      console.log(e);
       // Предотвращаем стандартный скролл страницы
-      // e.preventDefault();
+      e.preventDefault();
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
-      if (isTouchHandledRef.current) return;
+      e.preventDefault();
+      e.stopPropagation();
 
-      const touchEndY = e.changedTouches[0].clientY;
-      const touchDelta = touchStartYRef.current - touchEndY;
-      const TOUCH_THRESHOLD = 80; // Порог для определения свайпа (в пикселях)
+      // Сохраняем позицию последнего касания
+      touchEndYRef.current = e.changedTouches[0].clientY;
 
-      isTouchHandledRef.current = true;
+      // Определяем направление свайпа только если было достаточное движение
+      const touchDiff = touchEndYRef.current - touchStartYRef.current;
+      const TOUCH_THRESHOLD = 50;
 
-      // Свайп вниз (для перехода к предыдущей секции)
-      if (touchDelta < -TOUCH_THRESHOLD) {
-        prevSection();
+      if (Math.abs(touchDiff) > TOUCH_THRESHOLD) {
+        const direction = touchDiff > 0 ? 'next' : 'prev';
+        handleDirection(direction);
       }
-      // Свайп вверх (для перехода к следующей секции)
-      else if (touchDelta > TOUCH_THRESHOLD) {
-        nextSection();
-      }
-
-      // Сбрасываем флаг через некоторое время
-      setTimeout(() => {
-        isTouchHandledRef.current = false;
-      }, 500);
     };
 
     document.addEventListener('wheel', handleScroll, { passive: false });
@@ -836,7 +781,7 @@ export const Section8 = () => {
       passive: true,
     });
     document.addEventListener('touchmove', handleTouchMove, { passive: false });
-    document.addEventListener('touchend', handleTouchEnd, { passive: true });
+    document.addEventListener('touchend', handleTouchEnd, { passive: false });
 
     return () => {
       document.removeEventListener('wheel', handleScroll);
@@ -844,14 +789,14 @@ export const Section8 = () => {
       document.removeEventListener('touchmove', handleTouchMove);
       document.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [mountTrafficsVideo, debouncedScroll, nextSection, prevSection]);
+  }, [mountTrafficsVideo, scrollHandle]);
 
   return (
     <Section
       id="section8"
       title={t('sections.section10.title')}
       className="flex !w-full flex-col items-center">
-      <div className="">
+      {/* <div className="">
         <img
           src="/socials.png"
           alt="socials"
@@ -865,34 +810,34 @@ export const Section8 = () => {
           <CarrotSpan>{t('sections.common.monetize')}</CarrotSpan>{' '}
           {t('sections.section10.content').split('Монетизируем')[1]}
         </SectionText>
-      </div>
-      <div className="hidden">
-        <video
-          id={TRAFFICS_FORWARD_ID}
-          onTimeUpdate={(e) => {
-            updateTrafficsTime((e.target as HTMLVideoElement).currentTime);
-          }}
-          playsInline
-          muted
-          preload="auto"
-          className="absolute inset-0 w-full">
-          <source src={TRAFFICS_FORWARD_SOURCE} type="video/mp4" />
-        </video>
-        <video
-          id={TRAFFICS_BACKWARD_ID}
-          onTimeUpdate={(e) => {
-            updateTrafficsTime((e.target as HTMLVideoElement).currentTime);
-          }}
-          playsInline
-          muted
-          preload="auto"
-          className="absolute inset-0 w-full">
-          <source src={TRAFFICS_BACKWARD_SOURCE} type="video/mp4" />
-        </video>
-      </div>
+      </div> */}
+      <video
+        id={TRAFFICS_FORWARD_ID}
+        onTimeUpdate={(e) => {
+          updateTrafficsTime((e.target as HTMLVideoElement).currentTime);
+        }}
+        playsInline
+        muted
+        preload="auto"
+        className="fixed z-30 h-screen w-screen object-cover transition-all duration-300">
+        <source src={TRAFFICS_FORWARD_SOURCE} type="video/mp4" />
+      </video>
+      <video
+        id={TRAFFICS_BACKWARD_ID}
+        onTimeUpdate={(e) => {
+          updateTrafficsTime((e.target as HTMLVideoElement).currentTime);
+        }}
+        playsInline
+        muted
+        preload="auto"
+        className="fixed z-30 h-screen w-screen object-cover transition-all duration-300">
+        <source src={TRAFFICS_BACKWARD_SOURCE} type="video/mp4" />
+      </video>
     </Section>
   );
 };
+
+const LazySpline = lazy(() => import('@splinetool/react-spline'));
 
 export const Section9 = () => {
   const { t } = useTranslation();
@@ -968,10 +913,12 @@ export const Section9 = () => {
           className="absolute top-0 bottom-0 -left-0 z-0 !w-screen opacity-40"
           scene="https://prod.spline.design/qdVHy93-5StPiPyX/scene.splinecode"
         /> */}
-        <Spline
-          className="absolute top-0 -right-80 bottom-0 z-0 !w-screen max-lg:hidden"
-          scene={t('sections.section9.spline')}
-        />
+        <Suspense fallback={<div></div>}>
+          <LazySpline
+            className="absolute top-0 -right-80 bottom-0 z-0 !w-screen max-lg:hidden"
+            scene={t('sections.section9.spline')}
+          />
+        </Suspense>
       </div>
     </Section>
   );
