@@ -336,22 +336,22 @@ export const Header = () => {
           <div className="absolute bottom-0 z-[999] mt-auto flex w-full flex-col gap-y-5 px-5 pb-5">
             <div className="flex w-full items-center justify-center gap-x-2">
               {[
-                '/tg.svg',
-                '/insta.svg',
-                '/youtube.svg',
-                '/linkedin.svg',
-                '/facebook.svg',
+                '/tg.png',
+                '/insta.png',
+                '/youtube.png',
+                '/linkedin.png',
+                '/facebook.png',
               ].map((item) => (
                 <img
                   key={item}
                   src={item}
                   alt="tg"
                   className={cn(
-                    'relative z-[999] size-[10vw] shrink-0 object-cover object-center',
-                    ['/tg.svg', '/insta.svg'].includes(item)
+                    'relative z-[999] size-[8vw] shrink-0 object-cover object-center',
+                    ['/tg.png', '/insta.png'].includes(item)
                       ? '-mt-2.5'
-                      : 'scale-[1.6]',
-                    item === '/youtube.svg' && '-mb-0.5 ml-1.5',
+                      : 'scale-[1.5]',
+                    item === '/youtube.png' && '-mb-0.5 ml-1.5',
                   )}
                 />
               ))}

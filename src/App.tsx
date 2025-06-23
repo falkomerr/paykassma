@@ -30,6 +30,7 @@ import {
   playHoverButtonAudio,
   volumeChanged,
 } from './models/audio';
+import { $isBurgerOpen } from './models/header-model';
 import './styles/sections.css';
 
 attachLogger();
@@ -172,12 +173,14 @@ const AudioContainer = () => {
     changeVolume: volumeChanged,
   });
 
-  const { currentSection, sections, isAnimationPlaying, volume } = useUnit({
-    currentSection: $activeSection,
-    sections: $sections,
-    isAnimationPlaying: $animationPlaying,
-    volume: $volume,
-  });
+  const { currentSection, sections, isAnimationPlaying, volume, isBurgerOpen } =
+    useUnit({
+      currentSection: $activeSection,
+      sections: $sections,
+      isAnimationPlaying: $animationPlaying,
+      volume: $volume,
+      isBurgerOpen: $isBurgerOpen,
+    });
 
   useEffect(() => {
     setTimeout(() => {
@@ -194,6 +197,7 @@ const AudioContainer = () => {
         'fixed bottom-0 z-50 flex h-[5.625rem] w-full items-center justify-between bg-gradient-to-t from-black to-transparent px-5 pb-[1.5625rem] transition-all duration-500 ease-in-out lg:bottom-[1.6875rem] lg:from-transparent lg:px-[3.75rem] lg:pb-0',
         currentSection === 'section10' &&
           '!bottom-22 max-lg:!bottom-[10rem] max-lg:!from-transparent',
+        isBurgerOpen && 'opacity-0',
       )}>
       <div className="relative z-50 ml-[2.75rem] flex items-center justify-center">
         <ChipIcon

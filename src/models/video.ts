@@ -94,7 +94,7 @@ export const playVideoTimecodeFx = createEffect(
         videoElements.backward.hidden = false;
         videoElements.forward.hidden = true;
         videoElements.backward.play();
-      }, 400);
+      }, 500);
     } else if (
       videoMode === 'forward' &&
       videoElements.forward &&
