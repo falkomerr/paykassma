@@ -105,49 +105,51 @@ const UniversalCard = ({
   const [cardClasses, setCardClasses] = useState(
     `absolute transition-all duration-300 ease-in-out`,
   );
-  const [cardOpacity, setCardOpacity] = useState(0);
+  // const [cardOpacity, setCardOpacity] = useState(0);
 
   useEffect(() => {
-    const baseClasses = 'absolute transition-all duration-300 ease-in-out';
+    const baseClasses =
+      'absolute transition-all duration-300 ease-in-out will-change-[transform,opacity]';
 
     if (position === 'left') {
-      setCardOpacity(1);
+      // setCardOpacity(1);
       setCardClasses(
-        `${baseClasses} z-40 backdrop-blur-xl rounded-[40px] md:rounded-[30px] opacity-100 translate-x-0 scale-100`,
+        `${baseClasses} z-40  backdrop-blur-xl rounded-[40px] md:rounded-[30px] opacity-100 translate-x-0 scale-100`,
       );
     } else if (position === 'center') {
-      setCardOpacity(0.2);
+      // setCardOpacity(0.2);
       setCardClasses(
-        `${baseClasses} z-30 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[15%] translate-y-[3%] rotate-6`,
+        `${baseClasses} z-30 opacity-20 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[15%] translate-y-[3%] rotate-6`,
       );
     } else if (position === 'right') {
-      setCardOpacity(0.2);
+      // setCardOpacity(0.2);
       setCardClasses(
-        `${baseClasses} z-20 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[30%] translate-y-[6%] rotate-12`,
+        `${baseClasses} z-20 opacity-20 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[30%] translate-y-[6%] rotate-12`,
       );
     } else if (position === 'left-1') {
-      setCardOpacity(0.2);
+      // setCardOpacity(0.2);
       setCardClasses(
-        `${baseClasses} z-30 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[-15%] translate-y-[3%] rotate-[-6deg]`,
+        `${baseClasses} z-30 opacity-20 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[-15%] translate-y-[3%] rotate-[-6deg]`,
       );
     } else if (position === 'left-2') {
-      setCardOpacity(0.2);
+      // setCardOpacity(0.2);
       setCardClasses(
-        `${baseClasses} z-20 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[-30%] translate-y-[6%] rotate-[-12deg]`,
+        `${baseClasses} z-20 opacity-20 backdrop-blur-xl rounded-[40px] md:rounded-[30px] translate-x-[-30%] translate-y-[6%] rotate-[-12deg]`,
       );
     } else if (position === 'hidden') {
-      setCardOpacity(0);
-      setCardClasses(`${baseClasses} z-10 scale-50 `);
+      // setCardOpacity(0);
+      setCardClasses(`${baseClasses} z-10 scale-50 opacity-0`);
     }
   }, [position]);
 
   return (
     <motion.div
       className={cardClasses}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: cardOpacity }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}>
+      // initial={{ opacity: 0 }}
+      // animate={{ opacity: cardOpacity }}
+      // exit={{ opacity: 0 }}
+      // transition={{ duration: 0.3 }}
+    >
       <img
         src={imgSrc}
         alt={imgAlt}
@@ -404,7 +406,7 @@ const UniversalCarousel = ({
             <UniversalCard
               className={className}
               opacity={animateHiding ? 0 : 1}
-              key={card.imgAlt}
+              key={card.imgSrc}
               imgSrc={card.imgSrc}
               imgAlt={card.imgAlt}
               position={position}
