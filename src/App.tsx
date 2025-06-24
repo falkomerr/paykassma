@@ -194,7 +194,7 @@ const AudioContainer = () => {
   return (
     <div
       className={cn(
-        'fixed bottom-0 z-50 flex h-[5.625rem] w-full items-center justify-between bg-gradient-to-t from-black to-transparent px-5 pb-[1.5625rem] transition-all duration-500 ease-in-out lg:bottom-[1.6875rem] lg:from-transparent lg:px-[3.75rem] lg:pb-0',
+        'fixed bottom-0 z-50 flex h-[5.625rem] w-full items-center justify-between bg-gradient-to-t from-black to-transparent pr-5 pb-[1.5625rem] pl-3 transition-all duration-500 ease-in-out lg:bottom-[1.6875rem] lg:from-transparent lg:px-[3.75rem] lg:pb-0',
         currentSection === 'section10' &&
           '!bottom-22 max-lg:!bottom-[10rem] max-lg:!from-transparent',
         isBurgerOpen && 'opacity-0',

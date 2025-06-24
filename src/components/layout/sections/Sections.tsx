@@ -565,7 +565,7 @@ export const Section6 = () => {
         <CarrotSpan>{t('sections.common.meet')} </CarrotSpan>
         {t('sections.section6.content').split('увидимся')[1]}
       </SectionText>
-      <ScrollArea className="z-[9999] mx-auto -mt-12 ml-20 flex w-full overflow-x-hidden max-lg:pb-4 lg:h-[22vw]">
+      <ScrollArea className="z-[9999] mx-auto -mt-12 flex !w-full overflow-x-hidden max-lg:pb-4 lg:h-[22vw]">
         <div className="relative z-[999] flex h-fit gap-x-5 px-4 max-lg:mt-20">
           {Array.from({ length: 5 }).map((_, index) => {
             return (
@@ -729,64 +729,101 @@ export const Section8 = () => {
   });
 
   const touchStartYRef = useRef(0);
-
   const touchEndYRef = useRef(0);
+  const isTouchHandledRef = useRef(false);
+  const isScrollLocked = useRef(false);
 
   useEffect(() => {
     mountTrafficsVideo();
 
     // Базовая функция для обработки направления внутри useEffect
     const handleDirection = (direction: 'next' | 'prev') => {
+      if (isScrollLocked.current) return;
+
+      isScrollLocked.current = true;
+
       scrollHandle({
         direction: direction === 'next' ? 'forward' : 'backward',
       });
+
+      setTimeout(() => {
+        isScrollLocked.current = false;
+      }, 1000);
     };
 
     const handleScroll = (e: WheelEvent) => {
       e.preventDefault();
       e.stopPropagation();
 
-      const direction = e.deltaY > 0 ? 'next' : 'prev';
+      if (isScrollLocked.current) return;
 
+      const direction = e.deltaY > 0 ? 'next' : 'prev';
       handleDirection(direction);
     };
 
     // Обработчики сенсорных событий для мобильных устройств
     const handleTouchStart = (e: TouchEvent) => {
       touchStartYRef.current = e.touches[0].clientY;
+      isTouchHandledRef.current = false;
     };
 
+    // Обработчик перемещения при касании
     const handleTouchMove = (e: TouchEvent) => {
-      // Предотвращаем стандартный скролл страницы
-      e.preventDefault();
+      // Не блокируем горизонтальный скролл
+      const touchY = e.touches[0].clientY;
+      const deltaY = touchStartYRef.current - touchY;
+
+      // Если движение преимущественно вертикальное и значительное
+      if (Math.abs(deltaY) > 10) {
+        e.preventDefault();
+      }
     };
 
+    // Обработчик завершения касания
     const handleTouchEnd = (e: TouchEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
+      if (isScrollLocked.current || isTouchHandledRef.current) return;
 
-      // Сохраняем позицию последнего касания
       touchEndYRef.current = e.changedTouches[0].clientY;
-
-      // Определяем направление свайпа только если было достаточное движение
-      const touchDiff = touchEndYRef.current - touchStartYRef.current;
-      const TOUCH_THRESHOLD = 50;
+      const touchDiff = touchStartYRef.current - touchEndYRef.current;
+      const TOUCH_THRESHOLD = 30; // Уменьшаем порог для более отзывчивого скролла
 
       if (Math.abs(touchDiff) > TOUCH_THRESHOLD) {
+        isTouchHandledRef.current = true;
+        // Инвертируем направление для более интуитивного скролла
+        // Свайп вниз (положительный touchDiff) должен переходить к следующей секции
         const direction = touchDiff > 0 ? 'next' : 'prev';
         handleDirection(direction);
       }
     };
 
     document.addEventListener('wheel', handleScroll, { passive: false });
+    document.addEventListener(
+      'keydown',
+      (e) => {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          handleDirection('next');
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          handleDirection('prev');
+        }
+      },
+      { passive: false },
+    );
+
     document.addEventListener('touchstart', handleTouchStart, {
-      passive: true,
+      passive: false,
     });
     document.addEventListener('touchmove', handleTouchMove, { passive: false });
     document.addEventListener('touchend', handleTouchEnd, { passive: false });
 
     return () => {
       document.removeEventListener('wheel', handleScroll);
+      document.removeEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+          e.preventDefault();
+        }
+      });
       document.removeEventListener('touchstart', handleTouchStart);
       document.removeEventListener('touchmove', handleTouchMove);
       document.removeEventListener('touchend', handleTouchEnd);
