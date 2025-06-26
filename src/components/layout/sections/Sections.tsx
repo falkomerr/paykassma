@@ -565,6 +565,14 @@ export const Section5 = () => {
 export const Section6 = () => {
   const { t } = useTranslation();
 
+  const images = [
+    '/meetings/bangkok.png',
+    '/meetings/europe.png',
+    '/meetings/med.png',
+    '/meetings/cpa.png',
+    '/meetings/gergia.png',
+  ];
+
   return (
     <Section
       id="section6"
@@ -592,7 +600,7 @@ export const Section6 = () => {
       </SectionText>
       <ScrollArea className="z-[9999] mx-auto -mt-12 flex !w-full overflow-x-hidden max-lg:pb-4 lg:h-[22vw] lg:!w-fit">
         <div className="relative z-[999] flex h-fit gap-x-5 px-4 max-lg:mt-20">
-          {Array.from({ length: 5 }).map((_, index) => {
+          {images.map((image, index) => {
             return (
               <>
                 <CardContainer key={index} className="max-lg:hidden">
@@ -605,7 +613,7 @@ export const Section6 = () => {
                           duration: 0.3,
                           delay: (index + 7) * 0.25,
                         }}
-                        src="/meet-card.png"
+                        src={image}
                         alt="meet-card"
                         draggable={false}
                         className="relative z-[999] aspect-[435/389] w-[17.5vw] shrink-0 max-lg:w-[80vw] max-lg:min-w-[20.8125rem] lg:max-h-[300px]"
@@ -621,7 +629,7 @@ export const Section6 = () => {
                     duration: 0.3,
                     delay: (index + 7) * 0.25,
                   }}
-                  src="/meet-card.png"
+                  src={image}
                   alt="meet-card"
                   draggable={false}
                   className="relative z-[999] aspect-[435/389] w-[17.5vw] shrink-0 max-lg:w-[80vw] max-lg:min-w-[20.8125rem] lg:hidden lg:max-h-[300px]"
