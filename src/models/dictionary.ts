@@ -277,8 +277,8 @@ export const dictionary: NestedDictionary = {
         en: 'Section 5',
       },
       content: {
-        ru: 'Усиливаем бюджеты \nарбитражных команд',
-        en: 'We strengthen the budgets of \narbitrage teams',
+        ru: ' бюджеты \nарбитражных команд',
+        en: ' the budgets of \narbitrage teams',
       },
       description: {
         ru: 'Масштабируем ваши успешные связки предоставляя бюджеты \nдля получения  максимального профита с рекламной кампании',
@@ -314,7 +314,7 @@ export const dictionary: NestedDictionary = {
       },
       content: {
         ru: '\nфинансовых \nвзаимодействий',
-        en: 'Our variety of financial \ninteractions',
+        en: ' of financial \ninteractions',
       },
     },
 
@@ -389,7 +389,7 @@ export const dictionary: NestedDictionary = {
       },
       strengthen: {
         ru: 'Усиливаем',
-        en: 'Strengthen',
+        en: 'We strengthen',
       },
       meet: {
         ru: 'увидимся',

@@ -24,3 +24,21 @@ export const TRAFFICS_BACKWARD_SOURCE = 'videos/traffics-reversed.mp4';
 
 export const MOBILE_MONEY_FORWARD_SOURCE = 'videos/mobile-backward-money.mp4';
 export const MOBILE_MONEY_BACKWARD_SOURCE = 'videos/mobile-forward-money.mp4';
+
+export const EN_MOBILE_TRAFFICS_BACKWARD_SOURCE =
+  'videos/traffic/en-mobile-backward.mp4';
+export const EN_MOBILE_TRAFFICS_FORWARD_SOURCE =
+  'videos/traffic/en-mobile-forward.mp4';
+
+export const RU_MOBILE_TRAFFICS_BACKWARD_SOURCE =
+  'videos/traffic/ru-mobile-backward.mp4';
+export const RU_MOBILE_TRAFFICS_FORWARD_SOURCE =
+  'videos/traffic/ru-mobile-forward.mp4';
+
+export const EN_PC_TRAFFICS_BACKWARD_SOURCE =
+  'videos/traffic/en-pc-backward.mp4';
+export const EN_PC_TRAFFICS_FORWARD_SOURCE = 'videos/traffic/en-pc-forward.mp4';
+
+export const RU_PC_TRAFFICS_BACKWARD_SOURCE =
+  'videos/traffic/ru-pc-backward.mp4';
+export const RU_PC_TRAFFICS_FORWARD_SOURCE = 'videos/traffic/ru-pc-forward.mp4';

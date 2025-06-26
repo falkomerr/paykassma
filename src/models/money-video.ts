@@ -3,8 +3,8 @@ import { $sections } from '@/models/journey';
 import { createEffect, createEvent, createStore, sample } from 'effector';
 
 const SECTION_TIMECODES: Record<string, { start: number; end: number }> = {
-  1: { start: 0, end: 3.48 },
-  2: { start: 3.58, end: 5.48 },
+  1: { start: 0, end: 3.5 },
+  2: { start: 3.5, end: 5.5 },
   3: { start: 5.733, end: 8.5 },
 };
 

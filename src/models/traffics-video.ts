@@ -1,10 +1,11 @@
 import { TRAFFICS_BACKWARD_ID, TRAFFICS_FORWARD_ID } from '@/constants';
 import {
+  $activeSection,
   $previousActiveSection,
   goToNextSection,
   goToPrevSection,
 } from '@/models/journey';
-import { $videoMode as $journeyVideoMode } from '@/models/video';
+import { $videoMode as $journeyVideoMode, $videoMode } from '@/models/video';
 import {
   attach,
   createEffect,
@@ -12,7 +13,7 @@ import {
   createStore,
   sample,
 } from 'effector';
-import { debounce } from 'patronum/debounce';
+import { debounce } from 'patronum';
 
 const FORWARD_STOP_TIMECODE = 3.4;
 const BACKWARD_STOP_TIMECODE = 6.68;
@@ -23,17 +24,7 @@ export const prevtrafficSectionChanged = createEvent();
 export const nextraffictSectionChanged = createEvent();
 export const animationStarted = createEvent();
 export const animationEnded = createEvent();
-export const handleScroll = createEvent<{
-  direction: 'forward' | 'backward';
-}>();
-
-export const $videoMode = createStore<'forward' | 'backward'>('forward');
-$videoMode.on(debounce(handleScroll, 500), (_, { direction }) => direction);
-
-sample({
-  clock: $journeyVideoMode,
-  target: $videoMode,
-});
+export const handleScroll = createEvent();
 
 export const $currentSection = createStore<number>(-1);
 
@@ -89,17 +80,15 @@ export const playVideoTimecodeFx = attach({
     };
     videoMode: 'forward' | 'backward';
   }) => {
-    const handleNextSection = () => {
-      goToNextSection();
-    };
-    const handlePrevSection = () => {
-      goToPrevSection();
-    };
+    let alreadyStopped = false;
+
     const handleForwardTimeUpdate = () => {
       if (!videoElements.forward || !videoElements.backward) return;
 
       if (videoElements.forward.currentTime >= FORWARD_STOP_TIMECODE) {
+        if (alreadyStopped) return;
         videoElements.forward.pause();
+        alreadyStopped = true;
         const timeout = setTimeout(() => {
           videoElements.forward?.play();
           clearTimeout(timeout);
@@ -112,12 +101,29 @@ export const playVideoTimecodeFx = attach({
 
       if (videoElements.backward.currentTime >= BACKWARD_STOP_TIMECODE) {
         videoElements.backward.pause();
+        alreadyStopped = true;
         const timeout = setTimeout(() => {
           videoElements.backward?.play();
           clearTimeout(timeout);
         }, 1500);
       }
     };
+
+    const handleNextSection = () => {
+      videoElements.forward?.removeEventListener(
+        'timeupdate',
+        handleForwardTimeUpdate,
+      );
+      goToNextSection();
+    };
+    const handlePrevSection = () => {
+      videoElements.backward?.removeEventListener(
+        'timeupdate',
+        handleBackwardTimeUpdate,
+      );
+      goToPrevSection();
+    };
+
     if (videoElements.forward && videoElements.backward) {
       if (videoMode === 'forward') {
         videoElements.backward.style.display = 'none';
@@ -162,4 +168,11 @@ sample({
 sample({
   clock: linkVideoElementFx.doneData,
   target: $trafficsVideoElements,
+});
+
+sample({
+  clock: debounce(handleScroll, 500),
+  source: $activeSection,
+  filter: (src) => src === 'section8',
+  target: playVideoTimecodeFx,
 });

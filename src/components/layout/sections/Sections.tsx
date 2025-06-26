@@ -1,16 +1,22 @@
 import { ScrollArea, ScrollBar } from '@/components/components/ui/scrollarea';
 import { CardBody, CardContainer, CardItem } from '@/components/ui/3d-card';
 import {
+  EN_MOBILE_TRAFFICS_BACKWARD_SOURCE,
+  EN_MOBILE_TRAFFICS_FORWARD_SOURCE,
+  EN_PC_TRAFFICS_BACKWARD_SOURCE,
+  EN_PC_TRAFFICS_FORWARD_SOURCE,
   MOBILE_MONEY_BACKWARD_SOURCE,
   MOBILE_MONEY_FORWARD_SOURCE,
   MONEY_BACKWARD_ID,
   MONEY_BACKWARD_SOURCE,
   MONEY_FORWARD_ID,
   MONEY_FORWARD_SOURCE,
+  RU_MOBILE_TRAFFICS_BACKWARD_SOURCE,
+  RU_MOBILE_TRAFFICS_FORWARD_SOURCE,
+  RU_PC_TRAFFICS_BACKWARD_SOURCE,
+  RU_PC_TRAFFICS_FORWARD_SOURCE,
   TRAFFICS_BACKWARD_ID,
-  TRAFFICS_BACKWARD_SOURCE,
   TRAFFICS_FORWARD_ID,
-  TRAFFICS_FORWARD_SOURCE,
 } from '@/constants';
 import { cn } from '@/lib/utils';
 import { playSwipeCardAudio } from '@/models/audio';
@@ -30,12 +36,14 @@ import {
   sectionChanged,
 } from '@/models/money-video';
 import {
+  handleScroll,
   trafficsTimeUpdated,
   trafficsVideoElementMounted,
 } from '@/models/traffics-video';
+import Spline from '@splinetool/react-spline';
 import { useUnit } from 'effector-react';
-import { motion } from 'framer-motion';
-import { lazy, ReactNode, Suspense, useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { sectionVariants, transition } from '../SectionsContainer';
 import { $matches } from '../matches';
@@ -54,18 +62,20 @@ export const Section = ({
   disableAnimation,
 }: SectionProps) => {
   return (
-    <motion.section
-      variants={!disableAnimation ? sectionVariants : {}}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-      transition={transition}
-      className={cn(
-        'relative z-40 flex h-fit h-screen w-full flex-col items-start justify-start bg-gradient-to-b from-black from-30% to-transparent to-50% px-5 max-lg:py-[8rem] lg:w-fit lg:justify-center lg:from-transparent lg:px-[3.75rem]',
-        className,
-      )}>
-      {children}
-    </motion.section>
+    <AnimatePresence mode="wait">
+      <motion.section
+        variants={!disableAnimation ? sectionVariants : {}}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        transition={transition}
+        className={cn(
+          'relative z-40 flex h-fit h-screen w-full flex-col items-start justify-start bg-gradient-to-b from-black from-30% to-transparent to-50% px-5 max-lg:py-[8rem] lg:w-fit lg:justify-center lg:from-transparent lg:px-[3.75rem]',
+          className,
+        )}>
+        {children}
+      </motion.section>
+    </AnimatePresence>
   );
 };
 
@@ -424,7 +434,7 @@ const UniversalCarousel = ({
   }
 
   return (
-    <Section id={id} title={title}>
+    <Section className="!w-full" id={id} title={title}>
       {content()}
     </Section>
   );
@@ -539,7 +549,7 @@ export const Section5 = () => {
     <Section id="section5" title={t('sections.section5.title')}>
       <SectionText>
         <CarrotSpan>{t('sections.common.strengthen')}</CarrotSpan>
-        {t('sections.section5.content').split('Усиливаем')[1]}
+        {t('sections.section5.content')}
       </SectionText>
 
       <img
@@ -737,72 +747,195 @@ export const Section7 = () => {
 // Удаляем Section8 и Section9, оставляем только Section10
 export const Section8 = () => {
   const { t } = useTranslation();
-  const { mountTrafficsVideo, updateTrafficsTime } = useUnit({
+  const language = useUnit($lang);
+  const isDesktop = useUnit($matches);
+  const { mountTrafficsVideo, updateTrafficsTime, scroll } = useUnit({
     mountTrafficsVideo: trafficsVideoElementMounted,
     updateTrafficsTime: trafficsTimeUpdated,
+    scroll: handleScroll,
   });
 
   useEffect(() => {
+    const preventDefault = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
     mountTrafficsVideo();
-  }, [mountTrafficsVideo]);
+    scroll();
+
+    document.addEventListener('wheel', preventDefault);
+    document.addEventListener('touchmove', preventDefault);
+    document.addEventListener('keydown', preventDefault);
+
+    return () => {
+      document.removeEventListener('wheel', preventDefault);
+      document.removeEventListener('touchmove', preventDefault);
+      document.removeEventListener('keydown', preventDefault);
+    };
+  }, [mountTrafficsVideo, scroll]);
 
   return (
     <Section
       id="section8"
       title={t('sections.section10.title')}
       className="flex !w-full flex-col items-center">
-      {/* <div className="">
-        <img
-          src="/socials.png"
-          alt="socials"
-          draggable={false}
-          className="absolute top-40 left-1/2 aspect-[2506/1024] w-full -translate-x-[40%] lg:top-20"
-        />
-        <ChapterText className="mt-50 w-full text-center lg:mt-20">
-          {t('sections.chapters.trafficTypes')}
-        </ChapterText>
-        <SectionText className="w-full text-center text-[2.8645833333vw]">
-          <CarrotSpan>{t('sections.common.monetize')}</CarrotSpan>{' '}
-          {t('sections.section10.content').split('Монетизируем')[1]}
-        </SectionText>
-      </div> */}
-      <video
-        id={TRAFFICS_FORWARD_ID}
-        onTimeUpdate={(e) => {
-          updateTrafficsTime((e.target as HTMLVideoElement).currentTime);
-        }}
-        playsInline
-        muted
-        preload="auto"
-        className="fixed z-30 h-screen w-screen object-cover transition-all duration-300">
-        <source src={TRAFFICS_FORWARD_SOURCE} type="video/mp4" />
-      </video>
-      <video
-        id={TRAFFICS_BACKWARD_ID}
-        onTimeUpdate={(e) => {
-          updateTrafficsTime((e.target as HTMLVideoElement).currentTime);
-        }}
-        playsInline
-        muted
-        preload="auto"
-        className="fixed z-30 h-screen w-screen object-cover transition-all duration-300">
-        <source src={TRAFFICS_BACKWARD_SOURCE} type="video/mp4" />
-      </video>
+      {language === 'en' ? (
+        <>
+          {isDesktop ? (
+            <>
+              <video
+                id={TRAFFICS_FORWARD_ID}
+                onTimeUpdate={(e) => {
+                  updateTrafficsTime(
+                    (e.target as HTMLVideoElement).currentTime,
+                  );
+                }}
+                playsInline
+                muted
+                preload="auto"
+                className="fixed z-30 h-screen w-screen object-cover transition-all duration-300">
+                <source src={EN_PC_TRAFFICS_FORWARD_SOURCE} type="video/mp4" />
+              </video>
+              <video
+                id={TRAFFICS_BACKWARD_ID}
+                onTimeUpdate={(e) => {
+                  updateTrafficsTime(
+                    (e.target as HTMLVideoElement).currentTime,
+                  );
+                }}
+                playsInline
+                muted
+                preload="auto"
+                className="fixed z-30 h-screen w-screen object-cover transition-all duration-300">
+                <source src={EN_PC_TRAFFICS_BACKWARD_SOURCE} type="video/mp4" />
+              </video>
+            </>
+          ) : (
+            <>
+              <video
+                id={TRAFFICS_FORWARD_ID}
+                onTimeUpdate={(e) => {
+                  updateTrafficsTime(
+                    (e.target as HTMLVideoElement).currentTime,
+                  );
+                }}
+                playsInline
+                muted
+                preload="auto"
+                className="fixed z-30 h-screen w-screen object-cover transition-all duration-300">
+                <source
+                  src={EN_MOBILE_TRAFFICS_FORWARD_SOURCE}
+                  type="video/mp4"
+                />
+              </video>
+              <video
+                id={TRAFFICS_BACKWARD_ID}
+                onTimeUpdate={(e) => {
+                  updateTrafficsTime(
+                    (e.target as HTMLVideoElement).currentTime,
+                  );
+                }}
+                playsInline
+                muted
+                preload="auto"
+                className="fixed z-30 h-screen w-screen object-cover transition-all duration-300">
+                <source
+                  src={EN_MOBILE_TRAFFICS_BACKWARD_SOURCE}
+                  type="video/mp4"
+                />
+              </video>
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          {isDesktop ? (
+            <>
+              <video
+                id={TRAFFICS_FORWARD_ID}
+                onTimeUpdate={(e) => {
+                  updateTrafficsTime(
+                    (e.target as HTMLVideoElement).currentTime,
+                  );
+                }}
+                playsInline
+                muted
+                preload="auto"
+                className="fixed z-30 h-screen w-screen object-cover transition-all duration-300">
+                <source src={RU_PC_TRAFFICS_FORWARD_SOURCE} type="video/mp4" />
+              </video>
+              <video
+                id={TRAFFICS_BACKWARD_ID}
+                onTimeUpdate={(e) => {
+                  updateTrafficsTime(
+                    (e.target as HTMLVideoElement).currentTime,
+                  );
+                }}
+                playsInline
+                muted
+                preload="auto"
+                className="fixed z-30 h-screen w-screen object-cover transition-all duration-300">
+                <source src={RU_PC_TRAFFICS_BACKWARD_SOURCE} type="video/mp4" />
+              </video>
+            </>
+          ) : (
+            <>
+              <video
+                id={TRAFFICS_FORWARD_ID}
+                onTimeUpdate={(e) => {
+                  updateTrafficsTime(
+                    (e.target as HTMLVideoElement).currentTime,
+                  );
+                }}
+                playsInline
+                muted
+                preload="auto"
+                className="fixed z-30 h-screen w-screen object-cover transition-all duration-300">
+                <source
+                  src={RU_MOBILE_TRAFFICS_FORWARD_SOURCE}
+                  type="video/mp4"
+                />
+              </video>
+              <video
+                id={TRAFFICS_BACKWARD_ID}
+                onTimeUpdate={(e) => {
+                  updateTrafficsTime(
+                    (e.target as HTMLVideoElement).currentTime,
+                  );
+                }}
+                playsInline
+                muted
+                preload="auto"
+                className="fixed z-30 h-screen w-screen object-cover transition-all duration-300">
+                <source
+                  src={RU_MOBILE_TRAFFICS_BACKWARD_SOURCE}
+                  type="video/mp4"
+                />
+              </video>
+            </>
+          )}
+        </>
+      )}
     </Section>
   );
 };
-
-const LazySpline = lazy(() => import('@splinetool/react-spline'));
 
 export const Section9 = () => {
   const { t } = useTranslation();
 
   return (
     <Section
+      disableAnimation
       id="section9"
       title={t('sections.section10.title')}
       className="flex h-screen max-h-screen !w-full flex-col">
-      <div className="flex h-full items-center">
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -50 }}
+        transition={{ duration: 1 }}
+        className="flex h-full w-full items-center justify-between">
         <div className="z-50 flex flex-col gap-y-6">
           <ChapterText className="-mb-6">
             {t('sections.section9.chapter')}
@@ -868,13 +1001,11 @@ export const Section9 = () => {
           className="absolute top-0 bottom-0 -left-0 z-0 !w-screen opacity-40"
           scene="https://prod.spline.design/qdVHy93-5StPiPyX/scene.splinecode"
         /> */}
-        <Suspense fallback={<div></div>}>
-          <LazySpline
-            className="absolute top-0 -right-80 bottom-0 z-0 !w-screen max-lg:hidden"
-            scene={t('sections.section9.spline')}
-          />
-        </Suspense>
-      </div>
+        <Spline
+          className="w-fit overflow-hidden max-lg:hidden lg:max-w-[30vw]"
+          scene={t('sections.section9.spline')}
+        />
+      </motion.div>
     </Section>
   );
 };
