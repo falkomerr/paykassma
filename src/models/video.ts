@@ -7,10 +7,12 @@ import {
   $sections,
   animationEnded,
   animationPlayed,
+  gateOpened,
   goToNextSection,
   goToPrevSection,
 } from '@/models/journey';
 import { createEffect, createEvent, createStore, sample } from 'effector';
+import { combineEvents } from 'patronum';
 
 const SECTION_TIMECODES: Record<string, { start: number; end: number }> = {
   section1: { start: 0, end: 4.8 },
@@ -129,7 +131,10 @@ sample({
 });
 
 sample({
-  clock: [goToNextSection, linkVideoElementFx.doneData],
+  clock: [
+    goToNextSection,
+    combineEvents([linkVideoElementFx.doneData, gateOpened]),
+  ],
   source: {
     videoElements: $videoElements,
     isAnimationPlaying: $animationPlaying,

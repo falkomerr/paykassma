@@ -5,7 +5,12 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import { ChipIcon } from './assets/chip-icon';
 import { Header } from './components/layout/Header';
-import { $loaderFinished, appMounted, loaderToggled } from './models/app-model';
+import {
+  $isBgLoaded,
+  $loaderFinished,
+  appMounted,
+  loaderToggled,
+} from './models/app-model';
 import {
   $activeSection,
   $animationPlaying,
@@ -79,16 +84,18 @@ const AppLayout = () => {
             !isGateOpened && 'opacity-0',
           )}>
           <AnimatePresence>
-            {isGateOpened && ANIMATED_SECTIONS.includes(currentSection) && (
-              <motion.div
-                className="h-screen w-screen"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}>
-                <BackgroundVideo />
-              </motion.div>
-            )}
+            <motion.div
+              className="h-screen w-screen"
+              initial={{ opacity: 0 }}
+              animate={{
+                opacity:
+                  isGateOpened && ANIMATED_SECTIONS.includes(currentSection)
+                    ? 1
+                    : 0,
+              }}
+              transition={{ duration: 0.6, delay: 0.4 }}>
+              <BackgroundVideo />
+            </motion.div>
           </AnimatePresence>
           <AudioContainer />
         </motion.div>
@@ -237,6 +244,7 @@ const Loader = () => {
   const isLoaderFinished = useUnit($loaderFinished);
   const toggleLoader = useUnit(loaderToggled);
   const [progress, setProgress] = useState(0);
+  const isBgLoaded = useUnit($isBgLoaded);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -247,25 +255,29 @@ const Loader = () => {
     }, 35);
 
     const timeout = setTimeout(() => {
-      toggleLoader(true);
-      clearTimeout(timeout);
+      if (isBgLoaded) {
+        toggleLoader(true);
+        clearTimeout(timeout);
+      }
     }, 5000);
 
     return () => {
       clearTimeout(timeout);
       clearInterval(interval);
     };
-  }, [toggleLoader]);
+  }, [toggleLoader, isBgLoaded]);
 
   useEffect(() => {
     if (!isLoaderFinished) {
       setProgress(0);
       const timeout = setTimeout(() => {
-        toggleLoader(true);
-        clearTimeout(timeout);
+        if (isBgLoaded) {
+          toggleLoader(true);
+          clearTimeout(timeout);
+        }
       }, 5000);
     }
-  }, [isLoaderFinished, toggleLoader]);
+  }, [isLoaderFinished, toggleLoader, isBgLoaded]);
 
   return (
     <div

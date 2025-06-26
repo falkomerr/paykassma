@@ -3,14 +3,14 @@ import { $sections } from '@/models/journey';
 import { createEffect, createEvent, createStore, sample } from 'effector';
 
 const SECTION_TIMECODES: Record<string, { start: number; end: number }> = {
-  1: { start: 0, end: 3.58 },
-  2: { start: 3.58, end: 5.58 },
+  1: { start: 0, end: 3.48 },
+  2: { start: 3.58, end: 5.48 },
   3: { start: 5.733, end: 8.5 },
 };
 
 const REVERSED_TIMECODES: Record<string, { start: number; end: number }> = {
-  1: { start: 2.767, end: 4.4 },
-  2: { start: 0, end: 2.8 },
+  1: { start: 2.767, end: 4.5 },
+  2: { start: 0, end: 2.7 },
 };
 
 export const moneyTimeUpdated = createEvent<number>();

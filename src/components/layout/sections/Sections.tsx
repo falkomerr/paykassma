@@ -19,6 +19,7 @@ import {
   goToNextSection,
   goToPrevSection,
 } from '@/models/journey';
+import { $lang } from '@/models/language';
 import {
   $animationPlaying,
   exitSectionChanged,
@@ -29,7 +30,6 @@ import {
   sectionChanged,
 } from '@/models/money-video';
 import {
-  handleScroll,
   trafficsTimeUpdated,
   trafficsVideoElementMounted,
 } from '@/models/traffics-video';
@@ -108,13 +108,12 @@ const UniversalCard = ({
   // const [cardOpacity, setCardOpacity] = useState(0);
 
   useEffect(() => {
-    const baseClasses =
-      'absolute transition-all duration-300 ease-in-out will-change-[transform,opacity]';
+    const baseClasses = 'absolute transition-all duration-500 ease-in-out';
 
     if (position === 'left') {
       // setCardOpacity(1);
       setCardClasses(
-        `${baseClasses} z-40  backdrop-blur-xl rounded-[40px] md:rounded-[30px] opacity-100 translate-x-0 scale-100`,
+        `${baseClasses} z-40 backdrop-blur-xl rounded-[40px] md:rounded-[30px] opacity-100 translate-x-0 scale-100`,
       );
     } else if (position === 'center') {
       // setCardOpacity(0.2);
@@ -146,7 +145,7 @@ const UniversalCard = ({
     <motion.div
       className={cardClasses}
       // initial={{ opacity: 0 }}
-      // animate={{ opacity: cardOpacity }}
+      // animate={{ opacity: 1 }}
       // exit={{ opacity: 0 }}
       // transition={{ duration: 0.3 }}
     >
@@ -434,11 +433,18 @@ const UniversalCarousel = ({
 // Объединенная секция 2 и 3 с географической каруселью
 export const Section2 = () => {
   const { t } = useTranslation();
+  const lang = useUnit($lang);
 
-  const geoCards = [
-    { imgSrc: '/our-anwser.png', imgAlt: 'our-anwser' },
-    { imgSrc: '/our-reklams.png', imgAlt: 'our-reklams' },
-  ];
+  const geoCards =
+    lang === 'ru'
+      ? [
+          { imgSrc: '/our-anwser.png', imgAlt: 'our-anwser' },
+          { imgSrc: '/our-reklams.png', imgAlt: 'our-reklams' },
+        ]
+      : [
+          { imgSrc: '/en/more-than.png', imgAlt: 'our-anwser' },
+          { imgSrc: '/en/over-4.png', imgAlt: 'our-reklams' },
+        ];
 
   const geoTextProvider = (activeIndex: number) => (
     <>
@@ -476,13 +482,22 @@ export const Section3 = () => {
 };
 export const Section4 = () => {
   const { t } = useTranslation();
+  const lang = useUnit($lang);
 
-  const geoCards = [
-    { imgSrc: '/diversify.png', imgAlt: 'our-anwser' },
-    { imgSrc: '/change-flow.png', imgAlt: 'our-anwser' },
-    { imgSrc: '/test-new-offers.png', imgAlt: 'our-anwser' },
-    { imgSrc: '/take-payments.png', imgAlt: 'our-anwser' },
-  ];
+  const geoCards =
+    lang === 'ru'
+      ? [
+          { imgSrc: '/diversify.png', imgAlt: 'our-anwser' },
+          { imgSrc: '/change-flow.png', imgAlt: 'our-anwser' },
+          { imgSrc: '/test-new-offers.png', imgAlt: 'our-anwser' },
+          { imgSrc: '/take-payments.png', imgAlt: 'our-anwser' },
+        ]
+      : [
+          { imgSrc: '/en/diversify.png', imgAlt: 'our-anwser' },
+          { imgSrc: '/en/switch-traffics.png', imgAlt: 'our-anwser' },
+          { imgSrc: '/en/test-offers.png', imgAlt: 'our-anwser' },
+          { imgSrc: '/en/payouts-garanteed.png', imgAlt: 'our-anwser' },
+        ];
 
   return (
     <Section
@@ -565,7 +580,7 @@ export const Section6 = () => {
         <CarrotSpan>{t('sections.common.meet')} </CarrotSpan>
         {t('sections.section6.content').split('увидимся')[1]}
       </SectionText>
-      <ScrollArea className="z-[9999] mx-auto -mt-12 flex !w-full overflow-x-hidden max-lg:pb-4 lg:h-[22vw]">
+      <ScrollArea className="z-[9999] mx-auto -mt-12 flex !w-full overflow-x-hidden max-lg:pb-4 lg:h-[22vw] lg:!w-fit">
         <div className="relative z-[999] flex h-fit gap-x-5 px-4 max-lg:mt-20">
           {Array.from({ length: 5 }).map((_, index) => {
             return (
@@ -722,113 +737,14 @@ export const Section7 = () => {
 // Удаляем Section8 и Section9, оставляем только Section10
 export const Section8 = () => {
   const { t } = useTranslation();
-  const { mountTrafficsVideo, updateTrafficsTime, scrollHandle } = useUnit({
+  const { mountTrafficsVideo, updateTrafficsTime } = useUnit({
     mountTrafficsVideo: trafficsVideoElementMounted,
     updateTrafficsTime: trafficsTimeUpdated,
-    scrollHandle: handleScroll,
   });
-
-  const touchStartYRef = useRef(0);
-  const touchEndYRef = useRef(0);
-  const isTouchHandledRef = useRef(false);
-  const isScrollLocked = useRef(false);
 
   useEffect(() => {
     mountTrafficsVideo();
-
-    // Базовая функция для обработки направления внутри useEffect
-    const handleDirection = (direction: 'next' | 'prev') => {
-      if (isScrollLocked.current) return;
-
-      isScrollLocked.current = true;
-
-      scrollHandle({
-        direction: direction === 'next' ? 'forward' : 'backward',
-      });
-
-      setTimeout(() => {
-        isScrollLocked.current = false;
-      }, 1000);
-    };
-
-    const handleScroll = (e: WheelEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (isScrollLocked.current) return;
-
-      const direction = e.deltaY > 0 ? 'next' : 'prev';
-      handleDirection(direction);
-    };
-
-    // Обработчики сенсорных событий для мобильных устройств
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartYRef.current = e.touches[0].clientY;
-      isTouchHandledRef.current = false;
-    };
-
-    // Обработчик перемещения при касании
-    const handleTouchMove = (e: TouchEvent) => {
-      // Не блокируем горизонтальный скролл
-      const touchY = e.touches[0].clientY;
-      const deltaY = touchStartYRef.current - touchY;
-
-      // Если движение преимущественно вертикальное и значительное
-      if (Math.abs(deltaY) > 10) {
-        e.preventDefault();
-      }
-    };
-
-    // Обработчик завершения касания
-    const handleTouchEnd = (e: TouchEvent) => {
-      if (isScrollLocked.current || isTouchHandledRef.current) return;
-
-      touchEndYRef.current = e.changedTouches[0].clientY;
-      const touchDiff = touchStartYRef.current - touchEndYRef.current;
-      const TOUCH_THRESHOLD = 30; // Уменьшаем порог для более отзывчивого скролла
-
-      if (Math.abs(touchDiff) > TOUCH_THRESHOLD) {
-        isTouchHandledRef.current = true;
-        // Инвертируем направление для более интуитивного скролла
-        // Свайп вниз (положительный touchDiff) должен переходить к следующей секции
-        const direction = touchDiff > 0 ? 'next' : 'prev';
-        handleDirection(direction);
-      }
-    };
-
-    document.addEventListener('wheel', handleScroll, { passive: false });
-    document.addEventListener(
-      'keydown',
-      (e) => {
-        if (e.key === 'ArrowDown') {
-          e.preventDefault();
-          handleDirection('next');
-        } else if (e.key === 'ArrowUp') {
-          e.preventDefault();
-          handleDirection('prev');
-        }
-      },
-      { passive: false },
-    );
-
-    document.addEventListener('touchstart', handleTouchStart, {
-      passive: false,
-    });
-    document.addEventListener('touchmove', handleTouchMove, { passive: false });
-    document.addEventListener('touchend', handleTouchEnd, { passive: false });
-
-    return () => {
-      document.removeEventListener('wheel', handleScroll);
-      document.removeEventListener('keydown', (e) => {
-        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-          e.preventDefault();
-        }
-      });
-      document.removeEventListener('touchstart', handleTouchStart);
-      document.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, [mountTrafficsVideo, scrollHandle]);
+  }, [mountTrafficsVideo]);
 
   return (
     <Section

@@ -1,5 +1,5 @@
 import { createEvent, createStore, sample } from 'effector';
-import { once } from 'patronum';
+import { combineEvents, once } from 'patronum';
 import {
   initBgAudio,
   initButtonAudio,
@@ -12,6 +12,17 @@ import { changeLang } from './language';
 
 export const appMounted = createEvent();
 export const loaderToggled = createEvent<boolean>();
+
+export const bgLoaded = createEvent();
+export const bgBackwardLoaded = createEvent();
+
+export const $isBgLoaded = createStore(false);
+
+sample({
+  clock: combineEvents([bgLoaded, bgBackwardLoaded]),
+  fn: () => true,
+  target: $isBgLoaded,
+});
 
 sample({
   clock: once(appMounted),

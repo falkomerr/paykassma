@@ -1,24 +1,21 @@
 import { TRAFFICS_BACKWARD_ID, TRAFFICS_FORWARD_ID } from '@/constants';
 import {
   $previousActiveSection,
-  $sections,
   goToNextSection,
   goToPrevSection,
-  animationEnded as journeyAnimationEnded,
 } from '@/models/journey';
 import { $videoMode as $journeyVideoMode } from '@/models/video';
-import { createEffect, createEvent, createStore, sample } from 'effector';
+import {
+  attach,
+  createEffect,
+  createEvent,
+  createStore,
+  sample,
+} from 'effector';
 import { debounce } from 'patronum/debounce';
 
-const SECTION_TIMECODES: Record<string, { start: number; end: number }> = {
-  0: { start: 0, end: 3.4 },
-  1: { start: 3.4, end: 9.68 },
-};
-
-const REVERSED_TIMECODES: Record<string, { start: number; end: number }> = {
-  0: { start: 6.68, end: 9.91 },
-  1: { start: 0, end: 6.68 },
-};
+const FORWARD_STOP_TIMECODE = 3.4;
+const BACKWARD_STOP_TIMECODE = 6.68;
 
 export const trafficsTimeUpdated = createEvent<number>();
 export const trafficsVideoElementMounted = createEvent();
@@ -80,27 +77,10 @@ export const linkVideoElementFx = createEffect(() => ({
   forward: document.getElementById(TRAFFICS_FORWARD_ID) as HTMLVideoElement,
   backward: document.getElementById(TRAFFICS_BACKWARD_ID) as HTMLVideoElement,
 }));
-
-export const stopVideoFx = createEffect(
-  ({
+export const playVideoTimecodeFx = attach({
+  source: { videoMode: $videoMode, videoElements: $trafficsVideoElements },
+  effect: ({
     videoElements,
-  }: {
-    videoElements: {
-      forward: HTMLVideoElement | null;
-      backward: HTMLVideoElement | null;
-    };
-  }) => {
-    if (videoElements.forward && videoElements.backward) {
-      videoElements.forward.pause();
-      videoElements.backward.pause();
-    }
-  },
-);
-
-export const playVideoTimecodeFx = createEffect(
-  ({
-    videoElements,
-    timecode,
     videoMode,
   }: {
     videoElements: {
@@ -108,43 +88,71 @@ export const playVideoTimecodeFx = createEffect(
       backward: HTMLVideoElement | null;
     };
     videoMode: 'forward' | 'backward';
-    timecode: { start: number; end: number };
   }) => {
-    if (
-      videoMode === 'backward' &&
-      videoElements.backward &&
-      videoElements.forward
-    ) {
-      videoElements.backward.currentTime = timecode.start;
+    const handleNextSection = () => {
+      goToNextSection();
+    };
+    const handlePrevSection = () => {
+      goToPrevSection();
+    };
+    const handleForwardTimeUpdate = () => {
+      if (!videoElements.forward || !videoElements.backward) return;
 
-      setTimeout(() => {
-        if (!videoElements.backward || !videoElements.forward) return;
-        videoElements.backward.hidden = false;
-        videoElements.forward.hidden = true;
-        videoElements.backward.play();
-      }, 400);
-    } else if (
-      videoMode === 'forward' &&
-      videoElements.forward &&
-      videoElements.backward
-    ) {
-      videoElements.forward.currentTime = timecode.start;
+      if (videoElements.forward.currentTime >= FORWARD_STOP_TIMECODE) {
+        videoElements.forward.pause();
+        const timeout = setTimeout(() => {
+          videoElements.forward?.play();
+          clearTimeout(timeout);
+        }, 1500);
+      }
+    };
 
-      if (timecode.start === 0) {
-        videoElements.forward.hidden = false;
-        videoElements.backward.hidden = true;
+    const handleBackwardTimeUpdate = () => {
+      if (!videoElements.forward || !videoElements.backward) return;
+
+      if (videoElements.backward.currentTime >= BACKWARD_STOP_TIMECODE) {
+        videoElements.backward.pause();
+        const timeout = setTimeout(() => {
+          videoElements.backward?.play();
+          clearTimeout(timeout);
+        }, 1500);
+      }
+    };
+    if (videoElements.forward && videoElements.backward) {
+      if (videoMode === 'forward') {
+        videoElements.backward.style.display = 'none';
+        videoElements.forward.style.display = 'fixed';
+        videoElements.backward.pause();
+        videoElements.forward.style.zIndex = '1000';
+        videoElements.backward.style.zIndex = '0';
+
+        videoElements.forward.currentTime = 0;
         videoElements.forward.play();
+
+        videoElements.forward.addEventListener(
+          'timeupdate',
+          handleForwardTimeUpdate,
+        );
+        videoElements.forward.addEventListener('ended', handleNextSection);
       } else {
-        setTimeout(() => {
-          if (!videoElements.forward || !videoElements.backward) return;
-          videoElements.forward.hidden = false;
-          videoElements.backward.hidden = true;
-          videoElements.forward.play();
-        }, 400);
+        videoElements.forward.style.display = 'none';
+        videoElements.backward.style.display = 'fixed';
+        videoElements.forward.style.zIndex = '0';
+        videoElements.backward.style.zIndex = '1000';
+        videoElements.forward.pause();
+
+        videoElements.backward.currentTime = 0;
+        videoElements.backward.play();
+
+        videoElements.backward.addEventListener(
+          'timeupdate',
+          handleBackwardTimeUpdate,
+        );
+        videoElements.backward.addEventListener('ended', handlePrevSection);
       }
     }
   },
-);
+});
 
 sample({
   clock: trafficsVideoElementMounted,
@@ -154,118 +162,4 @@ sample({
 sample({
   clock: linkVideoElementFx.doneData,
   target: $trafficsVideoElements,
-});
-
-sample({
-  clock: [$currentSection.updates],
-  source: {
-    videoElements: $trafficsVideoElements,
-    activeSection: $currentSection,
-    videoMode: $videoMode,
-    sections: $sections,
-    isAnimationPlaying: $animationPlaying,
-  },
-  filter: ({ videoMode, isAnimationPlaying }) =>
-    videoMode === 'forward' && isAnimationPlaying === false,
-  fn: ({ videoElements, activeSection, videoMode }) => ({
-    videoElements,
-    videoMode,
-    timecode: SECTION_TIMECODES[activeSection],
-  }),
-  target: [playVideoTimecodeFx, animationStarted],
-});
-
-sample({
-  clock: [$currentSection.updates],
-  source: {
-    videoElements: $trafficsVideoElements,
-    activeSection: $currentSection,
-    videoMode: $videoMode,
-    sections: $sections,
-    isAnimationPlaying: $animationPlaying,
-  },
-  filter: ({ videoMode, isAnimationPlaying }) =>
-    videoMode === 'backward' && isAnimationPlaying === false,
-  fn: ({ videoElements, activeSection, videoMode }) => ({
-    videoElements,
-    videoMode,
-    timecode: REVERSED_TIMECODES[activeSection + 1],
-  }),
-
-  target: [playVideoTimecodeFx, animationStarted],
-});
-
-sample({
-  clock: trafficsTimeUpdated,
-  source: {
-    activeSection: $currentSection,
-    videoElements: $trafficsVideoElements,
-    videoMode: $videoMode,
-  },
-  filter: (src, time) => {
-    const timecode =
-      src.videoMode === 'forward'
-        ? SECTION_TIMECODES[src.activeSection]
-        : REVERSED_TIMECODES[src.activeSection + 1];
-
-    return !(time >= timecode.start && time < timecode.end);
-  },
-  fn: ({ videoElements }) => ({ videoElements }),
-  target: [stopVideoFx, animationEnded],
-});
-
-sample({
-  clock: animationEnded,
-  source: { $videoMode, $currentSection, $animationPlaying },
-  filter: ({ $videoMode, $currentSection }) =>
-    $videoMode === 'forward' && $currentSection === 1,
-  target: [goToNextSection, journeyAnimationEnded],
-});
-
-sample({
-  clock: animationEnded,
-  source: { $videoMode, $currentSection },
-  filter: ({ $videoMode, $currentSection }) =>
-    $videoMode === 'backward' && $currentSection === 0,
-  target: [goToPrevSection, journeyAnimationEnded],
-});
-
-sample({
-  clock: debounce(handleScroll, 500),
-  source: { $videoMode, $currentSection, $animationPlaying },
-  filter: ({ $videoMode, $currentSection, $animationPlaying }) =>
-    $videoMode === 'forward' &&
-    $currentSection === 1 &&
-    $animationPlaying === false,
-  target: [goToNextSection],
-});
-
-sample({
-  clock: debounce(handleScroll, 500),
-  source: { $videoMode, $currentSection, $animationPlaying },
-  filter: ({ $videoMode, $currentSection, $animationPlaying }) =>
-    $videoMode === 'backward' &&
-    $currentSection === 0 &&
-    $animationPlaying === false,
-  target: [goToPrevSection],
-});
-
-sample({
-  clock: debounce(handleScroll, 500),
-  source: { $videoMode, $currentSection, $animationPlaying },
-  filter: ({ $videoMode, $currentSection, $animationPlaying }) =>
-    $videoMode === 'forward' &&
-    $currentSection <= 0 &&
-    $animationPlaying === false,
-  target: [nextraffictSectionChanged],
-});
-
-sample({
-  clock: debounce(handleScroll, 500),
-  source: { $videoMode, $currentSection, $animationPlaying },
-  filter: ({ $videoMode, $currentSection, $animationPlaying }) =>
-    $videoMode === 'backward' &&
-    $currentSection >= 1 &&
-    $animationPlaying === false,
-  target: [prevtrafficSectionChanged],
 });
