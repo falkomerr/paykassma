@@ -386,11 +386,6 @@ export const initJourneyFx = createEffect(() => {
   window.addEventListener('touchmove', handleTouchMove, { passive: false });
   window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
-  // Всегда устанавливаем первую секцию как активную при инициализации
-  setTimeout(() => {
-    sectionChanged('section1');
-  }, 100);
-
   // Добавляем подписку на изменение активной секции для сброса флага прокрутки
   const unsubscribe = $activeSection.watch(() => {
     // Сбрасываем флаг прокрутки с задержкой
@@ -420,6 +415,13 @@ export const initJourneyFx = createEffect(() => {
 sample({
   clock: initSections,
   target: initJourneyFx,
+});
+
+// Устанавливаем первую секцию как активную при инициализации сразу
+sample({
+  clock: initSections,
+  fn: () => 'section1',
+  target: sectionChanged,
 });
 
 sample({
