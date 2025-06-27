@@ -254,15 +254,25 @@ const Loader = () => {
       });
     }, 35);
 
-    const timeout = setTimeout(() => {
+    const timeoutExit = setTimeout(() => {
       if (isBgLoaded) {
         toggleLoader(true);
-        clearTimeout(timeout);
+        clearTimeout(timeoutExit);
       }
     }, 5000);
 
+    if (isBgLoaded) {
+      setProgress(100);
+      const timeout = setTimeout(() => {
+        toggleLoader(true);
+        clearTimeout(timeout);
+        clearTimeout(timeoutExit);
+        clearInterval(interval);
+      }, 3000);
+    }
+
     return () => {
-      clearTimeout(timeout);
+      clearTimeout(timeoutExit);
       clearInterval(interval);
     };
   }, [toggleLoader, isBgLoaded]);

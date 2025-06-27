@@ -125,6 +125,7 @@ export const playVideoTimecodeFx = attach({
     };
 
     if (videoElements.forward && videoElements.backward) {
+      alreadyStopped = false;
       if (videoMode === 'forward') {
         videoElements.backward.style.display = 'none';
         videoElements.forward.style.display = 'fixed';
