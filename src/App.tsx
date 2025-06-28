@@ -261,6 +261,12 @@ const Loader = () => {
       }
     }, 5000);
 
+    const fullExitTimeout = setTimeout(() => {
+        toggleLoader(true);
+        clearTimeout(fullExitTimeout);         
+    }, 10000);
+
+
     if (isBgLoaded) {
       setProgress(100);
       const timeout = setTimeout(() => {
