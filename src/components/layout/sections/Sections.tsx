@@ -590,7 +590,7 @@ export const Section6 = () => {
           />
         </motion.div>
       </Suspense> */}
-      <ChapterText className="w-full text-center" animate>
+      <ChapterText className="-mt-5 w-full text-center" animate>
         {t('sections.chapters.conferences')}
       </ChapterText>
       <SectionText className="w-full text-center text-[2.8645833333vw]" animate>
@@ -598,8 +598,8 @@ export const Section6 = () => {
         <CarrotSpan>{t('sections.common.meet')} </CarrotSpan>
         {t('sections.section6.content').split('увидимся')[1]}
       </SectionText>
-      <ScrollArea className="z-[9999] mx-auto -mt-12 flex !w-full overflow-x-hidden max-lg:pb-4 lg:h-[22vw] lg:!w-fit">
-        <div className="relative z-[999] flex h-fit gap-x-5 px-4 max-lg:mt-20">
+      <ScrollArea className="z-[9999] mx-auto -mt-12 flex !w-full overflow-x-hidden max-lg:mt-5 max-lg:pb-4 lg:h-[22vw] lg:!w-fit">
+        <div className="relative z-[999] flex h-fit gap-x-5 px-4">
           {images.map((image, index) => {
             return (
               <>
@@ -787,7 +787,7 @@ export const Section8 = () => {
     <Section
       id="section8"
       title={t('sections.section10.title')}
-      className="flex !w-full flex-col items-center">
+      className="flex !w-full flex-col items-center max-lg:-mt-40">
       {language === 'en' ? (
         <>
           {isDesktop ? (
@@ -1061,7 +1061,7 @@ export const Section10 = () => {
         </div>
       </div>
       <svg
-        className="aspect-[222/259] w-[55.5vw] lg:hidden"
+        className="last-logo aspect-[222/259] w-[55.5vw] lg:hidden"
         width="276"
         height="311"
         viewBox="0 0 276 311"

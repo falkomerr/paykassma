@@ -174,3 +174,8 @@
 .animate-ease-spin {
   animation: easeInOutSpin 2s ease-in-out 400ms infinite;
 }
+@media (max-height: 768px) {
+  .last-logo {
+    display: none;
+  }
+}
