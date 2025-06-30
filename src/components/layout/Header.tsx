@@ -80,7 +80,7 @@ export const Header = () => {
             </SelectContent>
           </Select>
           <div className="hidden items-center gap-4 lg:flex">
-            <a href="/register">
+            <a href="https://account.paykassma.partners/v2/sign/">
               <AnimatedButton
                 variant="default"
                 onClick={() => handleRegister()}
@@ -88,7 +88,7 @@ export const Header = () => {
                 {t('buttons.register')}
               </AnimatedButton>
             </a>
-            <a href="/login">
+            <a href="https://account.paykassma.partners/v2/sign/in">
               <AnimatedButton
                 variant="login"
                 onClick={() => handleLogin()}

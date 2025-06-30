@@ -8,7 +8,9 @@ import {
 } from '@/components/components/ui/form';
 import { Input } from '@/components/components/ui/input';
 import { LogoSmall } from '@/components/ui/LogoSmall';
+import { registerClicked, registerFx } from '@/models/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useUnit } from 'effector-react';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -46,8 +48,21 @@ export const RegisterForm = () => {
     },
   });
 
+  const { registerUser, pending } = useUnit({
+    registerUser: registerClicked,
+    pending: registerFx.pending,
+  });
+
   const onSubmit = (values: z.infer<typeof registerFormSchema>) => {
-    console.log(values);
+    // Вызываем событие регистрации, преобразуя данные из формы в формат API
+    registerUser({
+      email: values.email,
+      password: values.password,
+      country: 'RU', // всегда "RU"
+      login: values.name, // имя компании
+      contact_person: values.tg, // ник в тг
+      notes: values.howYouKnow, // как узнали о нас
+    });
   };
 
   return (
@@ -160,6 +175,7 @@ export const RegisterForm = () => {
       />
       <button
         type="submit"
+        disabled={pending}
         className="relative aspect-[587/74] w-[30.1041666667vw] cursor-pointer overflow-hidden rounded-[0.78125vw]">
         <img
           src="/register-button-bg.svg"
@@ -167,7 +183,7 @@ export const RegisterForm = () => {
           className="absolute inset-0 h-full w-full scale-y-[0.8] object-cover"
         />
         <span className="font-inter relative z-10 text-[0.9416666667vw] font-medium tracking-[0.09rem] text-white">
-          Зарегистрироваться
+          {pending ? 'Регистрация...' : 'Зарегистрироваться'}
         </span>
       </button>
       <p className="font-inter max-w-[28.0208333333vw] text-[0.7291666667vw] text-[#CCC] [&_span]:cursor-pointer [&_span]:underline">
