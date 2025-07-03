@@ -10,11 +10,7 @@ import { $isBurgerOpen, burgerClicked } from '@/models/header-model';
 import { useUnit } from 'effector-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '../../hooks/useTranslation';
-import {
-  $isAuthLoading,
-  loginClicked,
-  registerClicked,
-} from '../../models/auth';
+import { $isAuthLoading } from '../../models/auth';
 import { $lang, changeLang } from '../../models/language';
 import { AnimatedButton } from '../ui/AnimatedButton';
 import { LogoSmall } from '../ui/LogoSmall';
@@ -27,13 +23,10 @@ export const Header = () => {
     isBurgerOpen: $isBurgerOpen,
   });
 
-  const { handleChangeLang, handleLogin, handleRegister, toggleBurger } =
-    useUnit({
-      handleChangeLang: changeLang,
-      handleLogin: loginClicked,
-      handleRegister: registerClicked,
-      toggleBurger: burgerClicked,
-    });
+  const { handleChangeLang, toggleBurger } = useUnit({
+    handleChangeLang: changeLang,
+    toggleBurger: burgerClicked,
+  });
 
   return (
     <>
@@ -80,19 +73,13 @@ export const Header = () => {
             </SelectContent>
           </Select>
           <div className="hidden items-center gap-4 lg:flex">
-            <a href="https://account.paykassma.partners/v2/sign/">
-              <AnimatedButton
-                variant="default"
-                onClick={() => handleRegister()}
-                disabled={isAuthLoading}>
+            <a href="/register">
+              <AnimatedButton variant="default" disabled={isAuthLoading}>
                 {t('buttons.register')}
               </AnimatedButton>
             </a>
-            <a href="https://account.paykassma.partners/v2/sign/in">
-              <AnimatedButton
-                variant="login"
-                onClick={() => handleLogin()}
-                disabled={isAuthLoading}>
+            <a href="/login">
+              <AnimatedButton variant="login" disabled={isAuthLoading}>
                 {t('buttons.login')}
               </AnimatedButton>
             </a>

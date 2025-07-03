@@ -58,10 +58,12 @@ export const RegisterForm = () => {
     registerUser({
       email: values.email,
       password: values.password,
-      country: 'RU', // всегда "RU"
-      login: values.name, // имя компании
+      country: 'DE', // всегда "RU"
       contact_person: values.tg, // ник в тг
-      notes: values.howYouKnow, // как узнали о нас
+      'custom_fields[2]': values.tg,
+      'custom_fields[13]': values.howYouKnow, // как узнали о нас
+      status: 'active',
+      notify: 1,
     });
   };
 
