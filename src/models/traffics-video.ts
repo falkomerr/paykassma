@@ -100,6 +100,7 @@ export const playVideoTimecodeFx = attach({
       if (!videoElements.forward || !videoElements.backward) return;
 
       if (videoElements.backward.currentTime >= BACKWARD_STOP_TIMECODE) {
+        if (alreadyStopped) return;
         videoElements.backward.pause();
         alreadyStopped = true;
         const timeout = setTimeout(() => {
